@@ -34,7 +34,7 @@
         }
         .carousel {
             display: flex;
-            overflow-x: auto;
+            overflow-x: hidden; /* Prevent dragging/scrolling */
             scroll-snap-type: x mandatory;
             gap: 20px;
             padding: 10px;
@@ -47,14 +47,23 @@
             flex: 0 0 calc(90% - 20px);
             scroll-snap-align: center;
             margin: 0 auto;
+            display: flex;
+            justify-content: center;
         }
         image-compare {
             display: block;
-            width: max-content;
-            max-width: 100%;
+            width: 100%;
+            height: auto;
+            max-height: 60vh; /* Limit height to ensure visibility */
             border: 2px solid #34495e;
             border-radius: 8px;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+        image-compare img {
+            width: 100%;
+            height: auto;
+            max-height: 55vh; /* Slightly less than container to account for slider UI */
+            object-fit: contain; /* Ensure whole image is visible */
         }
         .carousel-controls {
             display: flex;
@@ -85,6 +94,12 @@
             .carousel-item {
                 flex: 0 0 calc(85% - 20px);
             }
+            image-compare {
+                max-height: 50vh;
+            }
+            image-compare img {
+                max-height: 45vh;
+            }
             button {
                 padding: 8px 16px;
                 font-size: 14px;
@@ -99,6 +114,12 @@
             }
             .carousel-item {
                 flex: 0 0 calc(100% - 20px);
+            }
+            image-compare {
+                max-height: 40vh;
+            }
+            image-compare img {
+                max-height: 35vh;
             }
             .carousel-controls {
                 gap: 10px;
@@ -117,6 +138,8 @@
     <script type="text/babel">
         function ImageCompareCarousel() {
             const [currentTime, setCurrentTime] = React.useState(new Date());
+            const [currentIndex, setCurrentIndex] = React.useState(0);
+            const totalItems = 3; // Number of carousel items
 
             // Update time every minute
             React.useEffect(() => {
@@ -125,6 +148,16 @@
                 }, 60000);
                 return () => clearInterval(timer);
             }, []);
+
+            // Update scroll position based on currentIndex
+            React.useEffect(() => {
+                const carousel = document.querySelector('.carousel');
+                const itemWidth = carousel.querySelector('.carousel-item').offsetWidth;
+                carousel.scrollTo({
+                    left: currentIndex * (itemWidth + 20), // Account for gap
+                    behavior: 'smooth'
+                });
+            }, [currentIndex]);
 
             // Format date and time as HH:mm dd/mm/YYYY
             const formatDateTime = (date) => {
@@ -136,14 +169,13 @@
                 return `${hours}:${minutes} ${day}/${month}/${year}`;
             };
 
-            // Scroll carousel left or right
-            const scrollCarousel = (direction) => {
-                const carousel = document.querySelector('.carousel');
-                const itemWidth = carousel.querySelector('.carousel-item').offsetWidth;
-                carousel.scrollBy({
-                    left: direction === 'left' ? -itemWidth : itemWidth,
-                    behavior: 'smooth'
-                });
+            // Handle navigation
+            const handlePrevious = () => {
+                setCurrentIndex((prev) => Math.max(0, prev - 1));
+            };
+
+            const handleNext = () => {
+                setCurrentIndex((prev) => Math.min(totalItems - 1, prev + 1));
             };
 
             return (
@@ -158,13 +190,11 @@
                                         slot="image-1" 
                                         alt="Alt Text" 
                                         src="https://www.dropbox.com/scl/fi/ziv7d9znrtrjm6af7kjif/01-antes.jpg?rlkey=g0e0yc6pg91p6sh9oz69hobt5&raw=1" 
-                                        style={{ maxHeight: '100vh', maxWidth: '100vw', objectFit: 'contain' }}
                                     />
                                     <img 
                                         slot="image-2" 
                                         alt="Alt text" 
                                         src="https://www.dropbox.com/scl/fi/t0nq3nbzcqfff85bfc7qj/01-despues.png?rlkey=eww3ihmg0yzl9uyo0nvczq6zn&raw=1" 
-                                        style={{ maxHeight: '100vh', maxWidth: '100vw', objectFit: 'contain' }}
                                     />
                                 </image-compare>
                             </div>
@@ -174,13 +204,11 @@
                                         slot="image-1" 
                                         alt="Alt Text" 
                                         src="https://www.dropbox.com/scl/fi/k1yt6t8dqlpxeztsco2mu/02-antes.jpeg?rlkey=7x0os1sxwjqn3nbqyzh9d19o2&raw=1" 
-                                        style={{ maxHeight: '100vh', maxWidth: '100vw', objectFit: 'contain' }}
                                     />
                                     <img 
                                         slot="image-2" 
                                         alt="Alt text" 
                                         src="https://www.dropbox.com/scl/fi/mbmwao1qvqd6azt13ubud/02-despues.png?rlkey=k2jm9g7nmx47lu6hecul5h4gv&raw=1" 
-                                        style={{ maxHeight: '100vh', maxWidth: '100vw', objectFit: 'contain' }}
                                     />
                                 </image-compare>
                             </div>
@@ -190,20 +218,18 @@
                                         slot="image-1" 
                                         alt="Alt Text" 
                                         src="https://www.dropbox.com/scl/fi/iipp0othfg63oxowpp7od/03-antes.jpg?rlkey=9lybgjgh9g24a5e3coj0zora4&raw=1" 
-                                        style={{ maxHeight: '100vh', maxWidth: '100vw', objectFit: 'contain' }}
                                     />
                                     <img 
                                         slot="image-2" 
                                         alt="Alt text" 
                                         src="https://www.dropbox.com/scl/fi/j529svn3xoi5k9rwj7udp/03-despues.png?rlkey=l3mqtz5mmv91uazu0331npqcm&raw=1" 
-                                        style={{ maxHeight: '100vh', maxWidth: '100vw', objectFit: 'contain' }}
                                     />
                                 </image-compare>
                             </div>
                         </div>
                         <div className="carousel-controls">
-                            <button onClick={() => scrollCarousel('left')}>Previous</button>
-                            <button onClick={() => scrollCarousel('right')}>Next</button>
+                            <button onClick={handlePrevious} disabled={currentIndex === 0}>Previous</button>
+                            <button onClick={handleNext} disabled={currentIndex === totalItems - 1}>Next</button>
                         </div>
                     </div>
                 </div>
