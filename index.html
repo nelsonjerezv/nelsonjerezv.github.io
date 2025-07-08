@@ -1,47 +1,84 @@
-<script src="https://unpkg.com/@cloudfour/image-compare/dist/index.min.js"></script>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portfolio Landing Page</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+                'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+            background-color: #f5f5f5;
+        }
+        .container {
+            text-align: center;
+            padding: 20px;
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+        p {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 18px;
+        }
+        .iframe-container {
+            width: 100%;
+            max-width: 1200px;
+            height: 70vh;
+            margin: 0 auto;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+        @media (max-width: 768px) {
+            .iframe-container {
+                height: 60vh;
+            }
+            h1 {
+                font-size: 24px;
+            }
+            p {
+                font-size: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
 
+    <!-- React and Babel CDN -->
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 
-<image-compare label-text="Screen Reader Label Text" style="width: max-content;margin: 0px auto;">
-    <img slot="image-1" 
-         alt="Alt Text" 
-         src="https://www.dropbox.com/scl/fi/ziv7d9znrtrjm6af7kjif/01-antes.jpg?rlkey=g0e0yc6pg91p6sh9oz69hobt5&raw=1" 
-         style="max-height: 100vh;max-width: 100vw;object-fit: contain;"
-    />
-    <img slot="image-2" 
-         alt="Alt text" 
-         src="https://www.dropbox.com/scl/fi/t0nq3nbzcqfff85bfc7qj/01-despues.png?rlkey=eww3ihmg0yzl9uyo0nvczq6zn&raw=1" 
-         style="max-height: 100vh;max-width: 100vw;object-fit: contain;"
-    />
-</image-compare>
-<image-compare label-text="Screen Reader Label Text 2" style="width: max-content;margin: 0px auto;">
-    <img slot="image-1" 
-         alt="Alt Text" 
-         src="https://www.dropbox.com/scl/fi/k1yt6t8dqlpxeztsco2mu/02-antes.jpeg?rlkey=7x0os1sxwjqn3nbqyzh9d19o2&raw=1" 
-         style="max-height: 100vh;max-width: 100vw;object-fit: contain;"
-    />
-    <img slot="image-2" 
-         alt="Alt text" 
-         src="https://www.dropbox.com/scl/fi/mbmwao1qvqd6azt13ubud/02-despues.png?rlkey=k2jm9g7nmx47lu6hecul5h4gv&raw=1" 
-         style="max-height: 100vh;max-width: 100vw;object-fit: contain;"
-    />
-</image-compare>
-<image-compare label-text="Screen Reader Label Text 3" style="width: max-content;margin: 0px auto;">
-    <img slot="image-1" 
-         alt="Alt Text" 
-         src="https://www.dropbox.com/scl/fi/iipp0othfg63oxowpp7od/03-antes.jpg?rlkey=9lybgjgh9g24a5e3coj0zora4&raw=1" 
-         style="max-height: 100vh;max-width: 100vw;object-fit: contain;"
-    />
-    <img slot="image-2" 
-         alt="Alt text" 
-         src="https://www.dropbox.com/scl/fi/j529svn3xoi5k9rwj7udp/03-despues.png?rlkey=l3mqtz5mmv91uazu0331npqcm&raw=1" 
-         style="max-height: 100vh;max-width: 100vw;object-fit: contain;"
-    />
-</image-compare>
-<!-- <image-compare label-text="Screen Reader Label Text 2">
-    <img slot="image-1" alt="Alt Text" src=""/>
-    <img slot="image-2" alt="Alt text" src=""/>
-</image-compare> -->
-<!-- <image-compare label-text="Screen Reader Label Text 2">
-    <img slot="image-1" alt="Alt Text" src=""/>
-    <img slot="image-2" alt="Alt text" src=""/>
-</image-compare> -->
+    <script type="text/babel">
+        function LandingPage() {
+            return (
+                <div className="container">
+                    <h1>Welcome to My Portfolio</h1>
+                    <p>Explore my work and projects below.</p>
+                    <div className="iframe-container">
+                        <iframe
+                            src="https://nelsonjerezv.github.io/"
+                            title="Portfolio Content"
+                            allow="accelerometer; camera; encrypted-media; geolocation; gyroscope; microphone; midi; payment"
+                        />
+                    </div>
+                </div>
+            );
+        }
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<LandingPage />);
+    </script>
+</body>
+</html>
