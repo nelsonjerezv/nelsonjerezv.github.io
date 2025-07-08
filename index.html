@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Portfolio Landing Page</title>
+    <title>Image Comparison Landing Page</title>
+    <script src="https://unpkg.com/@cloudfour/image-compare/dist/index.min.js"></script>
     <style>
         body {
             margin: 0;
@@ -24,30 +25,23 @@
             margin-bottom: 30px;
             font-size: 18px;
         }
-        .iframe-container {
-            width: 100%;
-            max-width: 1200px;
-            height: 70vh;
-            margin: 0 auto;
+        image-compare {
+            display: block;
+            margin: 30px auto;
+            width: max-content;
             border: 2px solid #ddd;
             border-radius: 8px;
-            overflow: hidden;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
-        iframe {
-            width: 100%;
-            height: 100%;
-            border: none;
-        }
         @media (max-width: 768px) {
-            .iframe-container {
-                height: 60vh;
-            }
             h1 {
                 font-size: 24px;
             }
             p {
                 font-size: 16px;
+            }
+            image-compare {
+                margin: 20px auto;
             }
         }
     </style>
@@ -61,24 +55,62 @@
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 
     <script type="text/babel">
-        function LandingPage() {
+        function ImageCompareLandingPage() {
             return (
                 <div className="container">
-                    <h1>Welcome to My Portfolio</h1>
-                    <p>Explore my work and projects below.</p>
-                    <div className="iframe-container">
-                        <iframe
-                            src="https://nelsonjerezv.github.io/"
-                            title="Portfolio Content"
-                            allow="accelerometer; camera; encrypted-media; geolocation; gyroscope; microphone; midi; payment"
+                    <h1>Image Comparison Showcase</h1>
+                    <p>Compare before and after images below.</p>
+
+                    <image-compare label-text="Screen Reader Label Text" style={{ width: 'max-content', margin: '0px auto' }}>
+                        <img 
+                            slot="image-1" 
+                            alt="Alt Text" 
+                            src="https://www.dropbox.com/scl/fi/ziv7d9znrtrjm6af7kjif/01-antes.jpg?rlkey=g0e0yc6pg91p6sh9oz69hobt5&raw=1" 
+                            style={{ maxHeight: '100vh', maxWidth: '100vw', objectFit: 'contain' }}
                         />
-                    </div>
+                        <img 
+                            slot="image-2" 
+                            alt="Alt text" 
+                            src="https://www.dropbox.com/scl/fi/t0nq3nbzcqfff85bfc7qj/01-despues.png?rlkey=eww3ihmg0yzl9uyo0nvczq6zn&raw=1" 
+                            style={{ maxHeight: '100vh', maxWidth: '100vw', objectFit: 'contain' }}
+                        />
+                    </image-compare>
+
+                    <image-compare label-text="Screen Reader Label Text 2" style={{ width: 'max-content', margin: '0px auto' }}>
+                        <img 
+                            slot="image-1" 
+                            alt="Alt Text" 
+                            src="https://www.dropbox.com/scl/fi/k1yt6t8dqlpxeztsco2mu/02-antes.jpeg?rlkey=7x0os1sxwjqn3nbqyzh9d19o2&raw=1" 
+                            style={{ maxHeight: '100vh', maxWidth: '100vw', objectFit: 'contain' }}
+                        />
+                        <img 
+                            slot="image-2" 
+                            alt="Alt text" 
+                            src="https://www.dropbox.com/scl/fi/mbmwao1qvqd6azt13ubud/02-despues.png?rlkey=k2jm9g7nmx47lu6hecul5h4gv&raw=1" 
+                            style={{ maxHeight: '100vh', maxWidth: '100vw', objectFit: 'contain' }}
+                        />
+                    </image-compare>
+
+                    <image-compare label-text="Screen Reader Label Text 3" style={{ width: 'max-content', margin: '0px auto' }}>
+                        <img 
+                            slot="image-1" 
+                            alt="Alt Text" 
+                            src="https://www.dropbox.com/scl/fi/iipp0othfg63oxowpp7od/03-antes.jpg?rlkey=9lybgjgh9g24a5e3coj0zora4&raw=1" 
+                            style={{ maxHeight: '100vh', maxWidth: '100vw', objectFit: 'contain' }}
+                        />
+                        <img 
+                            slot="image-2" 
+                            alt="Alt text" 
+                            src="https://www.dropbox.com/scl/fi/j529svn3xoi5k9rwj7udp/03-despues.png?rlkey=l3mqtz5mmv91uazu0331npqcm&raw=1" 
+                            style={{ maxHeight: '100vh', maxWidth: '100vw', objectFit: 'contain' }}
+                        />
+                    </image-compare>
                 </div>
             );
         }
 
         const root = ReactDOM.createRoot(document.getElementById('root'));
-        root.render(<LandingPage />);
+        root.render(<ImageCompareLandingPage />);
     </script>
 </body>
 </html>
