@@ -46,7 +46,7 @@ function buildEventsJson() {
       };
     }
 
-    const url = `https://cdn.jsdelivr.net/gh/tuusuario/tu-repo@main/images/${urlEncodePath(relativePath)}`;
+    const url = `https://cdn.jsdelivr.net/gh/nelsonjerezv/nelsonjerezv.github.io@main/images/${urlEncodePath(relativePath)}`;
 
     eventsMap[eventName].photos.push({
       id: fileName,
