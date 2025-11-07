@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Galería de Eventos con Google Drive y Apps Script</title>
+  <title>Galería de Eventos con JSON Local</title>
   <style>
     body { font-family: sans-serif; margin: 0; padding: 0; background: #f6f6f6; }
     header { background: #222; color: white; padding: 10px; text-align: center; }
@@ -27,53 +27,8 @@
   <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
 
   <script type="text/babel">
-
-    // Cambia esta URL por tu URL desplegada del Google Apps Script Web App.
-    const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzT0CGpAm3uCeNyRBQ5m-OiKcuDY5p8dX02hqz7lWTDD3YbrDHCd03eQYyLGJrjyx5t/exec";
-
-    // Para desarrollo local, activar esta línea para evitar CORS con proxy temporal:
-     //const CORS_PROXY = "https://cors-anywhere.herokuapp.com/";
-     //const fetchUrl = (folderId) => `${CORS_PROXY}${APPS_SCRIPT_URL}?folderId=${folderId}`;
-
-    // Para producción, usar fetch directo sin proxy:
-    const fetchUrl = (folderId) => `${APPS_SCRIPT_URL}?folderId=${folderId}`;
-
-    const events = [
-      {
-        name: "Triatlón Topman",
-        folderId: "1Pl8NpZD77ZIXib3lSW0weH9QqPbbJ_Ci"
-      }
-    ];
-
-    function Gallery({ folderId }) {
-      const [photos, setPhotos] = React.useState([]);
-      const [loading, setLoading] = React.useState(true);
-      const [error, setError] = React.useState(null);
-
-      React.useEffect(() => {
-        setLoading(true);
-        fetch(fetchUrl(folderId))
-          .then(res => res.json())
-          .then(data => {
-            if(data.error){
-              setError(data.error);
-              setPhotos([]);
-            } else {
-              setPhotos(data);
-              setError(null);
-            }
-            setLoading(false);
-          })
-          .catch(err => {
-            setError('Error cargando fotos');
-            setLoading(false);
-          });
-      }, [folderId]);
-
-      if (loading) return <p>Cargando fotos...</p>;
-      if (error) return <p>Error: {error}</p>;
-      if (photos.length === 0) return <p>No se encontraron imágenes.</p>;
-
+    function Gallery({ photos }) {
+      if (!photos || photos.length === 0) return <p>No hay fotos para mostrar.</p>;
       return (
         <div className="gallery">
           {photos.map(photo => (
@@ -84,7 +39,15 @@
     }
 
     function App() {
+      const [events, setEvents] = React.useState([]);
       const [selectedEvent, setSelectedEvent] = React.useState(null);
+
+      React.useEffect(() => {
+        fetch('events.json')
+          .then(response => response.json())
+          .then(data => setEvents(data))
+          .catch(() => setEvents([]));
+      }, []);
 
       return (
         <div>
@@ -92,8 +55,8 @@
             <div>
               <h2>Eventos disponibles</h2>
               <div className="carousel">
-                {events.map((ev) => (
-                  <div className="carousel-item" key={ev.folderId}>
+                {events.map((ev, idx) => (
+                  <div className="carousel-item" key={idx}>
                     <h3>{ev.name}</h3>
                     <button onClick={() => setSelectedEvent(ev)}>Ver Fotos</button>
                   </div>
@@ -103,16 +66,17 @@
           ) : (
             <div>
               <button onClick={() => setSelectedEvent(null)}>Volver a eventos</button>
-              <h2>Fotos de {selectedEvent.name}</h2>
-              <Gallery folderId={selectedEvent.folderId} />
+              <h2>Fotos del evento: {selectedEvent.name}</h2>
+              <Gallery photos={selectedEvent.photos} />
             </div>
           )}
         </div>
       );
     }
 
-    const root = ReactDOM.createRoot(document.getElementById("root"));
+    const root = ReactDOM.createRoot(document.getElementById('root'));
     root.render(<App />);
   </script>
+
 </body>
 </html>
