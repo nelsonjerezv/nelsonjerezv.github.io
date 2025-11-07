@@ -8,5 +8,35 @@
         "url": "https://cdn.jsdelivr.net/gh/nelsonjerezv/nelsonjerezv.github.io@main/images/cycling%20Pucon%202025/premium_photo-1713184149461-69b0abeb3daa%202.avif"
       }
     ]
+  },
+  {
+    "name": "evento 2",
+    "photos": [
+      {
+        "id": "pexels-abner-velazquez-1035709527-34467094.avif",
+        "name": "pexels-abner-velazquez-1035709527-34467094.avif",
+        "url": "https://cdn.jsdelivr.net/gh/nelsonjerezv/nelsonjerezv.github.io@main/images/evento%202/pexels-abner-velazquez-1035709527-34467094.avif"
+      },
+      {
+        "id": "pexels-alyona-nagel-1468385055-34185312.avif",
+        "name": "pexels-alyona-nagel-1468385055-34185312.avif",
+        "url": "https://cdn.jsdelivr.net/gh/nelsonjerezv/nelsonjerezv.github.io@main/images/evento%202/pexels-alyona-nagel-1468385055-34185312.avif"
+      },
+      {
+        "id": "pexels-emrah-aslantepe-914624648-33335347.avif",
+        "name": "pexels-emrah-aslantepe-914624648-33335347.avif",
+        "url": "https://cdn.jsdelivr.net/gh/nelsonjerezv/nelsonjerezv.github.io@main/images/evento%202/pexels-emrah-aslantepe-914624648-33335347.avif"
+      },
+      {
+        "id": "pexels-kalz-michael-1277172-34123077.avif",
+        "name": "pexels-kalz-michael-1277172-34123077.avif",
+        "url": "https://cdn.jsdelivr.net/gh/nelsonjerezv/nelsonjerezv.github.io@main/images/evento%202/pexels-kalz-michael-1277172-34123077.avif"
+      },
+      {
+        "id": "pexels-saif-3805753-30947613.avif",
+        "name": "pexels-saif-3805753-30947613.avif",
+        "url": "https://cdn.jsdelivr.net/gh/nelsonjerezv/nelsonjerezv.github.io@main/images/evento%202/pexels-saif-3805753-30947613.avif"
+      }
+    ]
   }
 ]
