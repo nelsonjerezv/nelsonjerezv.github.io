@@ -1,129 +1,1006 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Galería de Eventos con JSON Local</title>
-  <style>
-    body { font-family: sans-serif; margin: 0; padding: 0; background: #f6f6f6; }
-    header { background: #222; color: white; padding: 10px; text-align: center; }
-    .carousel { display: flex; overflow-x: auto; margin: 20px; padding-left: 20px; }
-    .carousel-item { min-width: 240px; margin-right: 16px; background: white; border-radius: 10px; padding: 12px; }
-    .carousel-item h3 { margin-top: 0; }
-    .gallery { display: flex; flex-wrap: wrap; margin: 20px; }
-    .gallery-item { position: relative; margin: 8px; background: #eee; border-radius: 4px; cursor: pointer; }
-    .gallery-item input[type="checkbox"] { position: absolute; top: 5px; left: 5px; z-index: 1; }
-    .gallery img { height: 200px; width: auto; display: block; object-fit: contain; border-radius: 4px; }
-    button { cursor: pointer; padding: 8px 12px; border-radius: 5px; border: none; background: #007bff; color: white; margin-top: 8px; margin-left: 10px; }
-    button:hover { background: #0056b3; }
-    .selected-count { margin: 0 20px 10px; font-weight: bold; color: #333; }
-    .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.8); display: flex; align-items: center; justify-content: center; z-index: 1000; }
-    .modal img { max-width: 90%; max-height: 90%; border-radius: 8px; }
-    .modal-backdrop { position: absolute; width: 100%; height: 100%; }
-  </style>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Eventos disponibles</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            margin: 0;
+            padding: 0;
+            background: #f6f6f6;
+        }
+
+        header {
+            background: #222;
+            color: white;
+            padding: 10px;
+            text-align: center;
+        }
+
+        .carousel {
+            display: flex;
+            overflow-x: auto;
+            margin: 20px;
+            padding-left: 20px;
+        }
+
+        .carousel-item {
+            min-width: 240px;
+            margin-right: 16px;
+            background: white;
+            border-radius: 10px;
+            padding: 12px;
+        }
+
+        .carousel-item h3 {
+            margin-top: 0;
+        }
+
+        .gallery {
+            display: flex;
+            flex-wrap: wrap;
+            margin: 20px;
+        }
+
+        .gallery-item {
+            position: relative;
+            margin: 8px;
+            background: #eee;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: border 0.2s, box-shadow 0.2s;
+        }
+
+        .gallery-item.selected {
+            border: 3px solid #007bff;
+        }
+
+        .gallery-item:hover {
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .gallery img {
+            height: 200px;
+            width: auto;
+            display: block;
+            object-fit: contain;
+            border-radius: 4px;
+        }
+
+        .gallery-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: none;
+            flex-direction: column;
+            border-radius: 4px;
+        }
+
+        .gallery-item:hover .gallery-overlay {
+            display: flex;
+        }
+
+        .gallery-overlay-top,
+        .gallery-overlay-bottom {
+            flex: 1;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 16px;
+            border: none;
+            cursor: pointer;
+            transition: background 0.2s;
+            margin: 0px;
+            padding: 0px;
+            border-radius: 0px;
+        }
+
+        .gallery-overlay-top {
+            border-bottom: 1px solid white;
+        }
+
+        .gallery-overlay-top:hover,
+        .gallery-overlay-bottom:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        button {
+            cursor: pointer;
+            padding: 8px 12px;
+            border-radius: 5px;
+            border: none;
+            background: #007bff;
+            color: white;
+            margin-top: 8px;
+            margin-left: 10px;
+        }
+
+        button:hover {
+            background: #0056b3;
+        }
+
+        .selection-controls {
+            margin: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .selected-count {
+            font-weight: bold;
+            color: #333;
+        }
+
+        .lightbox {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .lightbox img {
+            max-width: 90%;
+            max-height: 90%;
+            border-radius: 8px;
+        }
+
+        .lightbox-nav {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(0, 0, 0, 0.5);
+            color: white;
+            border: none;
+            font-size: 24px;
+            padding: 10px;
+            cursor: pointer;
+            border-radius: 50%;
+            z-index: 1003;
+        }
+
+        .lightbox-prev {
+            left: 20px;
+        }
+
+        .lightbox-next {
+            right: 20px;
+        }
+
+        .lightbox-select {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            padding: 8px 12px;
+            border-radius: 5px;
+            color: white;
+            cursor: pointer;
+            border: none;
+            z-index: 1003;
+        }
+
+        .lightbox-select.select {
+            background: #007bff;
+        }
+
+        .lightbox-select.deselect {
+            background: #dc3545;
+        }
+
+        .lightbox-select:hover {
+            opacity: 0.8;
+        }
+
+        .lightbox-close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.5);
+            color: white;
+            border: none;
+            font-size: 24px;
+            padding: 5px 10px;
+            cursor: pointer;
+            border-radius: 50%;
+            z-index: 1001;
+        }
+
+        .lightbox-backdrop {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+        }
+
+        .lightbox-image-container {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            max-width: 90%;
+            max-height: 90%;
+        }
+
+        .review-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1001;
+        }
+
+        .review-content {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            max-width: 90%;
+            max-height: 80%;
+            width: 600px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        .review-header {
+            text-align: center;
+            margin-bottom: 10px;
+            width: 100%;
+        }
+
+        .review-image {
+            max-width: 100%;
+            max-height: 400px;
+            object-fit: contain;
+            border-radius: 4px;
+            margin-bottom: 10px;
+        }
+
+        .review-nav {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(0, 0, 0, 0.5);
+            color: white;
+            border: none;
+            font-size: 20px;
+            padding: 8px;
+            cursor: pointer;
+            border-radius: 50%;
+            z-index: 1003;
+        }
+
+        .review-prev {
+            left: 10px;
+            top: 50%;
+        }
+
+        .review-next {
+            right: 10px;
+            top: 50%;
+        }
+
+        .review-deselect {
+            background: #dc3545;
+            padding: 8px 12px;
+            border-radius: 5px;
+            color: white;
+            border: none;
+            cursor: pointer;
+            margin-bottom: 20px;
+            position: relative;
+            z-index: 1003;
+        }
+
+        .review-buttons {
+            display: flex;
+            gap: 10px;
+            width: 100%;
+            justify-content: center;
+        }
+
+        .review-buttons button {
+            flex: 1;
+            margin: 0;
+            position: relative;
+            z-index: 1003;
+        }
+
+        .review-image-container {
+            position: relative;
+            width: 100%;
+            height: 400px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 10px;
+        }
+
+        .header-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 20px;
+            width: calc(100% - 40px);
+        }
+
+        .back-button {
+            background: #6c757d;
+        }
+
+        .back-button:hover {
+            background: #545b62;
+        }
+
+        .selection-controls-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .email-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1002;
+        }
+
+        .email-content {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            max-width: 90%;
+            max-height: 80%;
+            width: 400px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .email-header {
+            text-align: center;
+            margin-bottom: 20px;
+            width: 100%;
+        }
+
+        .email-input {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+
+        .email-buttons {
+            display: flex;
+            gap: 10px;
+            width: 100%;
+            justify-content: center;
+        }
+
+        .email-buttons button {
+            flex: 1;
+            margin: 0;
+        }
+
+        .email-buttons .cancel {
+            background: #6c757d;
+        }
+
+        .email-buttons .cancel:hover {
+            background: #545b62;
+        }
+
+        .email-buttons .submit {
+            background: #28a745;
+        }
+
+        .email-buttons .submit:hover {
+            background: #218838;
+        }
+
+        .email-buttons .submit:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        .loading-spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #007bff;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        @keyframes spin {
+            0% {
+                transform: translate(-50%, -50%) rotate(0deg);
+            }
+
+            100% {
+                transform: translate(-50%, -50%) rotate(360deg);
+            }
+        }
+
+        .loading-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            z-index: 1;
+        }
+
+        .lightbox img,
+        .review-image {
+            z-index: 2;
+        }
+    </style>
 </head>
+
 <body>
-  <header>
-    <h1>Galería de Eventos</h1>
-  </header>
-  <div id="root"></div>
+    <div id="root"></div>
 
-  <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
-  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
-  <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
 
-  <script type="text/babel">
-    function Modal({ photo, onClose }) {
-      if (!photo) return null;
-      return (
-        <div className="modal" onClick={onClose}>
-          <div className="modal-backdrop" onClick={onClose} />
-          <img src={photo.url} alt={photo.name} onClick={(e) => e.stopPropagation()} />
-        </div>
-      );
-    }
+    <script type="text/babel">
+        var React = React; // Para compatibilidad con Babel Standalone @6
 
-    function Gallery({ photos, selectedPhotos, onToggleSelect, onSelectPhoto }) {
-      if (!photos || photos.length === 0) return <p>No hay fotos para mostrar.</p>;
-      return (
-        <div>
-          <p className="selected-count">
-            {selectedPhotos.length} foto{selectedPhotos.length !== 1 ? 's' : ''} seleccionada{selectedPhotos.length !== 1 ? 's' : ''}
-          </p>
-          <div className="gallery">
-            {photos.map(photo => (
-              <div key={photo.id} className="gallery-item" onClick={() => onSelectPhoto(photo)}>
-                <input
-                  type="checkbox"
-                  checked={selectedPhotos.includes(photo.id)}
-                  onChange={(e) => onToggleSelect(photo.id, e.target.checked)}
-                  onClick={(e) => e.stopPropagation()}
-                />
-                <img src={photo.url} alt={photo.name} />
-              </div>
-            ))}
-          </div>
-        </div>
-      );
-    }
+        function Lightbox(props) {
+            var photos = props.photos;
+            var index = props.index;
+            var onClose = props.onClose;
+            var onPrev = props.onPrev;
+            var onNext = props.onNext;
+            var onToggleSelect = props.onToggleSelect;
+            var selectedPhotos = props.selectedPhotos;
 
-    function App() {
-      const [events, setEvents] = React.useState([]);
-      const [selectedEvent, setSelectedEvent] = React.useState(null);
-      const [selectedPhotos, setSelectedPhotos] = React.useState([]);
-      const [selectedPhoto, setSelectedPhoto] = React.useState(null);
+            var isImageLoadingState = React.useState(true);
+            var isImageLoading = isImageLoadingState[0];
+            var setIsImageLoading = isImageLoadingState[1];
 
-      const toggleSelect = (id, checked) => {
-        setSelectedPhotos(prev =>
-          checked ? [...prev, id] : prev.filter(pId => pId !== id)
-        );
-      };
+            if (index === -1) return null;
+            var photo = photos[index];
+            var isSelected = false;
+            if (photo && selectedPhotos.length > 0) {
+                for (var i = 0; i < selectedPhotos.length; i++) {
+                    if (selectedPhotos[i].id === photo.id) {
+                        isSelected = true;
+                        break;
+                    }
+                }
+            }
+            var selectClass = isSelected ? 'lightbox-select deselect' : 'lightbox-select select';
+            var handleImageLoad = function () {
+                setIsImageLoading(false);
+            };
+            var resetLoading = function () {
+                setIsImageLoading(true);
+            };
+            return (
+                React.createElement('div', { className: 'lightbox', onClick: onClose },
+                    React.createElement('div', { className: 'lightbox-backdrop', onClick: onClose }),
+                    React.createElement('button', { className: 'lightbox-close', onClick: function (e) { e.stopPropagation(); onClose(); } }, '×'),
+                    React.createElement('button', { className: 'lightbox-nav lightbox-prev', onClick: function (e) { e.stopPropagation(); resetLoading(); onPrev(); } }, '←'),
+                    React.createElement('div', { className: 'lightbox-image-container', onClick: function (e) { e.stopPropagation(); } },
+                        isImageLoading && React.createElement('div', { className: 'loading-overlay' },
+                            React.createElement('div', { className: 'loading-spinner' })
+                        ),
+                        React.createElement('img', {
+                            src: photo.url,
+                            alt: photo.name,
+                            onClick: function (e) { e.stopPropagation(); },
+                            onLoad: handleImageLoad,
+                            style: { display: isImageLoading ? 'none' : 'block' }
+                        })
+                    ),
+                    React.createElement('button', { className: 'lightbox-nav lightbox-next', onClick: function (e) { e.stopPropagation(); resetLoading(); onNext(); } }, '→'),
+                    React.createElement('button', { className: selectClass, onClick: function (e) { e.stopPropagation(); onToggleSelect(photo); } },
+                        isSelected ? 'Deseleccionar' : 'Seleccionar'
+                    )
+                )
+            );
+        }
 
-      const handleSelectEvent = (ev) => {
-        setSelectedEvent(ev);
-        setSelectedPhotos([]);
-      };
+        function ReviewModal(props) {
+            var selectedPhotos = props.selectedPhotos;
+            var reviewIndex = props.reviewIndex;
+            var onClose = props.onClose;
+            var onDeselect = props.onDeselect;
+            var onPrev = props.onPrev;
+            var onNext = props.onNext;
+            var onConfirm = props.onConfirm;
 
-      React.useEffect(() => {
-        fetch('events.json')
-          .then(response => response.json())
-          .then(data => setEvents(data))
-          .catch(() => setEvents([]));
-      }, []);
+            var isImageLoadingState = React.useState(true);
+            var isImageLoading = isImageLoadingState[0];
+            var setIsImageLoading = isImageLoadingState[1];
 
-      return (
-        <div>
-          {!selectedEvent ? (
-            <div>
-              <h2>Eventos disponibles</h2>
-              <div className="carousel">
-                {events.map((ev, idx) => (
-                  <div className="carousel-item" key={idx}>
-                    <h3>{ev.name}</h3>
-                    <button onClick={() => handleSelectEvent(ev)}>Ver Fotos</button>
-                  </div>
-                ))}
-              </div>
-            </div>
-          ) : (
-            <div>
-              <button onClick={() => setSelectedEvent(null)}>Volver a eventos</button>
-              <h2>Fotos del evento: {selectedEvent.name}</h2>
-              <Gallery
-                photos={selectedEvent.photos}
-                selectedPhotos={selectedPhotos}
-                onToggleSelect={toggleSelect}
-                onSelectPhoto={setSelectedPhoto}
-              />
-              <Modal photo={selectedPhoto} onClose={() => setSelectedPhoto(null)} />
-            </div>
-          )}
-        </div>
-      );
-    }
+            if (!selectedPhotos || selectedPhotos.length === 0) return null;
+            var photo = selectedPhotos[reviewIndex];
+            if (!photo) return null; // Prevenir error si photo es undefined
+            var selectClass = 'review-deselect';
+            var handleImageLoad = function () {
+                setIsImageLoading(false);
+            };
+            var resetLoading = function () {
+                setIsImageLoading(true);
+            };
+            return (
+                React.createElement('div', { className: 'review-modal', onClick: onClose },
+                    React.createElement('div', { className: 'review-content', onClick: function (e) { e.stopPropagation(); } },
+                        React.createElement('div', { className: 'review-header' },
+                            React.createElement('h2', null, 'Confirma tu selección de imágenes'),
+                            React.createElement('h2', null, selectedPhotos.length === 1 ? `${selectedPhotos.length} imagen seleccionada` : `${selectedPhotos.length} imágenes seleccionadas`)
+                        ),
+                        React.createElement('button', { className: 'review-nav review-prev', onClick: function (e) { e.stopPropagation(); resetLoading(); onPrev(); } }, '←'),
+                        React.createElement('div', { className: 'review-image-container', onClick: function (e) { e.stopPropagation(); } },
+                            isImageLoading && React.createElement('div', { className: 'loading-overlay' },
+                                React.createElement('div', { className: 'loading-spinner' })
+                            ),
+                            React.createElement('img', {
+                                src: photo.url,
+                                alt: photo.name,
+                                className: 'review-image',
+                                onClick: function (e) { e.stopPropagation(); },
+                                onLoad: handleImageLoad,
+                                style: { display: isImageLoading ? 'none' : 'block' }
+                            })
+                        ),
+                        React.createElement('button', { className: 'review-nav review-next', onClick: function (e) { e.stopPropagation(); resetLoading(); onNext(); } }, '→'),
+                        React.createElement('button', { className: selectClass, onClick: function (e) { e.stopPropagation(); onDeselect(photo, true); } }, 'Deseleccionar'),
+                        React.createElement('div', { className: 'review-buttons' },
+                            React.createElement('button', { onClick: onClose }, 'Volver'),
+                            React.createElement('button', { onClick: onConfirm }, 'Confirmar')
+                        )
+                    )
+                )
+            );
+        }
 
-    const root = ReactDOM.createRoot(document.getElementById('root'));
-    root.render(<App />);
-  </script>
+        function EmailModal(props) {
+            var email = props.email;
+            var setEmail = props.setEmail;
+            var onClose = props.onClose;
+            var onSubmit = props.onSubmit;
+            var selectedPhotos = props.selectedPhotos;
+
+            var handleChange = function (e) {
+                setEmail(e.target.value);
+            };
+
+            var isValidEmail = function (email) {
+                return email && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+            };
+
+            var submitDisabled = !isValidEmail(email);
+
+            return (
+                React.createElement('div', { className: 'email-modal', onClick: onClose },
+                    React.createElement('div', { className: 'email-content', onClick: function (e) { e.stopPropagation(); } },
+                        React.createElement('div', { className: 'email-header' },
+                            React.createElement('h2', null, 'Ingresa tu email para la orden'),
+                            React.createElement('p', null, 'Te contactaremos cuando la orden sea recibida por el equipo.')
+                        ),
+                        React.createElement('input', {
+                            type: 'email',
+                            className: 'email-input',
+                            placeholder: 'tu@email.com',
+                            value: email,
+                            onChange: handleChange
+                        }),
+                        React.createElement('div', { className: 'email-buttons' },
+                            React.createElement('button', { className: 'cancel', onClick: onClose }, 'Cancelar'),
+                            React.createElement('button', {
+                                className: 'submit',
+                                onClick: function () { if (!submitDisabled) onSubmit(email, selectedPhotos); },
+                                disabled: submitDisabled
+                            }, 'Enviar orden')
+                        )
+                    )
+                )
+            );
+        }
+
+        function Gallery(props) {
+            var photos = props.photos;
+            var isSelectionMode = props.isSelectionMode;
+            var hasSelections = props.hasSelections;
+            var selectedPhotos = props.selectedPhotos;
+            var onToggleSelect = props.onToggleSelect;
+            var onOpenLightbox = props.onOpenLightbox;
+
+            if (!photos || photos.length === 0) {
+                return React.createElement('p', null, 'No hay fotos para mostrar.');
+            }
+            var items = [];
+            for (var j = 0; j < photos.length; j++) {
+                var photo = photos[j];
+                var idx = j;
+                var isSelected = false;
+                for (var k = 0; k < selectedPhotos.length; k++) {
+                    if (selectedPhotos[k].id === photo.id) {
+                        isSelected = true;
+                        break;
+                    }
+                }
+                var className = 'gallery-item' + (isSelectionMode && isSelected ? ' selected' : '');
+                var onClick = function (isSelectionMode, photo, idx) {
+                    return function () {
+                        if (isSelectionMode) {
+                            onToggleSelect(photo);
+                        } else {
+                            onOpenLightbox(idx);
+                        }
+                    };
+                }(isSelectionMode, photo, idx);
+                var overlay = null;
+                if (hasSelections) {
+                    var topOnClick = function (idx) { return function (e) { e.stopPropagation(); onOpenLightbox(idx); }; }(idx);
+                    var bottomOnClick = function (photo) { return function (e) { e.stopPropagation(); onToggleSelect(photo); }; }(photo);
+                    var bottomText = isSelected ? 'Deseleccionar' : 'Seleccionar';
+                    overlay = React.createElement('div', { className: 'gallery-overlay' },
+                        React.createElement('button', { className: 'gallery-overlay-top', onClick: topOnClick }, 'Ver'),
+                        React.createElement('button', { className: 'gallery-overlay-bottom', onClick: bottomOnClick }, bottomText)
+                    );
+                }
+                items.push(
+                    React.createElement('div', { key: photo.name || `photo-${j}`, className: className, onClick: onClick },
+                        React.createElement('img', { src: photo.url, alt: photo.name || 'Imagen' }),
+                        overlay
+                    )
+                );
+            }
+            return React.createElement('div', { className: 'gallery' }, items);
+        }
+
+        function App() {
+            var eventsState = React.useState([]);
+            var events = eventsState[0];
+            var setEvents = eventsState[1];
+            var selectedEventState = React.useState(null);
+            var selectedEvent = selectedEventState[0];
+            var setSelectedEvent = selectedEventState[1];
+            var selectedPhotosState = React.useState([]);
+            var selectedPhotos = selectedPhotosState[0];
+            var setSelectedPhotos = selectedPhotosState[1];
+            var isSelectionModeState = React.useState(false);
+            var isSelectionMode = isSelectionModeState[0];
+            var setIsSelectionMode = isSelectionModeState[1];
+            var lightboxIndexState = React.useState(-1);
+            var lightboxIndex = lightboxIndexState[0];
+            var setLightboxIndex = lightboxIndexState[1];
+            var showReviewState = React.useState(false);
+            var showReview = showReviewState[0];
+            var setShowReview = showReviewState[1];
+            var reviewIndexState = React.useState(0);
+            var reviewIndex = reviewIndexState[0];
+            var setReviewIndex = reviewIndexState[1];
+            var showEmailModalState = React.useState(false);
+            var showEmailModal = showEmailModalState[0];
+            var setShowEmailModal = showEmailModalState[1];
+            var emailState = React.useState('');
+            var email = emailState[0];
+            var setEmail = emailState[1];
+
+            var hasSelections = selectedPhotos.length > 0;
+
+            var toggleSelectionMode = function () {
+                setIsSelectionMode(!isSelectionMode);
+                if (!isSelectionMode) {
+                    setSelectedPhotos([]);
+                    setLightboxIndex(-1);
+                }
+            };
+
+            var toggleSelect = function (photo) {
+                var prevLength = selectedPhotos.length;
+                var newSelected = [];
+                var alreadySelected = false;
+                for (var l = 0; l < selectedPhotos.length; l++) {
+                    if (selectedPhotos[l].id !== photo.id) {
+                        newSelected.push(selectedPhotos[l]);
+                    } else {
+                        alreadySelected = true;
+                    }
+                }
+                if (!alreadySelected) {
+                    newSelected.push(photo);
+                }
+                setSelectedPhotos(newSelected);
+                // Si se agrega la primera selección desde lightbox, activa el modo
+                if (prevLength === 0 && newSelected.length > 0 && !isSelectionMode) {
+                    setIsSelectionMode(true);
+                }
+                // Si se remueve la última selección, desactiva el modo
+                if (newSelected.length === 0) {
+                    setIsSelectionMode(false);
+                }
+            };
+
+            var removeSelect = function (photo, resetIndex) {
+                var newSelected = [];
+                for (var m = 0; m < selectedPhotos.length; m++) {
+                    if (selectedPhotos[m].id !== photo.id) {
+                        newSelected.push(selectedPhotos[m]);
+                    }
+                }
+                setSelectedPhotos(newSelected);
+                // Si no quedan selecciones, desactiva el modo
+                if (newSelected.length === 0) {
+                    setIsSelectionMode(false);
+                }
+                // Si se invoca desde modal y pide reset, ajusta el índice para evitar out-of-bounds
+                if (resetIndex && showReview) {
+                    if (newSelected.length === 0) {
+                        setShowReview(false);
+                    } else {
+                        setReviewIndex(0);
+                    }
+                }
+            };
+
+            var handleConfirm = function () {
+                setShowReview(false);
+                setShowEmailModal(true);
+            };
+
+            var handleEmailSubmit = function (email, selectedPhotos) {
+                console.log('Orden enviada a:', email, 'con fotos:', selectedPhotos);
+                setShowEmailModal(false);
+                setIsSelectionMode(false);
+                setSelectedPhotos([]);
+                setEmail('');
+            };
+
+            var handleSelectEvent = function (ev) {
+                setSelectedEvent(ev);
+                setSelectedPhotos([]);
+                setIsSelectionMode(false);
+                setLightboxIndex(-1);
+                setShowReview(false);
+                setShowEmailModal(false);
+                setEmail('');
+                setReviewIndex(0);
+            };
+
+            var openLightbox = function (idx) {
+                setLightboxIndex(idx);
+            };
+
+            var closeLightbox = function () {
+                setLightboxIndex(-1);
+            };
+
+            var getPhotoLength = function () {
+                if (selectedEvent && selectedEvent.photos) {
+                    return selectedEvent.photos.length;
+                }
+                return 0;
+            };
+
+            var photoLength = getPhotoLength();
+
+            var prevPhoto = function () {
+                var newIndex = lightboxIndex - 1;
+                if (newIndex < 0) {
+                    newIndex = photoLength - 1;
+                }
+                setLightboxIndex(newIndex);
+            };
+
+            var nextPhoto = function () {
+                var newIndex = lightboxIndex + 1;
+                if (newIndex >= photoLength) {
+                    newIndex = 0;
+                }
+                setLightboxIndex(newIndex);
+            };
+
+            var prevReview = function () {
+                var newIndex = reviewIndex - 1;
+                if (newIndex < 0) {
+                    newIndex = selectedPhotos.length - 1;
+                }
+                setReviewIndex(newIndex);
+            };
+
+            var nextReview = function () {
+                var newIndex = reviewIndex + 1;
+                if (newIndex >= selectedPhotos.length) {
+                    newIndex = 0;
+                }
+                setReviewIndex(newIndex);
+            };
+
+            var handleKeyDown = function (e) {
+                if (lightboxIndex === -1) return;
+                if (e.key === 'ArrowLeft') {
+                    e.preventDefault();
+                    prevPhoto();
+                } else if (e.key === 'ArrowRight') {
+                    e.preventDefault();
+                    nextPhoto();
+                }
+            };
+
+            React.useEffect(function () {
+                if (lightboxIndex !== -1) {
+                    window.addEventListener('keydown', handleKeyDown);
+                    return function () {
+                        window.removeEventListener('keydown', handleKeyDown);
+                    };
+                }
+            }, [lightboxIndex]);
+
+            React.useEffect(function () {
+                fetch('events.json')
+                    .then(function (response) { return response.json(); })
+                    .then(function (data) { setEvents(data); })
+                    .catch(function () { setEvents([]); });
+            }, []);
+
+            React.useEffect(function () {
+                if (selectedEvent) {
+                    document.title = selectedEvent.name;
+                } else {
+                    document.title = 'Eventos disponibles';
+                }
+            }, [selectedEvent]);
+
+            var photos = [];
+            if (selectedEvent && selectedEvent.photos) {
+                photos = selectedEvent.photos;
+            }
+
+            var carouselItems = [];
+            for (var n = 0; n < events.length; n++) {
+                var ev = events[n];
+                var idx = n;
+                carouselItems.push(
+                    React.createElement('div', { className: 'carousel-item', key: ev.name },
+                        React.createElement('h3', null, ev.name),
+                        React.createElement('button', { onClick: function (ev) { return function () { handleSelectEvent(ev); }; }(ev) }, 'Ver Fotos')
+                    )
+                );
+            }
+
+            var gallery = null;
+            if (photos.length > 0) {
+                gallery = React.createElement(Gallery, {
+                    photos: photos,
+                    isSelectionMode: isSelectionMode,
+                    hasSelections: hasSelections,
+                    selectedPhotos: selectedPhotos,
+                    onToggleSelect: toggleSelect,
+                    onOpenLightbox: openLightbox
+                });
+            } else {
+                gallery = React.createElement('p', null, 'No hay fotos para mostrar.');
+            }
+
+            var lightbox = null;
+            if (lightboxIndex !== -1 && photos.length > 0) {
+                lightbox = React.createElement(Lightbox, {
+                    photos: photos,
+                    index: lightboxIndex,
+                    onClose: closeLightbox,
+                    onPrev: prevPhoto,
+                    onNext: nextPhoto,
+                    onToggleSelect: toggleSelect,
+                    selectedPhotos: selectedPhotos
+                });
+            }
+
+            var reviewModal = null;
+            if (showReview && selectedPhotos.length > 0) {
+                reviewModal = React.createElement(ReviewModal, {
+                    selectedPhotos: selectedPhotos,
+                    reviewIndex: reviewIndex,
+                    onClose: function () { setShowReview(false); },
+                    onDeselect: removeSelect,
+                    onPrev: prevReview,
+                    onNext: nextReview,
+                    onConfirm: handleConfirm
+                });
+            }
+
+            var emailModal = null;
+            if (showEmailModal) {
+                emailModal = React.createElement(EmailModal, {
+                    email: email,
+                    setEmail: setEmail,
+                    onClose: function () { setShowEmailModal(false); },
+                    onSubmit: handleEmailSubmit,
+                    selectedPhotos: selectedPhotos
+                });
+            }
+
+            var selectionControls = null;
+            if (isSelectionMode || hasSelections) {
+                selectionControls = React.createElement('button', { onClick: toggleSelectionMode }, isSelectionMode ? 'Cancelar selección' : 'Seleccionar imágenes para orden');
+                if (hasSelections) {
+                    selectionControls = [
+                        React.createElement('button', { key: 'toggle', onClick: toggleSelectionMode }, isSelectionMode ? 'Cancelar selección' : 'Seleccionar imágenes para orden'),
+                        React.createElement('span', { key: 'count', className: 'selected-count' }, `${selectedPhotos.length} ${selectedPhotos.length === 1 ? 'imagen seleccionada' : 'imágenes seleccionadas'}`),
+                        React.createElement('button', { key: 'generate', onClick: function () { setShowReview(true); setReviewIndex(0); } }, 'Generar orden')
+                    ];
+                }
+            } else {
+                selectionControls = React.createElement('button', { onClick: toggleSelectionMode }, 'Seleccionar imágenes para orden');
+            }
+
+            var headerTitle = selectedEvent ? selectedEvent.name : 'Galería de Eventos';
+
+            var content = null;
+            if (!selectedEvent) {
+                content = [
+                    React.createElement('header', { key: 'header' },
+                        React.createElement('h1', null, headerTitle)
+                    ),
+                    React.createElement('h2', { key: 'h2' }, 'Eventos disponibles'),
+                    React.createElement('div', { key: 'carousel', className: 'carousel' }, carouselItems)
+                ];
+            } else {
+                content = [
+                    React.createElement('header', { key: 'header' },
+                        React.createElement('h1', null, headerTitle)
+                    ),
+                    React.createElement('div', { key: 'header-row', className: 'header-row' },
+                        React.createElement('button', { key: 'back', className: 'back-button', onClick: function () { setSelectedEvent(null); } }, 'Volver a eventos'),
+                        React.createElement('div', { key: 'controls', className: 'selection-controls-wrapper' }, selectionControls)
+                    ),
+                    gallery
+                ];
+            }
+
+            return React.createElement('div', null, content, lightbox, reviewModal, emailModal);
+        }
+
+        var root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(React.createElement(App));
+    </script>
 </body>
+
 </html>
