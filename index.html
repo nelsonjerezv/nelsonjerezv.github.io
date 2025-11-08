@@ -7,13 +7,19 @@
   <style>
     body { font-family: sans-serif; margin: 0; padding: 0; background: #f6f6f6; }
     header { background: #222; color: white; padding: 10px; text-align: center; }
-    .carousel { display: flex; overflow-x: auto; margin: 20px; }
-    .carousel-item { min-width: 240px; margin-right: 16px; background: white; border-radius: 10px; padding: 12px;}
+    .carousel { display: flex; overflow-x: auto; margin: 20px; padding-left: 20px; }
+    .carousel-item { min-width: 240px; margin-right: 16px; background: white; border-radius: 10px; padding: 12px; }
     .carousel-item h3 { margin-top: 0; }
     .gallery { display: flex; flex-wrap: wrap; margin: 20px; }
-    .gallery img { width: 200px; margin: 8px; border-radius: 4px; background: #eee;}
-    button { cursor: pointer; padding: 8px 12px; border-radius: 5px; border: none; background: #007bff; color: white; margin-top: 8px;}
+    .gallery-item { position: relative; margin: 8px; background: #eee; border-radius: 4px; cursor: pointer; }
+    .gallery-item input[type="checkbox"] { position: absolute; top: 5px; left: 5px; z-index: 1; }
+    .gallery img { height: 200px; width: auto; display: block; object-fit: contain; border-radius: 4px; }
+    button { cursor: pointer; padding: 8px 12px; border-radius: 5px; border: none; background: #007bff; color: white; margin-top: 8px; margin-left: 10px; }
     button:hover { background: #0056b3; }
+    .selected-count { margin: 0 20px 10px; font-weight: bold; color: #333; }
+    .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.8); display: flex; align-items: center; justify-content: center; z-index: 1000; }
+    .modal img { max-width: 90%; max-height: 90%; border-radius: 8px; }
+    .modal-backdrop { position: absolute; width: 100%; height: 100%; }
   </style>
 </head>
 <body>
@@ -27,13 +33,36 @@
   <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
 
   <script type="text/babel">
-    function Gallery({ photos }) {
+    function Modal({ photo, onClose }) {
+      if (!photo) return null;
+      return (
+        <div className="modal" onClick={onClose}>
+          <div className="modal-backdrop" onClick={onClose} />
+          <img src={photo.url} alt={photo.name} onClick={(e) => e.stopPropagation()} />
+        </div>
+      );
+    }
+
+    function Gallery({ photos, selectedPhotos, onToggleSelect, onSelectPhoto }) {
       if (!photos || photos.length === 0) return <p>No hay fotos para mostrar.</p>;
       return (
-        <div className="gallery">
-          {photos.map(photo => (
-            <img key={photo.id} src={photo.url} alt={photo.name} />
-          ))}
+        <div>
+          <p className="selected-count">
+            {selectedPhotos.length} foto{selectedPhotos.length !== 1 ? 's' : ''} seleccionada{selectedPhotos.length !== 1 ? 's' : ''}
+          </p>
+          <div className="gallery">
+            {photos.map(photo => (
+              <div key={photo.id} className="gallery-item" onClick={() => onSelectPhoto(photo)}>
+                <input
+                  type="checkbox"
+                  checked={selectedPhotos.includes(photo.id)}
+                  onChange={(e) => onToggleSelect(photo.id, e.target.checked)}
+                  onClick={(e) => e.stopPropagation()}
+                />
+                <img src={photo.url} alt={photo.name} />
+              </div>
+            ))}
+          </div>
         </div>
       );
     }
@@ -41,6 +70,19 @@
     function App() {
       const [events, setEvents] = React.useState([]);
       const [selectedEvent, setSelectedEvent] = React.useState(null);
+      const [selectedPhotos, setSelectedPhotos] = React.useState([]);
+      const [selectedPhoto, setSelectedPhoto] = React.useState(null);
+
+      const toggleSelect = (id, checked) => {
+        setSelectedPhotos(prev =>
+          checked ? [...prev, id] : prev.filter(pId => pId !== id)
+        );
+      };
+
+      const handleSelectEvent = (ev) => {
+        setSelectedEvent(ev);
+        setSelectedPhotos([]);
+      };
 
       React.useEffect(() => {
         fetch('events.json')
@@ -58,7 +100,7 @@
                 {events.map((ev, idx) => (
                   <div className="carousel-item" key={idx}>
                     <h3>{ev.name}</h3>
-                    <button onClick={() => setSelectedEvent(ev)}>Ver Fotos</button>
+                    <button onClick={() => handleSelectEvent(ev)}>Ver Fotos</button>
                   </div>
                 ))}
               </div>
@@ -67,7 +109,13 @@
             <div>
               <button onClick={() => setSelectedEvent(null)}>Volver a eventos</button>
               <h2>Fotos del evento: {selectedEvent.name}</h2>
-              <Gallery photos={selectedEvent.photos} />
+              <Gallery
+                photos={selectedEvent.photos}
+                selectedPhotos={selectedPhotos}
+                onToggleSelect={toggleSelect}
+                onSelectPhoto={setSelectedPhoto}
+              />
+              <Modal photo={selectedPhoto} onClose={() => setSelectedPhoto(null)} />
             </div>
           )}
         </div>
@@ -77,6 +125,5 @@
     const root = ReactDOM.createRoot(document.getElementById('root'));
     root.render(<App />);
   </script>
-
 </body>
 </html>
