@@ -470,7 +470,7 @@
         }
 
         .email-input {
-            width: 100%;
+            width: calc(100% - 20px);
             padding: 10px;
             margin-bottom: 15px;
             border: 1px solid #ccc;
@@ -558,6 +558,31 @@
             text-align: center;
         }
 
+        .result-modal-success {
+            background: #d4edda !important;
+        }
+
+        .result-modal-error {
+            background: #f8d7da !important;
+            border-left: 4px solid #dc3545;
+        }
+
+        .result-modal-success .email-header h2 {
+            color: #155724;
+        }
+
+        .result-modal-success .email-header p {
+            color: #155724;
+        }
+
+        .result-modal-error .email-header h2 {
+            color: #721c24;
+        }
+
+        .result-modal-error .email-header p {
+            color: #721c24;
+        }
+
         @media (max-width: 600px) {
             .review-content {
                 height: 80vh;
@@ -578,16 +603,14 @@
 <body>
     <div id="root"></div>
 
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
     <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
     <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
-    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
-
 
     <script type="text/babel">
         let React = React; // Para compatibilidad con Babel Standalone @6
-        emailjs.init("trRTddWLTqdGsxznW"); // Reemplaza con tu User ID
-
+        emailjs.init("trRTddWLTqdGsxznW");
 
         function Lightbox(props) {
             let photos = props.photos;
@@ -807,6 +830,7 @@
             let onClose = props.onClose;
             let onSubmit = props.onSubmit;
             let selectedPhotos = props.selectedPhotos;
+            let isSendingEmail = props.isSendingEmail; // ← NUEVO: Recibir estado de loading
 
             let handleChange = function (e) {
                 setEmail(e.target.value);
@@ -816,10 +840,10 @@
                 return email && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
             };
 
-            let submitDisabled = !isValidEmail(email);
+            let submitDisabled = !isValidEmail(email) || isSendingEmail; // ← Deshabilitar también durante el envío
 
             return (
-                React.createElement('div', { className: 'email-modal', onClick: onClose },
+                React.createElement('div', { className: 'email-modal', onClick: isSendingEmail ? null : onClose }, // ← No cerrar durante envío
                     React.createElement('div', { className: 'email-content', onClick: function (e) { e.stopPropagation(); } },
                         React.createElement('div', { className: 'email-header' },
                             React.createElement('h2', null, 'Ingresa tu email para la orden'),
@@ -830,15 +854,51 @@
                             className: 'email-input',
                             placeholder: 'tu@email.com',
                             value: email,
-                            onChange: handleChange
+                            onChange: handleChange,
+                            disabled: isSendingEmail // ← Deshabilitar input durante envío
                         }),
                         React.createElement('div', { className: 'email-buttons' },
-                            React.createElement('button', { className: 'cancel', onClick: onClose }, 'Cancelar'),
+                            React.createElement('button', { 
+                                className: 'cancel', 
+                                onClick: onClose,
+                                disabled: isSendingEmail // ← Deshabilitar cancelar durante envío
+                            }, 'Cancelar'),
                             React.createElement('button', {
                                 className: 'submit',
                                 onClick: function () { if (!submitDisabled) onSubmit(email, selectedPhotos); },
                                 disabled: submitDisabled
-                            }, 'Enviar orden')
+                            }, isSendingEmail ? 'Enviando...' : 'Enviar orden') // ← Cambiar texto durante envío
+                        ),
+                        // ← NUEVO: Agregar spinner de loading
+                        isSendingEmail && React.createElement('div', { className: 'loading-overlay' },
+                            React.createElement('div', { className: 'loading-spinner' })
+                        )
+                    )
+                )
+            );
+        }
+
+
+        function ResultModal(props) {
+            let resultMessage = props.resultMessage;
+            let onClose = props.onClose;
+
+            let isSuccess = resultMessage.type === 'success';
+            let modalClass = 'email-modal';
+            let contentClass = isSuccess ? 'email-content result-modal-success' : 'email-content result-modal-error';
+
+            return (
+                React.createElement('div', { className: modalClass, onClick: onClose },
+                    React.createElement('div', { className: contentClass, onClick: function (e) { e.stopPropagation(); } },
+                        React.createElement('div', { className: 'email-header' },
+                            React.createElement('h2', null, resultMessage.title),
+                            React.createElement('p', null, resultMessage.message)
+                        ),
+                        React.createElement('div', { className: 'email-buttons' },
+                            React.createElement('button', { 
+                                onClick: onClose,
+                                style: { background: isSuccess ? '#28a745' : '#dc3545' }
+                            }, 'Aceptar')
                         )
                     )
                 )
@@ -925,16 +985,20 @@
             let emailState = React.useState('');
             let email = emailState[0];
             let setEmail = emailState[1];
-            let [emailsConfig, setEmailsConfig] = React.useState({ adminEmail: '', ccEmails: [] });
-            React.useEffect(() => {
-                fetch('emails.json')
-                    .then(response => response.json())
-                    .then(data => setEmailsConfig(data))
-                    .catch(() => setEmailsConfig({ adminEmail: 'nelson.jerezv@gmail.com' })); // Fallback
-            }, []);
+
+            let showResultModalState = React.useState(false);
+            let showResultModal = showResultModalState[0];
+            let setShowResultModal = showResultModalState[1];
+
+            let resultMessageState = React.useState({ type: 'success', title: '', message: '' });
+            let resultMessage = resultMessageState[0];
+            let setResultMessage = resultMessageState[1];
+
+            let emailsConfigState = React.useState({ adminEmail: '', ccEmails: [] });
+            let emailsConfig = emailsConfigState[0];
+            let setEmailsConfig = emailsConfigState[1];
+
             let hasSelections = selectedPhotos.length > 0;
-
-
 
             let lockBody = function () {
                 let scrollY = window.scrollY;
@@ -951,7 +1015,11 @@
                 window.scrollTo(0, parseInt(scrollY || '0') * -1);
             };
 
-            let isAnyModalOpen = lightboxIndex !== -1 || showReview || showEmailModal;
+            let isAnyModalOpen = lightboxIndex !== -1 || showReview || showEmailModal || showResultModal;
+
+            let isSendingEmailState = React.useState(false);
+            let isSendingEmail = isSendingEmailState[0];
+            let setIsSendingEmail = isSendingEmailState[1];
 
             React.useEffect(function () {
                 if (isAnyModalOpen) {
@@ -959,7 +1027,7 @@
                 } else {
                     unlockBody();
                 }
-            }, [lightboxIndex, showReview, showEmailModal]);
+            }, [lightboxIndex, showReview, showEmailModal, showResultModal]);
 
             let toggleSelectionMode = function () {
                 setIsSelectionMode(!isSelectionMode);
@@ -1018,28 +1086,39 @@
             };
 
             let handleEmailSubmit = function (userEmail, selectedPhotos) {
+                setIsSendingEmail(true); // Activar loading
+
                 let params = {
-                    to_email: emailsConfig.adminEmail,  // Destinatario fijo desde JSON
-                    cc_emails: emailsConfig.ccEmails.join(','),  // Si usas CC en plantilla
+                    to_email: emailsConfig.adminEmail,
+                    cc_emails: emailsConfig.ccEmails.join(','),
                     user_email: userEmail,
                     nombreEvento: selectedEvent ? selectedEvent.nombreEvento : 'Evento no especificado',
-                    photos: selectedPhotos.map(p => p.name).join('\n')
+                    photos: selectedPhotos.map(p => p.name.substring(0, p.name.lastIndexOf('.'))).join('\n')
                 };
 
                 emailjs.send("service_fotosEventos", "template_0ntzv59", params)
                     .then((result) => {
                         console.log('Email enviado exitosamente!', result.text);
-                        alert('¡Orden enviada! Te contactaremos pronto.');  // Feedback al usuario
-                        // Limpia estados
+                        setIsSendingEmail(false); // Desactivar loading
+                        setResultMessage({
+                            type: 'success',
+                            title: '¡Orden enviada!',
+                            message: 'Te contactaremos pronto con los detalles de tu orden.'
+                        });
+                        setShowResultModal(true);
                         setShowEmailModal(false);
-                        setIsSelectionMode(false);
-                        setSelectedPhotos([]);
-                        setEmail('');
                     }, (error) => {
                         console.log('Error al enviar email:', error.text);
-                        alert('Error al enviar. Intenta de nuevo.');
+                        setIsSendingEmail(false); // Desactivar loading incluso en error
+                        setResultMessage({
+                            type: 'error',
+                            title: 'Error al enviar',
+                            message: 'No pudimos procesar tu orden. Por favor, intenta de nuevo.'
+                        });
+                        setShowResultModal(true);
                     });
             };
+
 
             let handleGenerateFromLightbox = function () {
                 setLightboxIndex(-1);
@@ -1135,6 +1214,13 @@
             }, []);
 
             React.useEffect(function () {
+                fetch('emails.json')
+                    .then(function (response) { return response.json(); })
+                    .then(function (data) { setEmailsConfig(data); })
+                    .catch(function () { setEmailsConfig({ adminEmail: '', ccEmails: [] }); });
+            }, []);
+
+            React.useEffect(function () {
                 if (selectedEvent) {
                     document.title = selectedEvent.nombreEvento;
                 } else {
@@ -1182,7 +1268,7 @@
                                 src: firstPhoto, 
                                 alt: `Portada ${ev.nombreEvento || 'Evento'}`,
                                 onError: function (e) { 
-                                    e.target.src = 'https://via.placeholder.com/260x156?text=Imagen+no+disponible'; // Placeholder si no hay foto
+                                    e.target.src = 'https://via.placeholder.com/260x156?text=Imagen+no+disponible';
                                 }
                             })
                         ),
@@ -1239,7 +1325,16 @@
                     setEmail: setEmail,
                     onClose: function () { setShowEmailModal(false); },
                     onSubmit: handleEmailSubmit,
-                    selectedPhotos: selectedPhotos
+                    selectedPhotos: selectedPhotos,
+                    isSendingEmail: isSendingEmail // ← NUEVO: Pasar estado de loading
+                });
+            }
+
+            let resultModal = null;
+            if (showResultModal) {
+                resultModal = React.createElement(ResultModal, {
+                    resultMessage: resultMessage,
+                    onClose: function () { setShowResultModal(false); }
                 });
             }
 
@@ -1281,7 +1376,7 @@
                 ];
             }
 
-            return React.createElement('div', null, content, lightbox, reviewModal, emailModal);
+            return React.createElement('div', null, content, lightbox, reviewModal, emailModal, resultModal);
         }
 
         let root = ReactDOM.createRoot(document.getElementById('root'));
