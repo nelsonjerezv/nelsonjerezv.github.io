@@ -581,9 +581,13 @@
     <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
     <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+
 
     <script type="text/babel">
         let React = React; // Para compatibilidad con Babel Standalone @6
+        emailjs.init("trRTddWLTqdGsxznW"); // Reemplaza con tu User ID
+
 
         function Lightbox(props) {
             let photos = props.photos;
@@ -921,8 +925,16 @@
             let emailState = React.useState('');
             let email = emailState[0];
             let setEmail = emailState[1];
-
+            let [emailsConfig, setEmailsConfig] = React.useState({ adminEmail: '', ccEmails: [] });
+            React.useEffect(() => {
+                fetch('emails.json')
+                    .then(response => response.json())
+                    .then(data => setEmailsConfig(data))
+                    .catch(() => setEmailsConfig({ adminEmail: 'nelson.jerezv@gmail.com' })); // Fallback
+            }, []);
             let hasSelections = selectedPhotos.length > 0;
+
+
 
             let lockBody = function () {
                 let scrollY = window.scrollY;
@@ -1005,12 +1017,28 @@
                 setShowEmailModal(true);
             };
 
-            let handleEmailSubmit = function (email, selectedPhotos) {
-                console.log('Orden enviada a:', email, 'con fotos:', selectedPhotos);
-                setShowEmailModal(false);
-                setIsSelectionMode(false);
-                setSelectedPhotos([]);
-                setEmail('');
+            let handleEmailSubmit = function (userEmail, selectedPhotos) {
+                let params = {
+                    to_email: emailsConfig.adminEmail,  // Destinatario fijo desde JSON
+                    cc_emails: emailsConfig.ccEmails.join(','),  // Si usas CC en plantilla
+                    user_email: userEmail,
+                    nombreEvento: selectedEvent ? selectedEvent.nombreEvento : 'Evento no especificado',
+                    photos: selectedPhotos.map(p => p.name).join('\n')
+                };
+
+                emailjs.send("service_fotosEventos", "template_0ntzv59", params)
+                    .then((result) => {
+                        console.log('Email enviado exitosamente!', result.text);
+                        alert('¡Orden enviada! Te contactaremos pronto.');  // Feedback al usuario
+                        // Limpia estados
+                        setShowEmailModal(false);
+                        setIsSelectionMode(false);
+                        setSelectedPhotos([]);
+                        setEmail('');
+                    }, (error) => {
+                        console.log('Error al enviar email:', error.text);
+                        alert('Error al enviar. Intenta de nuevo.');
+                    });
             };
 
             let handleGenerateFromLightbox = function () {
