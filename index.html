@@ -22,21 +22,80 @@
 
         .carousel {
             display: flex;
-            overflow-x: auto;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 16px;
             margin: 20px;
-            padding-left: 20px;
+            padding: 0;
         }
 
         .carousel-item {
-            min-width: 240px;
-            margin-right: 16px;
+            max-height: 297px;
+            position: relative;
+            width: 260px;
             background: white;
             border-radius: 10px;
-            padding: 12px;
+            cursor: pointer;
+            transition: box-shadow 0.2s;
+            flex-shrink: 0;
         }
 
-        .carousel-item h3 {
-            margin-top: 0;
+        .carousel-item:hover {
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .carousel-item .foto {
+            position: relative;
+            width: 100%;
+            height: 156px;
+            overflow: hidden;
+            border-radius: 10px 10px 0 0;
+        }
+
+        .carousel-item .foto img {
+            width: 100%;
+            height: 100%;
+            display: block;
+            object-fit: cover;
+        }
+
+        @media only screen and (max-width: 759px) {
+            .carousel-item .foto {
+                height: 9.75rem;
+            }
+        }
+
+        .card-eventos {
+            background: #fff !important;
+            max-width: 260px !important;
+            padding: 1rem !important;
+            width: 100% !important;
+            text-align: left;
+            border-radius: 0 0 10px 10px;
+        }
+
+        .card-titulo-evento {
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+            font-size: 1.1em;
+        }
+
+        .card-data-evento,
+        .card-cid-evento {
+            margin-bottom: 0.25rem;
+            font-size: 0.9em;
+            color: #666;
+        }
+
+        .icon-eve-home {
+            width: 16px;
+            height: 16px;
+            margin-right: 0.5rem;
+            vertical-align: middle;
+        }
+
+        .nome-cidade-card {
+            font-weight: 500;
         }
 
         .gallery {
@@ -121,8 +180,6 @@
             border: none;
             background: #007bff;
             color: white;
-            margin-top: 8px;
-            margin-left: 10px;
         }
 
         button:hover {
@@ -160,25 +217,29 @@
             border-radius: 8px;
         }
 
-        .lightbox-nav {
+        .lightbox-nav,
+        .review-nav {
             position: absolute;
             top: 50%;
             transform: translateY(-50%);
-            background: rgba(0, 0, 0, 0.5);
+            background: #333;
             color: white;
             border: none;
-            font-size: 24px;
-            padding: 10px;
+            font-size: 28px;
+            font-weight: bold;
+            padding: 10px 15px;
             cursor: pointer;
             border-radius: 50%;
             z-index: 1003;
         }
 
-        .lightbox-prev {
+        .lightbox-prev,
+        .review-prev {
             left: 20px;
         }
 
-        .lightbox-next {
+        .lightbox-next,
+        .review-next {
             right: 20px;
         }
 
@@ -204,6 +265,23 @@
 
         .lightbox-select:hover {
             opacity: 0.8;
+        }
+
+        .lightbox-generate {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            padding: 8px 12px;
+            border-radius: 5px;
+            background: #28a745;
+            color: white;
+            border: none;
+            cursor: pointer;
+            z-index: 1003;
+        }
+
+        .lightbox-generate:hover {
+            background: #218838;
         }
 
         .lightbox-close {
@@ -253,14 +331,20 @@
             padding: 20px;
             border-radius: 8px;
             max-width: 90%;
-            max-height: 80%;
+            max-height: 80vh;
             width: 600px;
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
             position: relative;
             display: flex;
             flex-direction: column;
             align-items: center;
-            overflow: hidden;
+        }
+
+        .review-scrollable {
+            flex-grow: 1;
+            overflow-y: auto;
+            width: 100%;
+            text-align: center;
         }
 
         .review-header {
@@ -278,39 +362,34 @@
         }
 
         .review-nav {
-            position: absolute;
-            top: 50%;
-            transform: translateY(-50%);
-            background: rgba(0, 0, 0, 0.5);
-            color: white;
-            border: none;
-            font-size: 20px;
-            padding: 8px;
-            cursor: pointer;
-            border-radius: 50%;
-            z-index: 1003;
+            z-index: 2;
+            font-size: 24px;
+            padding: 8px 12px;
         }
 
         .review-prev {
             left: 10px;
-            top: 50%;
         }
 
         .review-next {
             right: 10px;
-            top: 50%;
+        }
+
+        .review-footer {
+            padding-top: 15px;
+            width: 100%;
+            border-top: 1px solid #eee;
         }
 
         .review-deselect {
             background: #dc3545;
+            width: 100%;
             padding: 8px 12px;
             border-radius: 5px;
             color: white;
             border: none;
             cursor: pointer;
-            margin-bottom: 20px;
-            position: relative;
-            z-index: 1003;
+            margin-bottom: 10px;
         }
 
         .review-buttons {
@@ -323,8 +402,6 @@
         .review-buttons button {
             flex: 1;
             margin: 0;
-            position: relative;
-            z-index: 1003;
         }
 
         .review-image-container {
@@ -475,6 +552,26 @@
         .review-image {
             z-index: 2;
         }
+
+        .events-header {
+            padding: 40px;
+            text-align: center;
+        }
+
+        @media (max-width: 600px) {
+            .review-content {
+                height: 80vh;
+            }
+
+            .events-header {
+                padding: 20px;
+            }
+
+            .carousel-item {
+                width: 100%;
+                max-width: 300px;
+            }
+        }
     </style>
 </head>
 
@@ -486,46 +583,89 @@
     <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
 
     <script type="text/babel">
-        var React = React; // Para compatibilidad con Babel Standalone @6
+        let React = React; // Para compatibilidad con Babel Standalone @6
 
         function Lightbox(props) {
-            var photos = props.photos;
-            var index = props.index;
-            var onClose = props.onClose;
-            var onPrev = props.onPrev;
-            var onNext = props.onNext;
-            var onToggleSelect = props.onToggleSelect;
-            var selectedPhotos = props.selectedPhotos;
+            let photos = props.photos;
+            let index = props.index;
+            let onClose = props.onClose;
+            let onPrev = props.onPrev;
+            let onNext = props.onNext;
+            let onToggleSelect = props.onToggleSelect;
+            let onGenerateOrder = props.onGenerateOrder;
+            let selectedPhotos = props.selectedPhotos;
 
-            var isImageLoadingState = React.useState(true);
-            var isImageLoading = isImageLoadingState[0];
-            var setIsImageLoading = isImageLoadingState[1];
+            let isImageLoadingState = React.useState(true);
+            let isImageLoading = isImageLoadingState[0];
+            let setIsImageLoading = isImageLoadingState[1];
+
+            let touchStartState = React.useState(null);
+            let touchStart = touchStartState[0];
+            let setTouchStart = touchStartState[1];
+
+            let touchEndState = React.useState(null);
+            let touchEnd = touchEndState[0];
+            let setTouchEnd = touchEndState[1];
 
             if (index === -1) return null;
-            var photo = photos[index];
-            var isSelected = false;
+            let photo = photos[index];
+            let isSelected = false;
             if (photo && selectedPhotos.length > 0) {
-                for (var i = 0; i < selectedPhotos.length; i++) {
+                for (let i = 0; i < selectedPhotos.length; i++) {
                     if (selectedPhotos[i].id === photo.id) {
                         isSelected = true;
                         break;
                     }
                 }
             }
-            var selectClass = isSelected ? 'lightbox-select deselect' : 'lightbox-select select';
-            var handleImageLoad = function () {
+            let selectClass = isSelected ? 'lightbox-select deselect' : 'lightbox-select select';
+            let handleImageLoad = function () {
                 setIsImageLoading(false);
             };
-            var resetLoading = function () {
+            let resetLoading = function () {
                 setIsImageLoading(true);
             };
-            return (
-                React.createElement('div', { className: 'lightbox', onClick: onClose },
-                    React.createElement('div', { className: 'lightbox-backdrop', onClick: onClose }),
-                    React.createElement('button', { className: 'lightbox-close', onClick: function (e) { e.stopPropagation(); onClose(); } }, '×'),
-                    React.createElement('button', { className: 'lightbox-nav lightbox-prev', onClick: function (e) { e.stopPropagation(); resetLoading(); onPrev(); } }, '←'),
-                    React.createElement('div', { className: 'lightbox-image-container', onClick: function (e) { e.stopPropagation(); } },
-                        isImageLoading && React.createElement('div', { className: 'loading-overlay' },
+
+            let handleTouchStart = function (e) {
+                setTouchEnd(null);
+                setTouchStart(e.targetTouches[0].clientX);
+            };
+
+            let handleTouchMove = function (e) {
+                setTouchEnd(e.targetTouches[0].clientX);
+            };
+
+            let handleTouchEnd = function () {
+                if (!touchStart || !touchEnd) return;
+                let distance = touchStart - touchEnd;
+                let isLeftSwipe = distance > 50;
+                let isRightSwipe = distance < -50;
+                if (isLeftSwipe) {
+                    resetLoading();
+                    onNext();
+                }
+                if (isRightSwipe) {
+                    resetLoading();
+                    onPrev();
+                }
+                setTouchStart(null);
+                setTouchEnd(null);
+            };
+
+            let elements = [
+                React.createElement('div', {
+                    className: 'lightbox',
+                    onClick: onClose,
+                    onTouchStart: handleTouchStart,
+                    onTouchMove: handleTouchMove,
+                    onTouchEnd: handleTouchEnd,
+                    key: 'lightbox-container'
+                },
+                    React.createElement('div', { className: 'lightbox-backdrop', onClick: onClose, key: 'backdrop' }),
+                    React.createElement('button', { className: 'lightbox-close', onClick: function (e) { e.stopPropagation(); onClose(); }, key: 'close' }, '×'),
+                    React.createElement('button', { className: 'lightbox-nav lightbox-prev', onClick: function (e) { e.stopPropagation(); resetLoading(); onPrev(); }, key: 'prev' }, '←'),
+                    React.createElement('div', { className: 'lightbox-image-container', onClick: function (e) { e.stopPropagation(); }, key: 'image-container' },
+                        isImageLoading && React.createElement('div', { className: 'loading-overlay', key: 'loading' },
                             React.createElement('div', { className: 'loading-spinner' })
                         ),
                         React.createElement('img', {
@@ -533,88 +673,146 @@
                             alt: photo.name,
                             onClick: function (e) { e.stopPropagation(); },
                             onLoad: handleImageLoad,
-                            style: { display: isImageLoading ? 'none' : 'block' }
+                            style: { display: isImageLoading ? 'none' : 'block' },
+                            key: 'image'
                         })
                     ),
-                    React.createElement('button', { className: 'lightbox-nav lightbox-next', onClick: function (e) { e.stopPropagation(); resetLoading(); onNext(); } }, '→'),
-                    React.createElement('button', { className: selectClass, onClick: function (e) { e.stopPropagation(); onToggleSelect(photo); } },
+                    React.createElement('button', { className: 'lightbox-nav lightbox-next', onClick: function (e) { e.stopPropagation(); resetLoading(); onNext(); }, key: 'next' }, '→'),
+                    React.createElement('button', { className: selectClass, onClick: function (e) { e.stopPropagation(); onToggleSelect(photo); }, key: 'select' },
                         isSelected ? 'Deseleccionar' : 'Seleccionar'
                     )
                 )
-            );
+            ];
+
+            if (selectedPhotos.length > 0) {
+                elements.push(
+                    React.createElement('button', {
+                        className: 'lightbox-generate',
+                        onClick: function (e) { e.stopPropagation(); onGenerateOrder(); },
+                        key: 'generate'
+                    }, 'Generar orden')
+                );
+            }
+
+            return React.createElement('div', null, elements);
         }
 
         function ReviewModal(props) {
-            var selectedPhotos = props.selectedPhotos;
-            var reviewIndex = props.reviewIndex;
-            var onClose = props.onClose;
-            var onDeselect = props.onDeselect;
-            var onPrev = props.onPrev;
-            var onNext = props.onNext;
-            var onConfirm = props.onConfirm;
+            let selectedPhotos = props.selectedPhotos;
+            let reviewIndex = props.reviewIndex;
+            let onClose = props.onClose;
+            let onDeselect = props.onDeselect;
+            let onPrev = props.onPrev;
+            let onNext = props.onNext;
+            let onConfirm = props.onConfirm;
 
-            var isImageLoadingState = React.useState(true);
-            var isImageLoading = isImageLoadingState[0];
-            var setIsImageLoading = isImageLoadingState[1];
+            let isImageLoadingState = React.useState(true);
+            let isImageLoading = isImageLoadingState[0];
+            let setIsImageLoading = isImageLoadingState[1];
+
+            let touchStartState = React.useState(null);
+            let touchStart = touchStartState[0];
+            let setTouchStart = touchStartState[1];
+
+            let touchEndState = React.useState(null);
+            let touchEnd = touchEndState[0];
+            let setTouchEnd = touchEndState[1];
 
             if (!selectedPhotos || selectedPhotos.length === 0) return null;
-            var photo = selectedPhotos[reviewIndex];
-            if (!photo) return null; // Prevenir error si photo es undefined
-            var selectClass = 'review-deselect';
-            var handleImageLoad = function () {
+            let photo = selectedPhotos[reviewIndex];
+            if (!photo) return null;
+            let selectClass = 'review-deselect';
+            let handleImageLoad = function () {
                 setIsImageLoading(false);
             };
-            var resetLoading = function () {
+            let resetLoading = function () {
                 setIsImageLoading(true);
             };
+
+            let handleTouchStart = function (e) {
+                setTouchEnd(null);
+                setTouchStart(e.targetTouches[0].clientX);
+            };
+
+            let handleTouchMove = function (e) {
+                setTouchEnd(e.targetTouches[0].clientX);
+            };
+
+            let handleTouchEnd = function () {
+                if (!touchStart || !touchEnd) return;
+                let distance = touchStart - touchEnd;
+                let isLeftSwipe = distance > 50;
+                let isRightSwipe = distance < -50;
+                if (isLeftSwipe) {
+                    resetLoading();
+                    onNext();
+                }
+                if (isRightSwipe) {
+                    resetLoading();
+                    onPrev();
+                }
+                setTouchStart(null);
+                setTouchEnd(null);
+            };
+
             return (
-                React.createElement('div', { className: 'review-modal', onClick: onClose },
+                React.createElement('div', {
+                    className: 'review-modal',
+                    onClick: onClose,
+                    onTouchStart: handleTouchStart,
+                    onTouchMove: handleTouchMove,
+                    onTouchEnd: handleTouchEnd
+                },
                     React.createElement('div', { className: 'review-content', onClick: function (e) { e.stopPropagation(); } },
-                        React.createElement('div', { className: 'review-header' },
-                            React.createElement('h2', null, 'Confirma tu selección de imágenes'),
-                            React.createElement('h2', null, selectedPhotos.length === 1 ? `${selectedPhotos.length} imagen seleccionada` : `${selectedPhotos.length} imágenes seleccionadas`)
+                        React.createElement('div', { className: 'review-scrollable' },
+                            React.createElement('div', { className: 'review-header' },
+                                React.createElement('h2', null, 'Confirma tu selección de imágenes'),
+                                React.createElement('h2', null, selectedPhotos.length === 1 ? `${selectedPhotos.length} imagen seleccionada` : `${selectedPhotos.length} imágenes seleccionadas`)
+                            ),
+                            React.createElement('div', { className: 'review-image-container', onClick: function (e) { e.stopPropagation(); } },
+                                isImageLoading && React.createElement('div', { className: 'loading-overlay' },
+                                    React.createElement('div', { className: 'loading-spinner' })
+                                ),
+                                React.createElement('img', {
+                                    src: photo.url,
+                                    alt: photo.name,
+                                    className: 'review-image',
+                                    onClick: function (e) { e.stopPropagation(); },
+                                    onLoad: handleImageLoad,
+                                    style: { display: isImageLoading ? 'none' : 'block' }
+                                })
+                            )
+                        ),
+                        React.createElement('div', { className: 'review-footer' },
+                            React.createElement('button', { className: selectClass, onClick: function (e) { e.stopPropagation(); onDeselect(photo, true); } }, 'Deseleccionar'),
+                            React.createElement('div', { className: 'review-buttons' },
+                                React.createElement('button', { onClick: onClose }, 'Volver'),
+                                React.createElement('button', { onClick: onConfirm }, 'Confirmar')
+                            )
                         ),
                         React.createElement('button', { className: 'review-nav review-prev', onClick: function (e) { e.stopPropagation(); resetLoading(); onPrev(); } }, '←'),
-                        React.createElement('div', { className: 'review-image-container', onClick: function (e) { e.stopPropagation(); } },
-                            isImageLoading && React.createElement('div', { className: 'loading-overlay' },
-                                React.createElement('div', { className: 'loading-spinner' })
-                            ),
-                            React.createElement('img', {
-                                src: photo.url,
-                                alt: photo.name,
-                                className: 'review-image',
-                                onClick: function (e) { e.stopPropagation(); },
-                                onLoad: handleImageLoad,
-                                style: { display: isImageLoading ? 'none' : 'block' }
-                            })
-                        ),
-                        React.createElement('button', { className: 'review-nav review-next', onClick: function (e) { e.stopPropagation(); resetLoading(); onNext(); } }, '→'),
-                        React.createElement('button', { className: selectClass, onClick: function (e) { e.stopPropagation(); onDeselect(photo, true); } }, 'Deseleccionar'),
-                        React.createElement('div', { className: 'review-buttons' },
-                            React.createElement('button', { onClick: onClose }, 'Volver'),
-                            React.createElement('button', { onClick: onConfirm }, 'Confirmar')
-                        )
+                        React.createElement('button', { className: 'review-nav review-next', onClick: function (e) { e.stopPropagation(); resetLoading(); onNext(); } }, '→')
                     )
                 )
             );
         }
 
         function EmailModal(props) {
-            var email = props.email;
-            var setEmail = props.setEmail;
-            var onClose = props.onClose;
-            var onSubmit = props.onSubmit;
-            var selectedPhotos = props.selectedPhotos;
+            let email = props.email;
+            let setEmail = props.setEmail;
+            let onClose = props.onClose;
+            let onSubmit = props.onSubmit;
+            let selectedPhotos = props.selectedPhotos;
 
-            var handleChange = function (e) {
+            let handleChange = function (e) {
                 setEmail(e.target.value);
             };
 
-            var isValidEmail = function (email) {
+            let isValidEmail = function (email) {
                 return email && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
             };
 
-            var submitDisabled = !isValidEmail(email);
+            let submitDisabled = !isValidEmail(email);
 
             return (
                 React.createElement('div', { className: 'email-modal', onClick: onClose },
@@ -644,29 +842,29 @@
         }
 
         function Gallery(props) {
-            var photos = props.photos;
-            var isSelectionMode = props.isSelectionMode;
-            var hasSelections = props.hasSelections;
-            var selectedPhotos = props.selectedPhotos;
-            var onToggleSelect = props.onToggleSelect;
-            var onOpenLightbox = props.onOpenLightbox;
+            let photos = props.photos;
+            let isSelectionMode = props.isSelectionMode;
+            let hasSelections = props.hasSelections;
+            let selectedPhotos = props.selectedPhotos;
+            let onToggleSelect = props.onToggleSelect;
+            let onOpenLightbox = props.onOpenLightbox;
 
             if (!photos || photos.length === 0) {
                 return React.createElement('p', null, 'No hay fotos para mostrar.');
             }
-            var items = [];
-            for (var j = 0; j < photos.length; j++) {
-                var photo = photos[j];
-                var idx = j;
-                var isSelected = false;
-                for (var k = 0; k < selectedPhotos.length; k++) {
+            let items = [];
+            for (let j = 0; j < photos.length; j++) {
+                let photo = photos[j];
+                let idx = j;
+                let isSelected = false;
+                for (let k = 0; k < selectedPhotos.length; k++) {
                     if (selectedPhotos[k].id === photo.id) {
                         isSelected = true;
                         break;
                     }
                 }
-                var className = 'gallery-item' + (isSelectionMode && isSelected ? ' selected' : '');
-                var onClick = function (isSelectionMode, photo, idx) {
+                let className = 'gallery-item' + (isSelectionMode && isSelected ? ' selected' : '');
+                let onClick = function (isSelectionMode, photo, idx) {
                     return function () {
                         if (isSelectionMode) {
                             onToggleSelect(photo);
@@ -675,11 +873,11 @@
                         }
                     };
                 }(isSelectionMode, photo, idx);
-                var overlay = null;
+                let overlay = null;
                 if (hasSelections) {
-                    var topOnClick = function (idx) { return function (e) { e.stopPropagation(); onOpenLightbox(idx); }; }(idx);
-                    var bottomOnClick = function (photo) { return function (e) { e.stopPropagation(); onToggleSelect(photo); }; }(photo);
-                    var bottomText = isSelected ? 'Deseleccionar' : 'Seleccionar';
+                    let topOnClick = function (idx) { return function (e) { e.stopPropagation(); onOpenLightbox(idx); }; }(idx);
+                    let bottomOnClick = function (photo) { return function (e) { e.stopPropagation(); onToggleSelect(photo); }; }(photo);
+                    let bottomText = isSelected ? 'Deseleccionar' : 'Seleccionar';
                     overlay = React.createElement('div', { className: 'gallery-overlay' },
                         React.createElement('button', { className: 'gallery-overlay-top', onClick: topOnClick }, 'Ver'),
                         React.createElement('button', { className: 'gallery-overlay-bottom', onClick: bottomOnClick }, bottomText)
@@ -696,37 +894,62 @@
         }
 
         function App() {
-            var eventsState = React.useState([]);
-            var events = eventsState[0];
-            var setEvents = eventsState[1];
-            var selectedEventState = React.useState(null);
-            var selectedEvent = selectedEventState[0];
-            var setSelectedEvent = selectedEventState[1];
-            var selectedPhotosState = React.useState([]);
-            var selectedPhotos = selectedPhotosState[0];
-            var setSelectedPhotos = selectedPhotosState[1];
-            var isSelectionModeState = React.useState(false);
-            var isSelectionMode = isSelectionModeState[0];
-            var setIsSelectionMode = isSelectionModeState[1];
-            var lightboxIndexState = React.useState(-1);
-            var lightboxIndex = lightboxIndexState[0];
-            var setLightboxIndex = lightboxIndexState[1];
-            var showReviewState = React.useState(false);
-            var showReview = showReviewState[0];
-            var setShowReview = showReviewState[1];
-            var reviewIndexState = React.useState(0);
-            var reviewIndex = reviewIndexState[0];
-            var setReviewIndex = reviewIndexState[1];
-            var showEmailModalState = React.useState(false);
-            var showEmailModal = showEmailModalState[0];
-            var setShowEmailModal = showEmailModalState[1];
-            var emailState = React.useState('');
-            var email = emailState[0];
-            var setEmail = emailState[1];
+            let eventsState = React.useState([]);
+            let events = eventsState[0];
+            let setEvents = eventsState[1];
+            let selectedEventState = React.useState(null);
+            let selectedEvent = selectedEventState[0];
+            let setSelectedEvent = selectedEventState[1];
+            let selectedPhotosState = React.useState([]);
+            let selectedPhotos = selectedPhotosState[0];
+            let setSelectedPhotos = selectedPhotosState[1];
+            let isSelectionModeState = React.useState(false);
+            let isSelectionMode = isSelectionModeState[0];
+            let setIsSelectionMode = isSelectionModeState[1];
+            let lightboxIndexState = React.useState(-1);
+            let lightboxIndex = lightboxIndexState[0];
+            let setLightboxIndex = lightboxIndexState[1];
+            let showReviewState = React.useState(false);
+            let showReview = showReviewState[0];
+            let setShowReview = showReviewState[1];
+            let reviewIndexState = React.useState(0);
+            let reviewIndex = reviewIndexState[0];
+            let setReviewIndex = reviewIndexState[1];
+            let showEmailModalState = React.useState(false);
+            let showEmailModal = showEmailModalState[0];
+            let setShowEmailModal = showEmailModalState[1];
+            let emailState = React.useState('');
+            let email = emailState[0];
+            let setEmail = emailState[1];
 
-            var hasSelections = selectedPhotos.length > 0;
+            let hasSelections = selectedPhotos.length > 0;
 
-            var toggleSelectionMode = function () {
+            let lockBody = function () {
+                let scrollY = window.scrollY;
+                document.body.style.position = 'fixed';
+                document.body.style.top = `-${scrollY}px`;
+                document.body.style.width = '100%';
+            };
+
+            let unlockBody = function () {
+                let scrollY = document.body.style.top;
+                document.body.style.position = '';
+                document.body.style.top = '';
+                document.body.style.width = '';
+                window.scrollTo(0, parseInt(scrollY || '0') * -1);
+            };
+
+            let isAnyModalOpen = lightboxIndex !== -1 || showReview || showEmailModal;
+
+            React.useEffect(function () {
+                if (isAnyModalOpen) {
+                    lockBody();
+                } else {
+                    unlockBody();
+                }
+            }, [lightboxIndex, showReview, showEmailModal]);
+
+            let toggleSelectionMode = function () {
                 setIsSelectionMode(!isSelectionMode);
                 if (!isSelectionMode) {
                     setSelectedPhotos([]);
@@ -734,11 +957,11 @@
                 }
             };
 
-            var toggleSelect = function (photo) {
-                var prevLength = selectedPhotos.length;
-                var newSelected = [];
-                var alreadySelected = false;
-                for (var l = 0; l < selectedPhotos.length; l++) {
+            let toggleSelect = function (photo) {
+                let prevLength = selectedPhotos.length;
+                let newSelected = [];
+                let alreadySelected = false;
+                for (let l = 0; l < selectedPhotos.length; l++) {
                     if (selectedPhotos[l].id !== photo.id) {
                         newSelected.push(selectedPhotos[l]);
                     } else {
@@ -749,29 +972,25 @@
                     newSelected.push(photo);
                 }
                 setSelectedPhotos(newSelected);
-                // Si se agrega la primera selección desde lightbox, activa el modo
                 if (prevLength === 0 && newSelected.length > 0 && !isSelectionMode) {
                     setIsSelectionMode(true);
                 }
-                // Si se remueve la última selección, desactiva el modo
                 if (newSelected.length === 0) {
                     setIsSelectionMode(false);
                 }
             };
 
-            var removeSelect = function (photo, resetIndex) {
-                var newSelected = [];
-                for (var m = 0; m < selectedPhotos.length; m++) {
+            let removeSelect = function (photo, resetIndex) {
+                let newSelected = [];
+                for (let m = 0; m < selectedPhotos.length; m++) {
                     if (selectedPhotos[m].id !== photo.id) {
                         newSelected.push(selectedPhotos[m]);
                     }
                 }
                 setSelectedPhotos(newSelected);
-                // Si no quedan selecciones, desactiva el modo
                 if (newSelected.length === 0) {
                     setIsSelectionMode(false);
                 }
-                // Si se invoca desde modal y pide reset, ajusta el índice para evitar out-of-bounds
                 if (resetIndex && showReview) {
                     if (newSelected.length === 0) {
                         setShowReview(false);
@@ -781,12 +1000,12 @@
                 }
             };
 
-            var handleConfirm = function () {
+            let handleConfirm = function () {
                 setShowReview(false);
                 setShowEmailModal(true);
             };
 
-            var handleEmailSubmit = function (email, selectedPhotos) {
+            let handleEmailSubmit = function (email, selectedPhotos) {
                 console.log('Orden enviada a:', email, 'con fotos:', selectedPhotos);
                 setShowEmailModal(false);
                 setIsSelectionMode(false);
@@ -794,7 +1013,13 @@
                 setEmail('');
             };
 
-            var handleSelectEvent = function (ev) {
+            let handleGenerateFromLightbox = function () {
+                setLightboxIndex(-1);
+                setShowReview(true);
+                setReviewIndex(0);
+            };
+
+            let handleSelectEvent = function (ev) {
                 setSelectedEvent(ev);
                 setSelectedPhotos([]);
                 setIsSelectionMode(false);
@@ -805,56 +1030,56 @@
                 setReviewIndex(0);
             };
 
-            var openLightbox = function (idx) {
+            let openLightbox = function (idx) {
                 setLightboxIndex(idx);
             };
 
-            var closeLightbox = function () {
+            let closeLightbox = function () {
                 setLightboxIndex(-1);
             };
 
-            var getPhotoLength = function () {
+            let getPhotoLength = function () {
                 if (selectedEvent && selectedEvent.photos) {
                     return selectedEvent.photos.length;
                 }
                 return 0;
             };
 
-            var photoLength = getPhotoLength();
+            let photoLength = getPhotoLength();
 
-            var prevPhoto = function () {
-                var newIndex = lightboxIndex - 1;
+            let prevPhoto = function () {
+                let newIndex = lightboxIndex - 1;
                 if (newIndex < 0) {
                     newIndex = photoLength - 1;
                 }
                 setLightboxIndex(newIndex);
             };
 
-            var nextPhoto = function () {
-                var newIndex = lightboxIndex + 1;
+            let nextPhoto = function () {
+                let newIndex = lightboxIndex + 1;
                 if (newIndex >= photoLength) {
                     newIndex = 0;
                 }
                 setLightboxIndex(newIndex);
             };
 
-            var prevReview = function () {
-                var newIndex = reviewIndex - 1;
+            let prevReview = function () {
+                let newIndex = reviewIndex - 1;
                 if (newIndex < 0) {
                     newIndex = selectedPhotos.length - 1;
                 }
                 setReviewIndex(newIndex);
             };
 
-            var nextReview = function () {
-                var newIndex = reviewIndex + 1;
+            let nextReview = function () {
+                let newIndex = reviewIndex + 1;
                 if (newIndex >= selectedPhotos.length) {
                     newIndex = 0;
                 }
                 setReviewIndex(newIndex);
             };
 
-            var handleKeyDown = function (e) {
+            let handleKeyDown = function (e) {
                 if (lightboxIndex === -1) return;
                 if (e.key === 'ArrowLeft') {
                     e.preventDefault();
@@ -883,30 +1108,62 @@
 
             React.useEffect(function () {
                 if (selectedEvent) {
-                    document.title = selectedEvent.name;
+                    document.title = selectedEvent.nombreEvento;
                 } else {
                     document.title = 'Eventos disponibles';
                 }
             }, [selectedEvent]);
 
-            var photos = [];
+            let photos = [];
             if (selectedEvent && selectedEvent.photos) {
                 photos = selectedEvent.photos;
             }
 
-            var carouselItems = [];
-            for (var n = 0; n < events.length; n++) {
-                var ev = events[n];
-                var idx = n;
+            let carouselItems = [];
+            for (let n = 0; n < events.length; n++) {
+                let ev = events[n];
+                let idx = n;
+                let firstPhoto = ev.photos && ev.photos.length > 0 ? ev.photos[0].url : '';
+                let eventCardElements = [
+                    React.createElement('div', { className: 'card-titulo-evento', title: ev.nombreEvento || 'Evento sin nombre', key: 'title' }, ev.nombreEvento || 'Evento sin nombre')
+                ];
+                if (ev.fecha) {
+                    eventCardElements.push(
+                        React.createElement('div', { className: 'card-data-evento', key: 'date' },
+                            React.createElement('span', { className: 'icon-eve-home', style: { fontSize: '16px', marginRight: '0.5rem' } }, '📅'),
+                            ev.fecha
+                        )
+                    );
+                }
+                if (ev.ubicacion) {
+                    eventCardElements.push(
+                        React.createElement('div', { className: 'card-cid-evento', key: 'location' },
+                            React.createElement('span', { className: 'icon-eve-home', style: { fontSize: '16px', marginRight: '0.5rem' } }, '📍'),
+                            React.createElement('span', { className: 'nome-cidade-card' }, ev.ubicacion)
+                        )
+                    );
+                }
                 carouselItems.push(
-                    React.createElement('div', { className: 'carousel-item', key: ev.name },
-                        React.createElement('h3', null, ev.name),
-                        React.createElement('button', { onClick: function (ev) { return function () { handleSelectEvent(ev); }; }(ev) }, 'Ver Fotos')
+                    React.createElement('div', { 
+                        className: 'carousel-item', 
+                        key: ev.nombreEvento || `event-${n}`,
+                        onClick: function (ev) { return function () { handleSelectEvent(ev); }; }(ev)
+                    },
+                        React.createElement('div', { className: 'foto' },
+                            React.createElement('img', { 
+                                src: firstPhoto, 
+                                alt: `Portada ${ev.nombreEvento || 'Evento'}`,
+                                onError: function (e) { 
+                                    e.target.src = 'https://via.placeholder.com/260x156?text=Imagen+no+disponible'; // Placeholder si no hay foto
+                                }
+                            })
+                        ),
+                        React.createElement('div', { className: 'card-eventos' }, eventCardElements)
                     )
                 );
             }
 
-            var gallery = null;
+            let gallery = null;
             if (photos.length > 0) {
                 gallery = React.createElement(Gallery, {
                     photos: photos,
@@ -920,7 +1177,7 @@
                 gallery = React.createElement('p', null, 'No hay fotos para mostrar.');
             }
 
-            var lightbox = null;
+            let lightbox = null;
             if (lightboxIndex !== -1 && photos.length > 0) {
                 lightbox = React.createElement(Lightbox, {
                     photos: photos,
@@ -929,11 +1186,12 @@
                     onPrev: prevPhoto,
                     onNext: nextPhoto,
                     onToggleSelect: toggleSelect,
+                    onGenerateOrder: handleGenerateFromLightbox,
                     selectedPhotos: selectedPhotos
                 });
             }
 
-            var reviewModal = null;
+            let reviewModal = null;
             if (showReview && selectedPhotos.length > 0) {
                 reviewModal = React.createElement(ReviewModal, {
                     selectedPhotos: selectedPhotos,
@@ -946,7 +1204,7 @@
                 });
             }
 
-            var emailModal = null;
+            let emailModal = null;
             if (showEmailModal) {
                 emailModal = React.createElement(EmailModal, {
                     email: email,
@@ -957,7 +1215,7 @@
                 });
             }
 
-            var selectionControls = null;
+            let selectionControls = null;
             if (isSelectionMode || hasSelections) {
                 selectionControls = React.createElement('button', { onClick: toggleSelectionMode }, isSelectionMode ? 'Cancelar selección' : 'Seleccionar imágenes para orden');
                 if (hasSelections) {
@@ -971,15 +1229,15 @@
                 selectionControls = React.createElement('button', { onClick: toggleSelectionMode }, 'Seleccionar imágenes para orden');
             }
 
-            var headerTitle = selectedEvent ? selectedEvent.name : 'Galería de Eventos';
+            let headerTitle = selectedEvent ? selectedEvent.nombreEvento || 'Evento sin nombre' : 'Galería de Eventos';
 
-            var content = null;
+            let content = null;
             if (!selectedEvent) {
                 content = [
                     React.createElement('header', { key: 'header' },
                         React.createElement('h1', null, headerTitle)
                     ),
-                    React.createElement('h2', { key: 'h2' }, 'Eventos disponibles'),
+                    React.createElement('h2', { key: 'h2', className: 'events-header' }, 'Eventos disponibles'),
                     React.createElement('div', { key: 'carousel', className: 'carousel' }, carouselItems)
                 ];
             } else {
@@ -998,7 +1256,7 @@
             return React.createElement('div', null, content, lightbox, reviewModal, emailModal);
         }
 
-        var root = ReactDOM.createRoot(document.getElementById('root'));
+        let root = ReactDOM.createRoot(document.getElementById('root'));
         root.render(React.createElement(App));
     </script>
 </body>

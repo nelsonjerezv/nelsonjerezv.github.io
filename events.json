@@ -1,6 +1,6 @@
 [
   {
-    "name": "cycling Pucon 2025",
+    "nombreEvento": "cycling Pucon 2025",
     "photos": [
       {
         "id": "premium_photo-1713184149461-69b0abeb3daa 2.avif",
@@ -10,7 +10,9 @@
     ]
   },
   {
-    "name": "cycling stock event 1",
+    "nombreEvento": "cycling stock event 1",
+    "fecha": "15/10/2025",
+    "ubicacion": "Pucon",
     "photos": [
       {
         "id": "pexels-abner-velazquez-1035709527-34467094.avif",
