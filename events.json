@@ -1,6 +1,6 @@
 [
   {
-    "nombreEvento": "cycling Pucon 2025",
+    "name": "cycling Pucon 2025",
     "photos": [
       {
         "id": "premium_photo-1713184149461-69b0abeb3daa 2.avif",
@@ -10,9 +10,7 @@
     ]
   },
   {
-    "nombreEvento": "Evento Prueba Cycling",
-    "fecha": "15/10/2025",
-    "ubicacion": "Tatooine",
+    "name": "cycling stock event 1",
     "photos": [
       {
         "id": "pexels-abner-velazquez-1035709527-34467094.avif",

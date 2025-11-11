@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>14AGENCIA - Agencia Fotográfica</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #f9f9f9;
+      color: #333;
+    }
+    header {
+      background-color: #222;
+      color: #fff;
+      padding: 1rem;
+      text-align: center;
+      font-weight: bold;
+      font-size: 1.5rem;
+      letter-spacing: 2px;
+    }
+    .tabs {
+      display: flex;
+      background: #444;
+    }
+    .tab {
+      flex: 1;
+      padding: 1rem;
+      text-align: center;
+      cursor: pointer;
+      color: #ccc;
+      border-bottom: 3px solid transparent;
+      user-select: none;
+      transition: background-color 0.3s, color 0.3s, border-bottom 0.3s;
+    }
+    .tab:hover {
+      background: #555;
+      color: #fff;
+    }
+    .tab.active {
+      background: #fff;
+      color: #222;
+      font-weight: bold;
+      border-bottom: 3px solid #e63946;
+      cursor: default;
+    }
+    .content {
+      padding: 2rem;
+      background: #fff;
+      min-height: 200px;
+      max-width: 800px;
+      margin: 1rem auto 2rem;
+      box-shadow: 0 2px 6px rgb(0 0 0 / 0.1);
+      border-radius: 4px;
+    }
+    /* Carousel styles */
+    .carousel {
+      display: flex;
+      overflow-x: auto;
+      scroll-behavior: smooth;
+      gap: 1rem;
+      margin-top: 1rem;
+      padding-bottom: 1rem;
+    }
+    .carousel img {
+      flex-shrink: 0;
+      width: 100%;
+      max-width: 600px;
+      border-radius: 6px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    }
+  </style>
+</head>
+<body>
+  <header>14AGENCIA</header>
+
+  <nav class="tabs" role="tablist">
+    <div id="tab-home" class="tab active" role="tab" aria-selected="true" tabindex="0" aria-controls="panel-home">Home</div>
+    <div id="tab-fotografos" class="tab" role="tab" aria-selected="false" tabindex="-1" aria-controls="panel-fotografos">Fotógrafos</div>
+    <div id="tab-quienes" class="tab" role="tab" aria-selected="false" tabindex="-1" aria-controls="panel-quienes">Quienes Somos</div>
+  </nav>
+
+  <section id="panel-home" class="content" role="tabpanel" aria-labelledby="tab-home">
+    <p>[translate:Somos una agencia que permite conectar a personas, eventos y fotógrafos.]</p>
+    <div class="carousel" aria-label="Carrusel de imágenes de 14AGENCIA">
+      <img src="https://images.pexels.com/photos/34405636/pexels-photo-34405636.jpeg" alt="[translate:Foto representativa de 14AGENCIA]" />
+    </div>
+    <p>[translate:Más contenido será agregado en esta sección a futuro.]</p>
+  </section>
+
+  <section id="panel-fotografos" class="content" role="tabpanel" aria-labelledby="tab-fotografos" hidden>
+    <p>[translate:Somos partner con fotógrafos en un modelo de exposición y comisión por participar mediante 14AGENCIA.]</p>
+    <p>[translate:Más contenido será agregado en esta sección a futuro.]</p>
+  </section>
+
+  <section id="panel-quienes" class="content" role="tabpanel" aria-labelledby="tab-quienes" hidden>
+    <p>[translate:Somos repulentos.]</p>
+    <p>[translate:Más contenido será agregado en esta sección a futuro.]</p>
+  </section>
+
+  <script>
+    const tabs = document.querySelectorAll('.tab');
+    const panels = document.querySelectorAll('[role="tabpanel"]');
+
+    function activateTab(tab) {
+      tabs.forEach(t => {
+        const selected = t === tab;
+        t.classList.toggle('active', selected);
+        t.setAttribute('aria-selected', selected);
+        t.tabIndex = selected ? 0 : -1;
+      });
+      panels.forEach(panel => {
+        panel.hidden = panel.id !== 'panel-' + tab.id.replace('tab-', '');
+      });
+    }
+
+    tabs.forEach(tab => {
+      tab.addEventListener('click', () => activateTab(tab));
+      tab.addEventListener('keydown', (e) => {
+        let index = Array.prototype.indexOf.call(tabs, tab);
+        if (e.key === 'ArrowRight') {
+          index = (index + 1) % tabs.length;
+          tabs[index].focus();
+          activateTab(tabs[index]);
+          e.preventDefault();
+        } else if (e.key === 'ArrowLeft') {
+          index = (index - 1 + tabs.length) % tabs.length;
+          tabs[index].focus();
+          activateTab(tabs[index]);
+          e.preventDefault();
+        }
+      });
+    });
+  </script>
+</body>
+</html>
