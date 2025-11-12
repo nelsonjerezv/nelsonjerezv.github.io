@@ -1,21 +1,48 @@
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <title>Eventos disponibles</title>
     <style>
+        :root {
+            --color-primary: #007bff;
+            --color-primary-hover: #0056b3;
+            --color-secondary: #6c757d;
+            --color-secondary-hover: #545b62;
+            --color-success: #28a745;
+            --color-success-hover: #218838;
+            --color-success-light: #d4edda;
+            --color-success-dark: #155724;
+            --color-danger: #dc3545;
+            --color-danger-light: #f8d7da;
+            --color-danger-dark: #721c24;
+            --color-background: #f6f6f6;
+            --color-surface: #fff;
+            --color-header-bg: #222;
+            --color-light-gray: #eee;
+            --color-dark-gray: #333;
+            --color-disabled: #ccc;
+            --color-text-primary: #333;
+            --color-text-secondary: #666;
+            --color-white: #fff;
+            --color-backdrop: rgba(0, 0, 0, 0.8);
+            --color-overlay: rgba(0, 0, 0, 0.5);
+            --color-gallery-overlay: rgba(255, 255, 255, 0.1);
+            --color-gallery-overlay-hover: rgba(255, 255, 255, 0.2);
+            --color-spinner-track: #f3f3f3;
+        }
+
         body {
             font-family: sans-serif;
             margin: 0;
             padding: 0;
-            background: #f6f6f6;
+            background: var(--color-background);
         }
 
         header {
-            background: #222;
-            color: white;
+            background: var(--color-header-bg);
+            color: var(--color-white);
             padding: 10px;
             text-align: center;
         }
@@ -33,7 +60,7 @@
             max-height: 297px;
             position: relative;
             width: 260px;
-            background: white;
+            background: var(--color-surface);
             border-radius: 10px;
             cursor: pointer;
             transition: box-shadow 0.2s;
@@ -66,7 +93,7 @@
         }
 
         .card-eventos {
-            background: #fff !important;
+            background: var(--color-surface) !important;
             max-width: 260px !important;
             padding: 1rem !important;
             width: 100% !important;
@@ -84,7 +111,7 @@
         .card-cid-evento {
             margin-bottom: 0.25rem;
             font-size: 0.9em;
-            color: #666;
+            color: var(--color-text-secondary);
         }
 
         .icon-eve-home {
@@ -107,14 +134,14 @@
         .gallery-item {
             position: relative;
             margin: 8px;
-            background: #eee;
+            background: var(--color-light-gray);
             border-radius: 4px;
             cursor: pointer;
             transition: border 0.2s, box-shadow 0.2s;
         }
 
         .gallery-item.selected {
-            border: 3px solid #007bff;
+            border: 3px solid var(--color-primary);
         }
 
         .gallery-item:hover {
@@ -135,7 +162,7 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background: rgba(0, 0, 0, 0.5);
+            background: var(--color-overlay);
             display: none;
             flex-direction: column;
             border-radius: 4px;
@@ -149,11 +176,11 @@
         .gallery-overlay-bottom {
             flex: 1;
             width: 100%;
-            background: rgba(255, 255, 255, 0.1);
+            background: var(--color-gallery-overlay);
             display: flex;
             align-items: center;
             justify-content: center;
-            color: white;
+            color: var(--color-white);
             font-weight: bold;
             font-size: 16px;
             border: none;
@@ -165,12 +192,12 @@
         }
 
         .gallery-overlay-top {
-            border-bottom: 1px solid white;
+            border-bottom: 1px solid var(--color-white);
         }
 
         .gallery-overlay-top:hover,
         .gallery-overlay-bottom:hover {
-            background: rgba(255, 255, 255, 0.2);
+            background: var(--color-gallery-overlay-hover);
         }
 
         button {
@@ -178,12 +205,12 @@
             padding: 8px 12px;
             border-radius: 5px;
             border: none;
-            background: #007bff;
-            color: white;
+            background: var(--color-primary);
+            color: var(--color-white);
         }
 
         button:hover {
-            background: #0056b3;
+            background: var(--color-primary-hover);
         }
 
         .selection-controls {
@@ -195,7 +222,7 @@
 
         .selected-count {
             font-weight: bold;
-            color: #333;
+            color: var(--color-text-primary);
         }
 
         .lightbox {
@@ -204,7 +231,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.8);
+            background: var(--color-backdrop);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -222,8 +249,8 @@
             position: absolute;
             top: 50%;
             transform: translateY(-50%);
-            background: #333;
-            color: white;
+            background: var(--color-dark-gray);
+            color: var(--color-white);
             border: none;
             font-size: 28px;
             font-weight: bold;
@@ -249,47 +276,47 @@
             right: 20px;
             padding: 8px 12px;
             border-radius: 5px;
-            color: white;
+            color: var(--color-white);
             cursor: pointer;
             border: none;
             z-index: 1003;
         }
 
         .lightbox-select.select {
-            background: #007bff;
+            background: var(--color-primary);
         }
 
         .lightbox-select.deselect {
-            background: #dc3545;
+            background: var(--color-danger);
         }
 
         .lightbox-select:hover {
             opacity: 0.8;
         }
-
+        
         .lightbox-generate {
             position: absolute;
             bottom: 20px;
             left: 20px;
             padding: 8px 12px;
             border-radius: 5px;
-            background: #28a745;
-            color: white;
+            background: var(--color-success);
+            color: var(--color-white);
             border: none;
             cursor: pointer;
             z-index: 1003;
         }
 
         .lightbox-generate:hover {
-            background: #218838;
+            background: var(--color-success-hover);
         }
 
         .lightbox-close {
             position: absolute;
             top: 20px;
             right: 20px;
-            background: rgba(0, 0, 0, 0.5);
-            color: white;
+            background: var(--color-overlay);
+            color: var(--color-white);
             border: none;
             font-size: 24px;
             padding: 5px 10px;
@@ -319,7 +346,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.8);
+            background: var(--color-backdrop);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -327,7 +354,7 @@
         }
 
         .review-content {
-            background: white;
+            background: var(--color-surface);
             padding: 20px;
             border-radius: 8px;
             max-width: 90%;
@@ -378,15 +405,15 @@
         .review-footer {
             padding-top: 15px;
             width: 100%;
-            border-top: 1px solid #eee;
+            border-top: 1px solid var(--color-light-gray);
         }
 
         .review-deselect {
-            background: #dc3545;
+            background: var(--color-danger);
             width: 100%;
             padding: 8px 12px;
             border-radius: 5px;
-            color: white;
+            color: var(--color-white);
             border: none;
             cursor: pointer;
             margin-bottom: 10px;
@@ -423,11 +450,11 @@
         }
 
         .back-button {
-            background: #6c757d;
+            background: var(--color-secondary);
         }
 
         .back-button:hover {
-            background: #545b62;
+            background: var(--color-secondary-hover);
         }
 
         .selection-controls-wrapper {
@@ -442,7 +469,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.8);
+            background: var(--color-backdrop);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -450,7 +477,7 @@
         }
 
         .email-content {
-            background: white;
+            background: var(--color-surface);
             padding: 20px;
             border-radius: 8px;
             max-width: 90%;
@@ -470,10 +497,10 @@
         }
 
         .email-input {
-            width: calc(100% - 20px);
+            width: 100%;
             padding: 10px;
             margin-bottom: 15px;
-            border: 1px solid #ccc;
+            border: 1px solid var(--color-disabled);
             border-radius: 4px;
             font-size: 16px;
         }
@@ -491,29 +518,29 @@
         }
 
         .email-buttons .cancel {
-            background: #6c757d;
+            background: var(--color-secondary);
         }
 
         .email-buttons .cancel:hover {
-            background: #545b62;
+            background: var(--color-secondary-hover);
         }
 
         .email-buttons .submit {
-            background: #28a745;
+            background: var(--color-success);
         }
 
         .email-buttons .submit:hover {
-            background: #218838;
+            background: var(--color-success-hover);
         }
 
         .email-buttons .submit:disabled {
-            background: #ccc;
+            background: var(--color-disabled);
             cursor: not-allowed;
         }
 
         .loading-spinner {
-            border: 4px solid #f3f3f3;
-            border-top: 4px solid #007bff;
+            border: 4px solid var(--color-spinner-track);
+            border-top: 4px solid var(--color-primary);
             border-radius: 50%;
             width: 40px;
             height: 40px;
@@ -540,7 +567,7 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background: rgba(0, 0, 0, 0.5);
+            background: var(--color-overlay);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -559,30 +586,25 @@
         }
 
         .result-modal-success {
-            background: #d4edda !important;
+            background: var(--color-success-light) !important;
+            border-left: 4px solid var(--color-success);
         }
 
         .result-modal-error {
-            background: #f8d7da !important;
-            border-left: 4px solid #dc3545;
+            background: var(--color-danger-light) !important;
+            border-left: 4px solid var(--color-danger);
         }
 
-        .result-modal-success .email-header h2 {
-            color: #155724;
-        }
-
+        .result-modal-success .email-header h2,
         .result-modal-success .email-header p {
-            color: #155724;
+            color: var(--color-success-dark);
         }
 
-        .result-modal-error .email-header h2 {
-            color: #721c24;
-        }
-
+        .result-modal-error .email-header h2,
         .result-modal-error .email-header p {
-            color: #721c24;
+            color: var(--color-danger-dark);
         }
-
+        
         @media (max-width: 600px) {
             .review-content {
                 height: 80vh;
@@ -599,7 +621,6 @@
         }
     </style>
 </head>
-
 <body>
     <div id="root"></div>
 
@@ -622,17 +643,9 @@
             let onGenerateOrder = props.onGenerateOrder;
             let selectedPhotos = props.selectedPhotos;
 
-            let isImageLoadingState = React.useState(true);
-            let isImageLoading = isImageLoadingState[0];
-            let setIsImageLoading = isImageLoadingState[1];
-
-            let touchStartState = React.useState(null);
-            let touchStart = touchStartState[0];
-            let setTouchStart = touchStartState[1];
-
-            let touchEndState = React.useState(null);
-            let touchEnd = touchEndState[0];
-            let setTouchEnd = touchEndState[1];
+            let [isImageLoading, setIsImageLoading] = React.useState(true);
+            let [touchStart, setTouchStart] = React.useState(null);
+            let [touchEnd, setTouchEnd] = React.useState(null);
 
             if (index === -1) return null;
             let photo = photos[index];
@@ -707,7 +720,12 @@
                     React.createElement('button', { className: 'lightbox-nav lightbox-next', onClick: function (e) { e.stopPropagation(); resetLoading(); onNext(); }, key: 'next' }, '→'),
                     React.createElement('button', { className: selectClass, onClick: function (e) { e.stopPropagation(); onToggleSelect(photo); }, key: 'select' },
                         isSelected ? 'Deseleccionar' : 'Seleccionar'
-                    )
+                    ),
+                    selectedPhotos.length > 0 && React.createElement('button', {
+                        className: 'lightbox-generate',
+                        onClick: function (e) { e.stopPropagation(); onGenerateOrder(); },
+                        key: 'generate'
+                    }, 'Ir a orden')
                 )
             ];
 
@@ -725,104 +743,97 @@
         }
 
         function ReviewModal(props) {
-            let selectedPhotos = props.selectedPhotos;
-            let reviewIndex = props.reviewIndex;
-            let onClose = props.onClose;
-            let onDeselect = props.onDeselect;
-            let onPrev = props.onPrev;
-            let onNext = props.onNext;
-            let onConfirm = props.onConfirm;
+    let selectedPhotos = props.selectedPhotos;
+    let reviewIndex = props.reviewIndex;
+    let onClose = props.onClose;
+    let onDeselect = props.onDeselect;
+    let onPrev = props.onPrev;
+    let onNext = props.onNext;
+    let onConfirm = props.onConfirm;
 
-            let isImageLoadingState = React.useState(true);
-            let isImageLoading = isImageLoadingState[0];
-            let setIsImageLoading = isImageLoadingState[1];
+    let [isImageLoading, setIsImageLoading] = React.useState(true);
+    let [touchStart, setTouchStart] = React.useState(null);
+    let [touchEnd, setTouchEnd] = React.useState(null);
 
-            let touchStartState = React.useState(null);
-            let touchStart = touchStartState[0];
-            let setTouchStart = touchStartState[1];
+    if (!selectedPhotos || selectedPhotos.length === 0) return null;
+    let photo = selectedPhotos[reviewIndex];
+    if (!photo) return null;
 
-            let touchEndState = React.useState(null);
-            let touchEnd = touchEndState[0];
-            let setTouchEnd = touchEndState[1];
+    let handleImageLoad = function () { setIsImageLoading(false); };
+    let resetLoading = function () { setIsImageLoading(true); };
 
-            if (!selectedPhotos || selectedPhotos.length === 0) return null;
-            let photo = selectedPhotos[reviewIndex];
-            if (!photo) return null;
-            let selectClass = 'review-deselect';
-            let handleImageLoad = function () {
-                setIsImageLoading(false);
-            };
-            let resetLoading = function () {
-                setIsImageLoading(true);
-            };
+    let handleTouchStart = function (e) {
+        setTouchEnd(null);
+        setTouchStart(e.targetTouches[0].clientX);
+    };
+    let handleTouchMove = function (e) {
+        setTouchEnd(e.targetTouches[0].clientX);
+    };
+    let handleTouchEnd = function () {
+        if (!touchStart || !touchEnd) return;
+        let distance = touchStart - touchEnd;
+        if (distance > 50) { resetLoading(); onNext(); }
+        if (distance < -50) { resetLoading(); onPrev(); }
+        setTouchStart(null);
+        setTouchEnd(null);
+    };
 
-            let handleTouchStart = function (e) {
-                setTouchEnd(null);
-                setTouchStart(e.targetTouches[0].clientX);
-            };
+    // Crea los nav solo si hay más de una foto
+    let navButtons = null;
+    if (selectedPhotos.length > 1) {
+        navButtons = [
+            React.createElement('button', { 
+                className: 'review-nav review-prev', 
+                onClick: function (e) { e.stopPropagation(); resetLoading(); onPrev(); }, 
+                key: 'prev-nav' 
+            }, '←'),
+            React.createElement('button', { 
+                className: 'review-nav review-next', 
+                onClick: function (e) { e.stopPropagation(); resetLoading(); onNext(); }, 
+                key: 'next-nav' 
+            }, '→')
+        ];
+    }
 
-            let handleTouchMove = function (e) {
-                setTouchEnd(e.targetTouches[0].clientX);
-            };
-
-            let handleTouchEnd = function () {
-                if (!touchStart || !touchEnd) return;
-                let distance = touchStart - touchEnd;
-                let isLeftSwipe = distance > 50;
-                let isRightSwipe = distance < -50;
-                if (isLeftSwipe) {
-                    resetLoading();
-                    onNext();
-                }
-                if (isRightSwipe) {
-                    resetLoading();
-                    onPrev();
-                }
-                setTouchStart(null);
-                setTouchEnd(null);
-            };
-
-            return (
-                React.createElement('div', {
-                    className: 'review-modal',
-                    onClick: onClose,
-                    onTouchStart: handleTouchStart,
-                    onTouchMove: handleTouchMove,
-                    onTouchEnd: handleTouchEnd
-                },
-                    React.createElement('div', { className: 'review-content', onClick: function (e) { e.stopPropagation(); } },
-                        React.createElement('div', { className: 'review-scrollable' },
-                            React.createElement('div', { className: 'review-header' },
-                                React.createElement('h2', null, 'Confirma tu selección de imágenes'),
-                                React.createElement('h2', null, selectedPhotos.length === 1 ? `${selectedPhotos.length} imagen seleccionada` : `${selectedPhotos.length} imágenes seleccionadas`)
-                            ),
-                            React.createElement('div', { className: 'review-image-container', onClick: function (e) { e.stopPropagation(); } },
-                                isImageLoading && React.createElement('div', { className: 'loading-overlay' },
-                                    React.createElement('div', { className: 'loading-spinner' })
-                                ),
-                                React.createElement('img', {
-                                    src: photo.url,
-                                    alt: photo.name,
-                                    className: 'review-image',
-                                    onClick: function (e) { e.stopPropagation(); },
-                                    onLoad: handleImageLoad,
-                                    style: { display: isImageLoading ? 'none' : 'block' }
-                                })
-                            )
-                        ),
-                        React.createElement('div', { className: 'review-footer' },
-                            React.createElement('button', { className: selectClass, onClick: function (e) { e.stopPropagation(); onDeselect(photo, true); } }, 'Deseleccionar'),
-                            React.createElement('div', { className: 'review-buttons' },
-                                React.createElement('button', { onClick: onClose }, 'Volver'),
-                                React.createElement('button', { onClick: onConfirm }, 'Confirmar')
-                            )
-                        ),
-                        React.createElement('button', { className: 'review-nav review-prev', onClick: function (e) { e.stopPropagation(); resetLoading(); onPrev(); } }, '←'),
-                        React.createElement('button', { className: 'review-nav review-next', onClick: function (e) { e.stopPropagation(); resetLoading(); onNext(); } }, '→')
-                    )
+    return React.createElement('div', {
+        className: 'review-modal',
+        onClick: onClose,
+        onTouchStart: handleTouchStart,
+        onTouchMove: handleTouchMove,
+        onTouchEnd: handleTouchEnd
+    },
+        React.createElement('div', { className: 'review-content', onClick: function (e) { e.stopPropagation(); } },
+            React.createElement('div', { className: 'review-scrollable' },
+                React.createElement('div', { className: 'review-header' },
+                    React.createElement('h2', null, 'Confirma tu selección de imágenes'),
+                    React.createElement('h2', null, selectedPhotos.length === 1 ? `${selectedPhotos.length} imagen seleccionada` : `${selectedPhotos.length} imágenes seleccionadas`)
+                ),
+                React.createElement('div', { className: 'review-image-container', onClick: function (e) { e.stopPropagation(); } },
+                    isImageLoading ? React.createElement('div', { className: 'loading-overlay' },
+                        React.createElement('div', { className: 'loading-spinner' })
+                    ) : null,
+                    React.createElement('img', {
+                        src: photo.url,
+                        alt: photo.name,
+                        className: 'review-image',
+                        onClick: function (e) { e.stopPropagation(); },
+                        onLoad: handleImageLoad,
+                        style: { display: isImageLoading ? 'none' : 'block' }
+                    })
                 )
-            );
-        }
+            ),
+            React.createElement('div', { className: 'review-footer' },
+                React.createElement('button', { className: 'review-deselect', onClick: function (e) { e.stopPropagation(); onDeselect(photo, true); } }, 'Deseleccionar'),
+                React.createElement('div', { className: 'review-buttons' },
+                    React.createElement('button', { onClick: onClose }, 'Volver'),
+                    React.createElement('button', { onClick: onConfirm }, 'Confirmar')
+                )
+            )
+        ),
+        // Inserta los nav como hijos del mismo overlay
+        navButtons
+    );
+}
 
         function EmailModal(props) {
             let email = props.email;
@@ -830,54 +841,57 @@
             let onClose = props.onClose;
             let onSubmit = props.onSubmit;
             let selectedPhotos = props.selectedPhotos;
-            let isSendingEmail = props.isSendingEmail; // ← NUEVO: Recibir estado de loading
+            let isSendingEmail = props.isSendingEmail;
 
             let handleChange = function (e) {
                 setEmail(e.target.value);
             };
 
-            let isValidEmail = function (email) {
-                return email && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+            let isValidEmail = function (emailStr) {
+                return emailStr && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailStr);
             };
 
-            let submitDisabled = !isValidEmail(email) || isSendingEmail; // ← Deshabilitar también durante el envío
+            let submitDisabled = !isValidEmail(email) || isSendingEmail;
 
-            return (
-                React.createElement('div', { className: 'email-modal', onClick: isSendingEmail ? null : onClose }, // ← No cerrar durante envío
-                    React.createElement('div', { className: 'email-content', onClick: function (e) { e.stopPropagation(); } },
-                        React.createElement('div', { className: 'email-header' },
-                            React.createElement('h2', null, 'Ingresa tu email para la orden'),
-                            React.createElement('p', null, 'Te contactaremos cuando la orden sea recibida por el equipo.')
-                        ),
-                        React.createElement('input', {
-                            type: 'email',
-                            className: 'email-input',
-                            placeholder: 'tu@email.com',
-                            value: email,
-                            onChange: handleChange,
-                            disabled: isSendingEmail // ← Deshabilitar input durante envío
-                        }),
-                        React.createElement('div', { className: 'email-buttons' },
-                            React.createElement('button', { 
-                                className: 'cancel', 
-                                onClick: onClose,
-                                disabled: isSendingEmail // ← Deshabilitar cancelar durante envío
-                            }, 'Cancelar'),
-                            React.createElement('button', {
-                                className: 'submit',
-                                onClick: function () { if (!submitDisabled) onSubmit(email, selectedPhotos); },
-                                disabled: submitDisabled
-                            }, isSendingEmail ? 'Enviando...' : 'Enviar orden') // ← Cambiar texto durante envío
-                        ),
-                        // ← NUEVO: Agregar spinner de loading
-                        isSendingEmail && React.createElement('div', { className: 'loading-overlay' },
-                            React.createElement('div', { className: 'loading-spinner' })
-                        )
-                    )
+            let inputElement = React.createElement('input', {
+                type: 'email',
+                className: 'email-input',
+                placeholder: 'tu@email.com',
+                value: email,
+                onChange: handleChange,
+                disabled: isSendingEmail
+            });
+
+            let cancelButton = React.createElement('button', { 
+                className: 'cancel', 
+                onClick: onClose,
+                disabled: isSendingEmail 
+            }, 'Cancelar');
+
+            let submitButton = React.createElement('button', {
+                className: 'submit',
+                onClick: function () { if (!submitDisabled) onSubmit(email, selectedPhotos); },
+                disabled: submitDisabled
+            }, isSendingEmail ? 'Enviando...' : 'Enviar orden');
+
+            let buttonsDiv = React.createElement('div', { className: 'email-buttons' }, cancelButton, submitButton);
+
+            let loadingOverlay = isSendingEmail ? React.createElement('div', { className: 'loading-overlay' },
+                React.createElement('div', { className: 'loading-spinner' })
+            ) : null;
+
+            return React.createElement('div', { className: 'email-modal', onClick: isSendingEmail ? null : onClose },
+                React.createElement('div', { className: 'email-content', onClick: function (e) { e.stopPropagation(); } },
+                    React.createElement('div', { className: 'email-header' },
+                        React.createElement('h2', null, 'Ingresa tu email para la orden'),
+                        React.createElement('p', null, 'Te contactaremos cuando la orden sea recibida por el equipo.')
+                    ),
+                    inputElement,
+                    buttonsDiv,
+                    loadingOverlay
                 )
             );
         }
-
 
         function ResultModal(props) {
             let resultMessage = props.resultMessage;
@@ -887,20 +901,18 @@
             let modalClass = 'email-modal';
             let contentClass = isSuccess ? 'email-content result-modal-success' : 'email-content result-modal-error';
 
-            return (
-                React.createElement('div', { className: modalClass, onClick: onClose },
-                    React.createElement('div', { className: contentClass, onClick: function (e) { e.stopPropagation(); } },
-                        React.createElement('div', { className: 'email-header' },
-                            React.createElement('h2', null, resultMessage.title),
-                            React.createElement('p', null, resultMessage.message)
-                        ),
-                        React.createElement('div', { className: 'email-buttons' },
-                            React.createElement('button', { 
-                                onClick: onClose,
-                                style: { background: isSuccess ? '#28a745' : '#dc3545' }
-                            }, 'Aceptar')
-                        )
-                    )
+            let acceptButton = React.createElement('button', { 
+                onClick: onClose,
+                style: { background: isSuccess ? '#28a745' : '#dc3545' }
+            }, 'Aceptar');
+
+            return React.createElement('div', { className: modalClass, onClick: onClose },
+                React.createElement('div', { className: contentClass, onClick: function (e) { e.stopPropagation(); } },
+                    React.createElement('div', { className: 'email-header' },
+                        React.createElement('h2', null, resultMessage.title),
+                        React.createElement('p', null, resultMessage.message)
+                    ),
+                    React.createElement('div', { className: 'email-buttons' }, acceptButton)
                 )
             );
         }
@@ -948,7 +960,7 @@
                     );
                 }
                 items.push(
-                    React.createElement('div', { key: photo.name || `photo-${j}`, className: className, onClick: onClick },
+                    React.createElement('div', { key: `${photo.name}-${j}`, className: className, onClick: onClick },
                         React.createElement('img', { src: photo.url, alt: photo.name || 'Imagen' }),
                         overlay
                     )
@@ -958,45 +970,19 @@
         }
 
         function App() {
-            let eventsState = React.useState([]);
-            let events = eventsState[0];
-            let setEvents = eventsState[1];
-            let selectedEventState = React.useState(null);
-            let selectedEvent = selectedEventState[0];
-            let setSelectedEvent = selectedEventState[1];
-            let selectedPhotosState = React.useState([]);
-            let selectedPhotos = selectedPhotosState[0];
-            let setSelectedPhotos = selectedPhotosState[1];
-            let isSelectionModeState = React.useState(false);
-            let isSelectionMode = isSelectionModeState[0];
-            let setIsSelectionMode = isSelectionModeState[1];
-            let lightboxIndexState = React.useState(-1);
-            let lightboxIndex = lightboxIndexState[0];
-            let setLightboxIndex = lightboxIndexState[1];
-            let showReviewState = React.useState(false);
-            let showReview = showReviewState[0];
-            let setShowReview = showReviewState[1];
-            let reviewIndexState = React.useState(0);
-            let reviewIndex = reviewIndexState[0];
-            let setReviewIndex = reviewIndexState[1];
-            let showEmailModalState = React.useState(false);
-            let showEmailModal = showEmailModalState[0];
-            let setShowEmailModal = showEmailModalState[1];
-            let emailState = React.useState('');
-            let email = emailState[0];
-            let setEmail = emailState[1];
-
-            let showResultModalState = React.useState(false);
-            let showResultModal = showResultModalState[0];
-            let setShowResultModal = showResultModalState[1];
-
-            let resultMessageState = React.useState({ type: 'success', title: '', message: '' });
-            let resultMessage = resultMessageState[0];
-            let setResultMessage = resultMessageState[1];
-
-            let emailsConfigState = React.useState({ adminEmail: '', ccEmails: [] });
-            let emailsConfig = emailsConfigState[0];
-            let setEmailsConfig = emailsConfigState[1];
+            let [events, setEvents] = React.useState([]);
+            let [selectedEvent, setSelectedEvent] = React.useState(null);
+            let [selectedPhotos, setSelectedPhotos] = React.useState([]);
+            let [isSelectionMode, setIsSelectionMode] = React.useState(false);
+            let [lightboxIndex, setLightboxIndex] = React.useState(-1);
+            let [showReview, setShowReview] = React.useState(false);
+            let [reviewIndex, setReviewIndex] = React.useState(0);
+            let [showEmailModal, setShowEmailModal] = React.useState(false);
+            let [email, setEmail] = React.useState('');
+            let [showResultModal, setShowResultModal] = React.useState(false);
+            let [resultMessage, setResultMessage] = React.useState({ type: 'success', title: '', message: '' });
+            let [emailsConfig, setEmailsConfig] = React.useState({ adminEmail: '', ccEmails: [] });
+            let [isSendingEmail, setIsSendingEmail] = React.useState(false);
 
             let hasSelections = selectedPhotos.length > 0;
 
@@ -1016,10 +1002,6 @@
             };
 
             let isAnyModalOpen = lightboxIndex !== -1 || showReview || showEmailModal || showResultModal;
-
-            let isSendingEmailState = React.useState(false);
-            let isSendingEmail = isSendingEmailState[0];
-            let setIsSendingEmail = isSendingEmailState[1];
 
             React.useEffect(function () {
                 if (isAnyModalOpen) {
@@ -1085,21 +1067,21 @@
                 setShowEmailModal(true);
             };
 
-            let handleEmailSubmit = function (userEmail, selectedPhotos) {
-                setIsSendingEmail(true); // Activar loading
+            let handleEmailSubmit = function (userEmail, selectedPhotosParam) {
+                setIsSendingEmail(true);
 
                 let params = {
                     to_email: emailsConfig.adminEmail,
                     cc_emails: emailsConfig.ccEmails.join(','),
                     user_email: userEmail,
-                    nombreEvento: selectedEvent ? selectedEvent.nombreEvento : 'Evento no especificado',
-                    photos: selectedPhotos.map(p => p.name.substring(0, p.name.lastIndexOf('.'))).join('\n')
+                    nombreEvento: selectedEvent ? selectedEvent.name : 'Evento no especificado',
+                    photos: selectedPhotosParam.map(p => p.name.substring(0, p.name.lastIndexOf('.'))).join('\n')
                 };
 
                 emailjs.send("service_fotosEventos", "template_0ntzv59", params)
                     .then((result) => {
                         console.log('Email enviado exitosamente!', result.text);
-                        setIsSendingEmail(false); // Desactivar loading
+                        setIsSendingEmail(false);
                         setResultMessage({
                             type: 'success',
                             title: '¡Orden enviada!',
@@ -1109,7 +1091,7 @@
                         setShowEmailModal(false);
                     }, (error) => {
                         console.log('Error al enviar email:', error.text);
-                        setIsSendingEmail(false); // Desactivar loading incluso en error
+                        setIsSendingEmail(false);
                         setResultMessage({
                             type: 'error',
                             title: 'Error al enviar',
@@ -1118,7 +1100,6 @@
                         setShowResultModal(true);
                     });
             };
-
 
             let handleGenerateFromLightbox = function () {
                 setLightboxIndex(-1);
@@ -1222,7 +1203,7 @@
 
             React.useEffect(function () {
                 if (selectedEvent) {
-                    document.title = selectedEvent.nombreEvento;
+                    document.title = selectedEvent.name;
                 } else {
                     document.title = 'Eventos disponibles';
                 }
@@ -1239,7 +1220,7 @@
                 let idx = n;
                 let firstPhoto = ev.photos && ev.photos.length > 0 ? ev.photos[0].url : '';
                 let eventCardElements = [
-                    React.createElement('div', { className: 'card-titulo-evento', title: ev.nombreEvento || 'Evento sin nombre', key: 'title' }, ev.nombreEvento || 'Evento sin nombre')
+                    React.createElement('div', { className: 'card-titulo-evento', title: ev.name || 'Evento sin nombre', key: 'title' }, ev.name || 'Evento sin nombre')
                 ];
                 if (ev.fecha) {
                     eventCardElements.push(
@@ -1260,13 +1241,13 @@
                 carouselItems.push(
                     React.createElement('div', { 
                         className: 'carousel-item', 
-                        key: ev.nombreEvento || `event-${n}`,
-                        onClick: function (ev) { return function () { handleSelectEvent(ev); }; }(ev)
+                        key: ev.name || `event-${n}`,
+                        onClick: function (evParam) { return function () { handleSelectEvent(evParam); }; }(ev)
                     },
                         React.createElement('div', { className: 'foto' },
                             React.createElement('img', { 
                                 src: firstPhoto, 
-                                alt: `Portada ${ev.nombreEvento || 'Evento'}`,
+                                alt: `Portada ${ev.name || 'Evento'}`,
                                 onError: function (e) { 
                                     e.target.src = 'https://via.placeholder.com/260x156?text=Imagen+no+disponible';
                                 }
@@ -1326,7 +1307,7 @@
                     onClose: function () { setShowEmailModal(false); },
                     onSubmit: handleEmailSubmit,
                     selectedPhotos: selectedPhotos,
-                    isSendingEmail: isSendingEmail // ← NUEVO: Pasar estado de loading
+                    isSendingEmail: isSendingEmail
                 });
             }
 
@@ -1352,7 +1333,7 @@
                 selectionControls = React.createElement('button', { onClick: toggleSelectionMode }, 'Seleccionar imágenes para orden');
             }
 
-            let headerTitle = selectedEvent ? selectedEvent.nombreEvento || 'Evento sin nombre' : 'Galería de Eventos';
+            let headerTitle = selectedEvent ? selectedEvent.name || 'Evento sin nombre' : 'Galería de Eventos';
 
             let content = null;
             if (!selectedEvent) {
@@ -1383,5 +1364,4 @@
         root.render(React.createElement(App));
     </script>
 </body>
-
 </html>
