@@ -130,6 +130,84 @@ function App() {
         setReviewIndex(0);
     };
 
+    // Helper para slugificar nombres de eventos (para URLs limpias)
+    function slugify(name) {
+        if (!name) return '';
+        return name.toLowerCase().trim()
+            .replace(/[^a-z0-9\s-]/g, '')  // Quita chars especiales
+            .replace(/\s+/g, '-')          // Espacios a guiones
+            .replace(/-+/g, '-');          // Múltiples guiones a uno
+    }
+
+    // Actualiza el URL sin recargar la página
+    function updateUrl(path) {
+        if (window.location.pathname !== path) {
+            window.history.pushState({}, '', path);
+        }
+    }
+
+    // Función para parsear pathname y setear estado inicial/navegación
+    function parseAndSetState(pathname) {
+        if (pathname === '/' || pathname === '') {
+            // Vista principal
+            setSelectedEvent(null);
+            setSelectedPhotographer(null);
+            setPhotographerQuery('');
+            setSelectedPhotos([]);
+            setIsSelectionMode(false);
+            setLightboxIndex(-1);
+            setShowReview(false);
+            setShowEmailModal(false);
+            setEmail('');
+            setReviewIndex(0);
+            setActivePhotographer(null);
+            return true;
+        }
+
+        let parts = pathname.split('/').filter(Boolean);
+        if (parts.length >= 2) {
+            let type = parts[0];
+            let param = parts.slice(1).join('/');  // En caso de nombres con /
+
+            if (type === 'evento') {
+                // Busca evento por slug
+                let slug = slugify(param);
+                for (let i = 0; i < events.length; i++) {
+                    if (slugify(events[i].name) === slug) {
+                        handleSelectEvent(events[i]);
+                        return true;
+                    }
+                }
+                // No encontrado: redirige a /
+                updateUrl('/');
+                return false;
+            } else if (type === 'fotografo') {
+                // Busca fotógrafo exacto
+                if (allPhotographers.includes(param)) {
+                    setSelectedPhotographer(param);
+                    setSelectedEvent(null);
+                    setPhotographerQuery(param);
+                    setSelectedPhotos([]);
+                    setIsSelectionMode(false);
+                    setLightboxIndex(-1);
+                    setShowReview(false);
+                    setShowEmailModal(false);
+                    setEmail('');
+                    setReviewIndex(0);
+                    setActivePhotographer(null);
+                    updateUrl('/fotografo/' + param);  // Asegura URL
+                    return true;
+                }
+                // No encontrado: redirige a /
+                updateUrl('/');
+                return false;
+            }
+        }
+        // Ruta inválida: redirige a /
+        updateUrl('/');
+        return false;
+    }
+
     let handleSelectEvent = function (ev) {
         setSelectedEvent(ev);
         setSelectedPhotographer(null);
@@ -142,6 +220,7 @@ function App() {
         setEmail('');
         setReviewIndex(0);
         setActivePhotographer(null);
+        updateUrl('/evento/' + slugify(ev.name));  // Actualiza URL
     };
 
     let openLightbox = function (idx) { setLightboxIndex(idx); };
@@ -178,7 +257,23 @@ function App() {
         else { document.title = 'Eventos disponibles'; }
     }, [selectedEvent, selectedPhotographer]);
 
-    // Construir fuente global de fotos y fotógrafos
+    // Inicializa estado desde URL al montar la app
+    React.useEffect(function () {
+        parseAndSetState(window.location.pathname);
+    }, []);
+
+    // Escucha cambios de URL (navegación con botones del navegador)
+    React.useEffect(function () {
+        function handlePopState() {
+            parseAndSetState(window.location.pathname);
+        }
+        window.addEventListener('popstate', handlePopState);
+        return function () {
+            window.removeEventListener('popstate', handlePopState);
+        };
+    }, []);
+
+    // Construir fuente global de fotos y fotógrafos (después de cargar events)
     let allEventsPhotos = [];
     for (let i = 0; i < events.length; i++) {
         let ev = events[i];
@@ -268,7 +363,7 @@ function App() {
         );
     }
 
-    // Buscador global por fotógrafo (vista principal, debajo del carrusel como pediste)
+    // Buscador global por fotógrafo (vista principal, debajo del carrusel)
     let searchRow = null;
     if (!selectedEvent && !selectedPhotographer) {
         searchRow = React.createElement('div', { key: 'search-row', className: 'search-row' },
@@ -294,6 +389,7 @@ function App() {
                             setEmail('');
                             setReviewIndex(0);
                             setActivePhotographer(null);
+                            updateUrl('/fotografo/' + val);  // Actualiza URL
                             break;
                         }
                     }
@@ -454,6 +550,7 @@ function App() {
                         setSelectedPhotographer(null);
                         setPhotographerQuery('');
                         setActivePhotographer(null);
+                        updateUrl('/');  // Actualiza URL
                     }
                 }, 'Volver a eventos'),
                 React.createElement('div', { key: 'controls', className: 'selection-controls-wrapper' }, selectionControls)
@@ -464,7 +561,7 @@ function App() {
     } else if (selectedPhotographer) {
         content = [
             React.createElement('header', { key: 'header' },
-                React.createElement('h1', null, `Fotos de ${selectedPhotographer}`)
+                React.createElement('h1', null, selectedPhotographer)
             ),
             React.createElement('div', { key: 'header-row', className: 'header-row' },
                 React.createElement('button', {
@@ -480,6 +577,7 @@ function App() {
                         setShowEmailModal(false);
                         setEmail('');
                         setReviewIndex(0);
+                        updateUrl('/');  // Actualiza URL
                     }
                 }, 'Volver a eventos'),
                 React.createElement('div', { key: 'controls', className: 'selection-controls-wrapper' }, selectionControls)
@@ -491,6 +589,6 @@ function App() {
     return React.createElement('div', null, content, lightbox, reviewModal, emailModal, resultModal);
 }
 
-// Monta la app (usa ReactDOM global)
+// Monta la app
 let root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(React.createElement(App));
