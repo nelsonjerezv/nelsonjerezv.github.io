@@ -36,8 +36,16 @@ function buildEventsJson() {
     }
 
     const parts = relativePath.split(path.sep);
-    const eventName = parts[0]; // Carpeta raíz = evento
-    const fileName = parts.slice(1).join('/');
+
+    // Estructura esperada: evento/fotografo/archivo
+    if (parts.length < 3) {
+      // Si no cumple el esquema, se omite
+      return;
+    }
+
+    const eventName = parts[0];           // Carpeta raíz = evento
+    const photographer = parts[1];        // Segundo nivel = fotógrafo
+    const fileName = parts.slice(2).join('/'); // Nombre del archivo (por si en el futuro hay subcarpetas)
 
     if (!eventsMap[eventName]) {
       eventsMap[eventName] = {
@@ -51,6 +59,7 @@ function buildEventsJson() {
     eventsMap[eventName].photos.push({
       id: fileName,
       name: fileName,
+      photographer: photographer,
       url: url
     });
   });

@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
@@ -293,7 +294,7 @@
         .lightbox-select:hover {
             opacity: 0.8;
         }
-        
+
         .lightbox-generate {
             position: absolute;
             bottom: 20px;
@@ -538,6 +539,32 @@
             cursor: not-allowed;
         }
 
+        .filters-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin: 0 20px 10px 20px;
+        }
+
+        .filter-button {
+            background: var(--color-light-gray);
+            color: var(--color-dark-gray);
+            border: none;
+            padding: 8px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .filter-button:hover {
+            background: var(--color-gallery-overlay-hover);
+            color: var(--color-white);
+        }
+
+        .filter-button.active {
+            background: var(--color-primary);
+            color: var(--color-white);
+        }
+
         .loading-spinner {
             border: 4px solid var(--color-spinner-track);
             border-top: 4px solid var(--color-primary);
@@ -604,7 +631,7 @@
         .result-modal-error .email-header p {
             color: var(--color-danger-dark);
         }
-        
+
         @media (max-width: 600px) {
             .review-content {
                 height: 80vh;
@@ -621,6 +648,7 @@
         }
     </style>
 </head>
+
 <body>
     <div id="root"></div>
 
@@ -743,97 +771,97 @@
         }
 
         function ReviewModal(props) {
-    let selectedPhotos = props.selectedPhotos;
-    let reviewIndex = props.reviewIndex;
-    let onClose = props.onClose;
-    let onDeselect = props.onDeselect;
-    let onPrev = props.onPrev;
-    let onNext = props.onNext;
-    let onConfirm = props.onConfirm;
+            let selectedPhotos = props.selectedPhotos;
+            let reviewIndex = props.reviewIndex;
+            let onClose = props.onClose;
+            let onDeselect = props.onDeselect;
+            let onPrev = props.onPrev;
+            let onNext = props.onNext;
+            let onConfirm = props.onConfirm;
 
-    let [isImageLoading, setIsImageLoading] = React.useState(true);
-    let [touchStart, setTouchStart] = React.useState(null);
-    let [touchEnd, setTouchEnd] = React.useState(null);
+            let [isImageLoading, setIsImageLoading] = React.useState(true);
+            let [touchStart, setTouchStart] = React.useState(null);
+            let [touchEnd, setTouchEnd] = React.useState(null);
 
-    if (!selectedPhotos || selectedPhotos.length === 0) return null;
-    let photo = selectedPhotos[reviewIndex];
-    if (!photo) return null;
+            if (!selectedPhotos || selectedPhotos.length === 0) return null;
+            let photo = selectedPhotos[reviewIndex];
+            if (!photo) return null;
 
-    let handleImageLoad = function () { setIsImageLoading(false); };
-    let resetLoading = function () { setIsImageLoading(true); };
+            let handleImageLoad = function () { setIsImageLoading(false); };
+            let resetLoading = function () { setIsImageLoading(true); };
 
-    let handleTouchStart = function (e) {
-        setTouchEnd(null);
-        setTouchStart(e.targetTouches[0].clientX);
-    };
-    let handleTouchMove = function (e) {
-        setTouchEnd(e.targetTouches[0].clientX);
-    };
-    let handleTouchEnd = function () {
-        if (!touchStart || !touchEnd) return;
-        let distance = touchStart - touchEnd;
-        if (distance > 50) { resetLoading(); onNext(); }
-        if (distance < -50) { resetLoading(); onPrev(); }
-        setTouchStart(null);
-        setTouchEnd(null);
-    };
+            let handleTouchStart = function (e) {
+                setTouchEnd(null);
+                setTouchStart(e.targetTouches[0].clientX);
+            };
+            let handleTouchMove = function (e) {
+                setTouchEnd(e.targetTouches[0].clientX);
+            };
+            let handleTouchEnd = function () {
+                if (!touchStart || !touchEnd) return;
+                let distance = touchStart - touchEnd;
+                if (distance > 50) { resetLoading(); onNext(); }
+                if (distance < -50) { resetLoading(); onPrev(); }
+                setTouchStart(null);
+                setTouchEnd(null);
+            };
 
-    // Crea los nav solo si hay más de una foto
-    let navButtons = null;
-    if (selectedPhotos.length > 1) {
-        navButtons = [
-            React.createElement('button', { 
-                className: 'review-nav review-prev', 
-                onClick: function (e) { e.stopPropagation(); resetLoading(); onPrev(); }, 
-                key: 'prev-nav' 
-            }, '←'),
-            React.createElement('button', { 
-                className: 'review-nav review-next', 
-                onClick: function (e) { e.stopPropagation(); resetLoading(); onNext(); }, 
-                key: 'next-nav' 
-            }, '→')
-        ];
-    }
+            // Crea los nav solo si hay más de una foto
+            let navButtons = null;
+            if (selectedPhotos.length > 1) {
+                navButtons = [
+                    React.createElement('button', {
+                        className: 'review-nav review-prev',
+                        onClick: function (e) { e.stopPropagation(); resetLoading(); onPrev(); },
+                        key: 'prev-nav'
+                    }, '←'),
+                    React.createElement('button', {
+                        className: 'review-nav review-next',
+                        onClick: function (e) { e.stopPropagation(); resetLoading(); onNext(); },
+                        key: 'next-nav'
+                    }, '→')
+                ];
+            }
 
-    return React.createElement('div', {
-        className: 'review-modal',
-        onClick: onClose,
-        onTouchStart: handleTouchStart,
-        onTouchMove: handleTouchMove,
-        onTouchEnd: handleTouchEnd
-    },
-        React.createElement('div', { className: 'review-content', onClick: function (e) { e.stopPropagation(); } },
-            React.createElement('div', { className: 'review-scrollable' },
-                React.createElement('div', { className: 'review-header' },
-                    React.createElement('h2', null, 'Confirma tu selección de imágenes'),
-                    React.createElement('h2', null, selectedPhotos.length === 1 ? `${selectedPhotos.length} imagen seleccionada` : `${selectedPhotos.length} imágenes seleccionadas`)
+            return React.createElement('div', {
+                className: 'review-modal',
+                onClick: onClose,
+                onTouchStart: handleTouchStart,
+                onTouchMove: handleTouchMove,
+                onTouchEnd: handleTouchEnd
+            },
+                React.createElement('div', { className: 'review-content', onClick: function (e) { e.stopPropagation(); } },
+                    React.createElement('div', { className: 'review-scrollable' },
+                        React.createElement('div', { className: 'review-header' },
+                            React.createElement('h2', null, 'Confirma tu selección de imágenes'),
+                            React.createElement('h2', null, selectedPhotos.length === 1 ? `${selectedPhotos.length} imagen seleccionada` : `${selectedPhotos.length} imágenes seleccionadas`)
+                        ),
+                        React.createElement('div', { className: 'review-image-container', onClick: function (e) { e.stopPropagation(); } },
+                            isImageLoading ? React.createElement('div', { className: 'loading-overlay' },
+                                React.createElement('div', { className: 'loading-spinner' })
+                            ) : null,
+                            React.createElement('img', {
+                                src: photo.url,
+                                alt: photo.name,
+                                className: 'review-image',
+                                onClick: function (e) { e.stopPropagation(); },
+                                onLoad: handleImageLoad,
+                                style: { display: isImageLoading ? 'none' : 'block' }
+                            })
+                        )
+                    ),
+                    React.createElement('div', { className: 'review-footer' },
+                        React.createElement('button', { className: 'review-deselect', onClick: function (e) { e.stopPropagation(); onDeselect(photo, true); } }, 'Deseleccionar'),
+                        React.createElement('div', { className: 'review-buttons' },
+                            React.createElement('button', { onClick: onClose }, 'Volver'),
+                            React.createElement('button', { onClick: onConfirm }, 'Confirmar')
+                        )
+                    )
                 ),
-                React.createElement('div', { className: 'review-image-container', onClick: function (e) { e.stopPropagation(); } },
-                    isImageLoading ? React.createElement('div', { className: 'loading-overlay' },
-                        React.createElement('div', { className: 'loading-spinner' })
-                    ) : null,
-                    React.createElement('img', {
-                        src: photo.url,
-                        alt: photo.name,
-                        className: 'review-image',
-                        onClick: function (e) { e.stopPropagation(); },
-                        onLoad: handleImageLoad,
-                        style: { display: isImageLoading ? 'none' : 'block' }
-                    })
-                )
-            ),
-            React.createElement('div', { className: 'review-footer' },
-                React.createElement('button', { className: 'review-deselect', onClick: function (e) { e.stopPropagation(); onDeselect(photo, true); } }, 'Deseleccionar'),
-                React.createElement('div', { className: 'review-buttons' },
-                    React.createElement('button', { onClick: onClose }, 'Volver'),
-                    React.createElement('button', { onClick: onConfirm }, 'Confirmar')
-                )
-            )
-        ),
-        // Inserta los nav como hijos del mismo overlay
-        navButtons
-    );
-}
+                // Inserta los nav como hijos del mismo overlay
+                navButtons
+            );
+        }
 
         function EmailModal(props) {
             let email = props.email;
@@ -862,10 +890,10 @@
                 disabled: isSendingEmail
             });
 
-            let cancelButton = React.createElement('button', { 
-                className: 'cancel', 
+            let cancelButton = React.createElement('button', {
+                className: 'cancel',
                 onClick: onClose,
-                disabled: isSendingEmail 
+                disabled: isSendingEmail
             }, 'Cancelar');
 
             let submitButton = React.createElement('button', {
@@ -901,7 +929,7 @@
             let modalClass = 'email-modal';
             let contentClass = isSuccess ? 'email-content result-modal-success' : 'email-content result-modal-error';
 
-            let acceptButton = React.createElement('button', { 
+            let acceptButton = React.createElement('button', {
                 onClick: onClose,
                 style: { background: isSuccess ? '#28a745' : '#dc3545' }
             }, 'Aceptar');
@@ -983,6 +1011,7 @@
             let [resultMessage, setResultMessage] = React.useState({ type: 'success', title: '', message: '' });
             let [emailsConfig, setEmailsConfig] = React.useState({ adminEmail: '', ccEmails: [] });
             let [isSendingEmail, setIsSendingEmail] = React.useState(false);
+            let [activePhotographer, setActivePhotographer] = React.useState(null);
 
             let hasSelections = selectedPhotos.length > 0;
 
@@ -1116,6 +1145,7 @@
                 setShowEmailModal(false);
                 setEmail('');
                 setReviewIndex(0);
+                setActivePhotographer(null);
             };
 
             let openLightbox = function (idx) {
@@ -1209,10 +1239,12 @@
                 }
             }, [selectedEvent]);
 
-            let photos = [];
+            let allPhotos = [];
             if (selectedEvent && selectedEvent.photos) {
-                photos = selectedEvent.photos;
+                allPhotos = selectedEvent.photos;
             }
+            let photographers = Array.from(new Set(allPhotos.map(p => p.photographer).filter(Boolean)));
+            let photos = activePhotographer ? allPhotos.filter(p => p.photographer === activePhotographer) : allPhotos;
 
             let carouselItems = [];
             for (let n = 0; n < events.length; n++) {
@@ -1239,17 +1271,17 @@
                     );
                 }
                 carouselItems.push(
-                    React.createElement('div', { 
-                        className: 'carousel-item', 
+                    React.createElement('div', {
+                        className: 'carousel-item',
                         key: ev.name || `event-${n}`,
                         onClick: function (evParam) { return function () { handleSelectEvent(evParam); }; }(ev)
                     },
                         React.createElement('div', { className: 'foto' },
-                            React.createElement('img', { 
-                                src: firstPhoto, 
+                            React.createElement('img', {
+                                src: firstPhoto,
                                 alt: `Portada ${ev.name || 'Evento'}`,
-                                onError: function (e) { 
-                                    e.target.src = 'https://via.placeholder.com/260x156?text=Imagen+no+disponible';
+                                onError: function (e) {
+                                    e.target.src = 'https://placehold.co/260x156?text=Imagen%20no%20disponible';
                                 }
                             })
                         ),
@@ -1353,6 +1385,22 @@
                         React.createElement('button', { key: 'back', className: 'back-button', onClick: function () { setSelectedEvent(null); } }, 'Volver a eventos'),
                         React.createElement('div', { key: 'controls', className: 'selection-controls-wrapper' }, selectionControls)
                     ),
+                    React.createElement('div', { key: 'filters-row', className: 'filters-row' },
+                        // Botón "Todas las fotografías"
+                        React.createElement('button', {
+                            key: 'all',
+                            className: 'filter-button' + (activePhotographer === null ? ' active' : ''),
+                            onClick: function () { setActivePhotographer(null); }
+                        }, 'Todas las fotografías'),
+                        // Un botón por fotógrafo
+                        photographers.map(function (ph) {
+                            return React.createElement('button', {
+                                key: 'ph-' + ph,
+                                className: 'filter-button' + (activePhotographer === ph ? ' active' : ''),
+                                onClick: function () { setActivePhotographer(ph); }
+                            }, 'Fotos de ' + ph);
+                        })
+                    ),
                     gallery
                 ];
             }
@@ -1364,4 +1412,5 @@
         root.render(React.createElement(App));
     </script>
 </body>
+
 </html>
