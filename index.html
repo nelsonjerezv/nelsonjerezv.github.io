@@ -677,63 +677,43 @@
 
             if (index === -1) return null;
             let photo = photos[index];
+
+            // ¿Está seleccionada la foto actual?
             let isSelected = false;
             if (photo && selectedPhotos.length > 0) {
                 for (let i = 0; i < selectedPhotos.length; i++) {
-                    if (selectedPhotos[i].id === photo.id) {
-                        isSelected = true;
-                        break;
-                    }
+                    if (selectedPhotos[i].id === photo.id) { isSelected = true; break; }
                 }
             }
             let selectClass = isSelected ? 'lightbox-select deselect' : 'lightbox-select select';
-            let handleImageLoad = function () {
-                setIsImageLoading(false);
-            };
-            let resetLoading = function () {
-                setIsImageLoading(true);
-            };
 
-            let handleTouchStart = function (e) {
-                setTouchEnd(null);
-                setTouchStart(e.targetTouches[0].clientX);
-            };
+            let handleImageLoad = function () { setIsImageLoading(false); };
+            let resetLoading = function () { setIsImageLoading(true); };
 
-            let handleTouchMove = function (e) {
-                setTouchEnd(e.targetTouches[0].clientX);
-            };
-
+            let handleTouchStart = function (e) { setTouchEnd(null); setTouchStart(e.targetTouches[0].clientX); };
+            let handleTouchMove = function (e) { setTouchEnd(e.targetTouches[0].clientX); };
             let handleTouchEnd = function () {
                 if (!touchStart || !touchEnd) return;
                 let distance = touchStart - touchEnd;
-                let isLeftSwipe = distance > 50;
-                let isRightSwipe = distance < -50;
-                if (isLeftSwipe) {
-                    resetLoading();
-                    onNext();
-                }
-                if (isRightSwipe) {
-                    resetLoading();
-                    onPrev();
-                }
-                setTouchStart(null);
-                setTouchEnd(null);
+                if (distance > 50) { resetLoading(); onNext(); }
+                if (distance < -50) { resetLoading(); onPrev(); }
+                setTouchStart(null); setTouchEnd(null);
             };
 
-            let elements = [
+            // Render principal del lightbox
+            return React.createElement('div', null,
                 React.createElement('div', {
                     className: 'lightbox',
                     onClick: onClose,
                     onTouchStart: handleTouchStart,
                     onTouchMove: handleTouchMove,
-                    onTouchEnd: handleTouchEnd,
-                    key: 'lightbox-container'
+                    onTouchEnd: handleTouchEnd
                 },
-                    React.createElement('div', { className: 'lightbox-backdrop', onClick: onClose, key: 'backdrop' }),
-                    React.createElement('button', { className: 'lightbox-close', onClick: function (e) { e.stopPropagation(); onClose(); }, key: 'close' }, '×'),
-                    React.createElement('button', { className: 'lightbox-nav lightbox-prev', onClick: function (e) { e.stopPropagation(); resetLoading(); onPrev(); }, key: 'prev' }, '←'),
-                    React.createElement('div', { className: 'lightbox-image-container', onClick: function (e) { e.stopPropagation(); }, key: 'image-container' },
-                        isImageLoading && React.createElement('div', { className: 'loading-overlay', key: 'loading' },
+                    React.createElement('div', { className: 'lightbox-backdrop', onClick: onClose }),
+                    React.createElement('button', { className: 'lightbox-close', onClick: function (e) { e.stopPropagation(); onClose(); } }, '×'),
+                    React.createElement('button', { className: 'lightbox-nav lightbox-prev', onClick: function (e) { e.stopPropagation(); resetLoading(); onPrev(); } }, '←'),
+                    React.createElement('div', { className: 'lightbox-image-container', onClick: function (e) { e.stopPropagation(); } },
+                        isImageLoading && React.createElement('div', { className: 'loading-overlay' },
                             React.createElement('div', { className: 'loading-spinner' })
                         ),
                         React.createElement('img', {
@@ -741,34 +721,27 @@
                             alt: photo.name,
                             onClick: function (e) { e.stopPropagation(); },
                             onLoad: handleImageLoad,
-                            style: { display: isImageLoading ? 'none' : 'block' },
-                            key: 'image'
+                            style: { display: isImageLoading ? 'none' : 'block' }
                         })
                     ),
-                    React.createElement('button', { className: 'lightbox-nav lightbox-next', onClick: function (e) { e.stopPropagation(); resetLoading(); onNext(); }, key: 'next' }, '→'),
-                    React.createElement('button', { className: selectClass, onClick: function (e) { e.stopPropagation(); onToggleSelect(photo); }, key: 'select' },
+                    React.createElement('button', { className: 'lightbox-nav lightbox-next', onClick: function (e) { e.stopPropagation(); resetLoading(); onNext(); } }, '→'),
+
+                    // Botón Seleccionar/Deseleccionar (derecha)
+                    React.createElement('button', { className: selectClass, onClick: function (e) { e.stopPropagation(); onToggleSelect(photo); } },
                         isSelected ? 'Deseleccionar' : 'Seleccionar'
                     ),
-                    selectedPhotos.length > 0 && React.createElement('button', {
-                        className: 'lightbox-generate',
-                        onClick: function (e) { e.stopPropagation(); onGenerateOrder(); },
-                        key: 'generate'
-                    }, 'Ir a orden')
-                )
-            ];
 
-            if (selectedPhotos.length > 0) {
-                elements.push(
+                    // Botón Generar orden (izquierda), SIEMPRE visible; deshabilitado si no hay seleccionadas
                     React.createElement('button', {
                         className: 'lightbox-generate',
-                        onClick: function (e) { e.stopPropagation(); onGenerateOrder(); },
-                        key: 'generate'
+                        onClick: function (e) { e.stopPropagation(); if (selectedPhotos.length > 0) onGenerateOrder(); },
+                        disabled: selectedPhotos.length === 0,
+                        style: selectedPhotos.length > 0 ? { display: 'inline-block' } : { display: 'none' }
                     }, 'Generar orden')
-                );
-            }
-
-            return React.createElement('div', null, elements);
+                )
+            );
         }
+
 
         function ReviewModal(props) {
             let selectedPhotos = props.selectedPhotos;
