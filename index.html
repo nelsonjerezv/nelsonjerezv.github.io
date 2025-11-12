@@ -94,13 +94,11 @@
         }
 
         .card-eventos {
-            background: var(--color-surface) !important;
-            max-width: 260px !important;
-            padding: 1rem !important;
-            width: 100% !important;
-            text-align: left;
-            border-radius: 0 0 10px 10px;
-        }
+  background: var(--color-surface) !important;
+  padding: 1rem !important;
+  text-align: left;
+  border-radius: 0 0 10px 10px;
+}
 
         .card-titulo-evento {
             font-weight: bold;
@@ -310,6 +308,14 @@
 
         .lightbox-generate:hover {
             background: var(--color-success-hover);
+        }
+
+        .lightbox-generate:disabled {
+            background: var(--color-disabled);
+            color: var(--color-white);
+            cursor: not-allowed;
+            opacity: 0.8;
+            pointer-events: none;
         }
 
         .lightbox-close {
@@ -539,32 +545,6 @@
             cursor: not-allowed;
         }
 
-        .filters-row {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-            margin: 0 20px 10px 20px;
-        }
-
-        .filter-button {
-            background: var(--color-light-gray);
-            color: var(--color-dark-gray);
-            border: none;
-            padding: 8px 12px;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-
-        .filter-button:hover {
-            background: var(--color-gallery-overlay-hover);
-            color: var(--color-white);
-        }
-
-        .filter-button.active {
-            background: var(--color-primary);
-            color: var(--color-white);
-        }
-
         .loading-spinner {
             border: 4px solid var(--color-spinner-track);
             border-top: 4px solid var(--color-primary);
@@ -632,6 +612,52 @@
             color: var(--color-danger-dark);
         }
 
+        .filters-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin: 0 20px 10px 20px;
+        }
+
+        .filter-button {
+            background: var(--color-light-gray);
+            color: var(--color-dark-gray);
+            border: none;
+            padding: 8px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .filter-button:hover {
+            background: var(--color-gallery-overlay-hover);
+            color: var(--color-white);
+        }
+
+        .filter-button.active {
+            background: var(--color-primary);
+            color: var(--color-white);
+        }
+
+        .search-row {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            margin: 0 20px 10px 20px;
+        }
+
+        .search-label {
+            color: var(--color-text-primary);
+            font-weight: bold;
+        }
+
+        .search-input {
+            flex: 1;
+            padding: 8px 12px;
+            border: 1px solid var(--color-disabled);
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
         @media (max-width: 600px) {
             .review-content {
                 height: 80vh;
@@ -651,7 +677,6 @@
 
 <body>
     <div id="root"></div>
-
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
     <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
@@ -660,6 +685,22 @@
     <script type="text/babel">
         let React = React; // Para compatibilidad con Babel Standalone @6
         emailjs.init("trRTddWLTqdGsxznW");
+
+        // Helper de fallback robusto para imágenes (placehold.co + SVG embebido)
+        function applyRobustFallback(imgEl, w, h, text) {
+            if (imgEl.dataset.fallbackApplied === '1') return;
+            imgEl.dataset.fallbackApplied = '1';
+            imgEl.src = 'https://placehold.co/' + w + 'x' + h + '?text=' + encodeURIComponent(text || 'Imagen no disponible');
+            imgEl.onerror = function () {
+                imgEl.onerror = null;
+                var svg = '<svg xmlns="http://www.w3.org/2000/svg" width="' + w + '" height="' + h + '">'
+                    + '<rect width="100%" height="100%" fill="#eee"/>'
+                    + '<text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle"'
+                    + ' font-family="sans-serif" font-size="14" fill="#666">' + (text || 'Imagen no disponible') + '</text>'
+                    + '</svg>';
+                imgEl.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
+            };
+        }
 
         function Lightbox(props) {
             let photos = props.photos;
@@ -678,7 +719,6 @@
             if (index === -1) return null;
             let photo = photos[index];
 
-            // ¿Está seleccionada la foto actual?
             let isSelected = false;
             if (photo && selectedPhotos.length > 0) {
                 for (let i = 0; i < selectedPhotos.length; i++) {
@@ -690,8 +730,8 @@
             let handleImageLoad = function () { setIsImageLoading(false); };
             let resetLoading = function () { setIsImageLoading(true); };
 
-            let handleTouchStart = function (e) { setTouchEnd(null); setTouchStart(e.targetTouches[0].clientX); };
-            let handleTouchMove = function (e) { setTouchEnd(e.targetTouches[0].clientX); };
+            let handleTouchStart = function (e) { setTouchEnd(null); setTouchStart(e.targetTouches.clientX); };
+            let handleTouchMove = function (e) { setTouchEnd(e.targetTouches.clientX); };
             let handleTouchEnd = function () {
                 if (!touchStart || !touchEnd) return;
                 let distance = touchStart - touchEnd;
@@ -700,7 +740,6 @@
                 setTouchStart(null); setTouchEnd(null);
             };
 
-            // Render principal del lightbox
             return React.createElement('div', null,
                 React.createElement('div', {
                     className: 'lightbox',
@@ -713,35 +752,30 @@
                     React.createElement('button', { className: 'lightbox-close', onClick: function (e) { e.stopPropagation(); onClose(); } }, '×'),
                     React.createElement('button', { className: 'lightbox-nav lightbox-prev', onClick: function (e) { e.stopPropagation(); resetLoading(); onPrev(); } }, '←'),
                     React.createElement('div', { className: 'lightbox-image-container', onClick: function (e) { e.stopPropagation(); } },
-                        isImageLoading && React.createElement('div', { className: 'loading-overlay' },
+                        isImageLoading ? React.createElement('div', { className: 'loading-overlay' },
                             React.createElement('div', { className: 'loading-spinner' })
-                        ),
+                        ) : null,
                         React.createElement('img', {
                             src: photo.url,
                             alt: photo.name,
                             onClick: function (e) { e.stopPropagation(); },
                             onLoad: handleImageLoad,
+                            onError: function (e) { applyRobustFallback(e.target, 800, 600, 'Imagen no disponible'); },
                             style: { display: isImageLoading ? 'none' : 'block' }
                         })
                     ),
                     React.createElement('button', { className: 'lightbox-nav lightbox-next', onClick: function (e) { e.stopPropagation(); resetLoading(); onNext(); } }, '→'),
-
-                    // Botón Seleccionar/Deseleccionar (derecha)
                     React.createElement('button', { className: selectClass, onClick: function (e) { e.stopPropagation(); onToggleSelect(photo); } },
                         isSelected ? 'Deseleccionar' : 'Seleccionar'
                     ),
-
-                    // Botón Generar orden (izquierda), SIEMPRE visible; deshabilitado si no hay seleccionadas
                     React.createElement('button', {
                         className: 'lightbox-generate',
                         onClick: function (e) { e.stopPropagation(); if (selectedPhotos.length > 0) onGenerateOrder(); },
-                        disabled: selectedPhotos.length === 0,
-                        style: selectedPhotos.length > 0 ? { display: 'inline-block' } : { display: 'none' }
+                        disabled: selectedPhotos.length === 0
                     }, 'Generar orden')
                 )
             );
         }
-
 
         function ReviewModal(props) {
             let selectedPhotos = props.selectedPhotos;
@@ -763,35 +797,28 @@
             let handleImageLoad = function () { setIsImageLoading(false); };
             let resetLoading = function () { setIsImageLoading(true); };
 
-            let handleTouchStart = function (e) {
-                setTouchEnd(null);
-                setTouchStart(e.targetTouches[0].clientX);
-            };
-            let handleTouchMove = function (e) {
-                setTouchEnd(e.targetTouches[0].clientX);
-            };
+            let handleTouchStart = function (e) { setTouchEnd(null); setTouchStart(e.targetTouches.clientX); };
+            let handleTouchMove = function (e) { setTouchEnd(e.targetTouches.clientX); };
             let handleTouchEnd = function () {
                 if (!touchStart || !touchEnd) return;
                 let distance = touchStart - touchEnd;
                 if (distance > 50) { resetLoading(); onNext(); }
                 if (distance < -50) { resetLoading(); onPrev(); }
-                setTouchStart(null);
-                setTouchEnd(null);
+                setTouchStart(null); setTouchEnd(null);
             };
 
-            // Crea los nav solo si hay más de una foto
             let navButtons = null;
             if (selectedPhotos.length > 1) {
                 navButtons = [
                     React.createElement('button', {
+                        key: 'prev-nav',
                         className: 'review-nav review-prev',
-                        onClick: function (e) { e.stopPropagation(); resetLoading(); onPrev(); },
-                        key: 'prev-nav'
+                        onClick: function (e) { e.stopPropagation(); resetLoading(); onPrev(); }
                     }, '←'),
                     React.createElement('button', {
+                        key: 'next-nav',
                         className: 'review-nav review-next',
-                        onClick: function (e) { e.stopPropagation(); resetLoading(); onNext(); },
-                        key: 'next-nav'
+                        onClick: function (e) { e.stopPropagation(); resetLoading(); onNext(); }
                     }, '→')
                 ];
             }
@@ -819,6 +846,7 @@
                                 className: 'review-image',
                                 onClick: function (e) { e.stopPropagation(); },
                                 onLoad: handleImageLoad,
+                                onError: function (e) { applyRobustFallback(e.target, 800, 600, 'Imagen no disponible'); },
                                 style: { display: isImageLoading ? 'none' : 'block' }
                             })
                         )
@@ -831,7 +859,6 @@
                         )
                     )
                 ),
-                // Inserta los nav como hijos del mismo overlay
                 navButtons
             );
         }
@@ -844,38 +871,9 @@
             let selectedPhotos = props.selectedPhotos;
             let isSendingEmail = props.isSendingEmail;
 
-            let handleChange = function (e) {
-                setEmail(e.target.value);
-            };
-
-            let isValidEmail = function (emailStr) {
-                return emailStr && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailStr);
-            };
-
+            let handleChange = function (e) { setEmail(e.target.value); };
+            let isValidEmail = function (emailStr) { return emailStr && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailStr); };
             let submitDisabled = !isValidEmail(email) || isSendingEmail;
-
-            let inputElement = React.createElement('input', {
-                type: 'email',
-                className: 'email-input',
-                placeholder: 'tu@email.com',
-                value: email,
-                onChange: handleChange,
-                disabled: isSendingEmail
-            });
-
-            let cancelButton = React.createElement('button', {
-                className: 'cancel',
-                onClick: onClose,
-                disabled: isSendingEmail
-            }, 'Cancelar');
-
-            let submitButton = React.createElement('button', {
-                className: 'submit',
-                onClick: function () { if (!submitDisabled) onSubmit(email, selectedPhotos); },
-                disabled: submitDisabled
-            }, isSendingEmail ? 'Enviando...' : 'Enviar orden');
-
-            let buttonsDiv = React.createElement('div', { className: 'email-buttons' }, cancelButton, submitButton);
 
             let loadingOverlay = isSendingEmail ? React.createElement('div', { className: 'loading-overlay' },
                 React.createElement('div', { className: 'loading-spinner' })
@@ -887,8 +885,22 @@
                         React.createElement('h2', null, 'Ingresa tu email para la orden'),
                         React.createElement('p', null, 'Te contactaremos cuando la orden sea recibida por el equipo.')
                     ),
-                    inputElement,
-                    buttonsDiv,
+                    React.createElement('input', {
+                        type: 'email',
+                        className: 'email-input',
+                        placeholder: 'tu@email.com',
+                        value: email,
+                        onChange: handleChange,
+                        disabled: isSendingEmail
+                    }),
+                    React.createElement('div', { className: 'email-buttons' },
+                        React.createElement('button', { className: 'cancel', onClick: onClose, disabled: isSendingEmail }, 'Cancelar'),
+                        React.createElement('button', {
+                            className: 'submit',
+                            onClick: function () { if (!submitDisabled) onSubmit(email, selectedPhotos); },
+                            disabled: submitDisabled
+                        }, isSendingEmail ? 'Enviando...' : 'Enviar orden')
+                    ),
                     loadingOverlay
                 )
             );
@@ -902,18 +914,15 @@
             let modalClass = 'email-modal';
             let contentClass = isSuccess ? 'email-content result-modal-success' : 'email-content result-modal-error';
 
-            let acceptButton = React.createElement('button', {
-                onClick: onClose,
-                style: { background: isSuccess ? '#28a745' : '#dc3545' }
-            }, 'Aceptar');
-
             return React.createElement('div', { className: modalClass, onClick: onClose },
                 React.createElement('div', { className: contentClass, onClick: function (e) { e.stopPropagation(); } },
                     React.createElement('div', { className: 'email-header' },
                         React.createElement('h2', null, resultMessage.title),
                         React.createElement('p', null, resultMessage.message)
                     ),
-                    React.createElement('div', { className: 'email-buttons' }, acceptButton)
+                    React.createElement('div', { className: 'email-buttons' },
+                        React.createElement('button', { onClick: onClose, style: { background: isSuccess ? '#28a745' : '#dc3545' } }, 'Aceptar')
+                    )
                 )
             );
         }
@@ -935,34 +944,34 @@
                 let idx = j;
                 let isSelected = false;
                 for (let k = 0; k < selectedPhotos.length; k++) {
-                    if (selectedPhotos[k].id === photo.id) {
-                        isSelected = true;
-                        break;
-                    }
+                    if (selectedPhotos[k].id === photo.id) { isSelected = true; break; }
                 }
                 let className = 'gallery-item' + (isSelectionMode && isSelected ? ' selected' : '');
-                let onClick = function (isSelectionMode, photo, idx) {
+                let onClick = (function (isSelectionMode, photo, idx) {
                     return function () {
-                        if (isSelectionMode) {
-                            onToggleSelect(photo);
-                        } else {
-                            onOpenLightbox(idx);
-                        }
+                        if (isSelectionMode) { onToggleSelect(photo); }
+                        else { onOpenLightbox(idx); }
                     };
-                }(isSelectionMode, photo, idx);
+                })(isSelectionMode, photo, idx);
+
                 let overlay = null;
                 if (hasSelections) {
-                    let topOnClick = function (idx) { return function (e) { e.stopPropagation(); onOpenLightbox(idx); }; }(idx);
-                    let bottomOnClick = function (photo) { return function (e) { e.stopPropagation(); onToggleSelect(photo); }; }(photo);
+                    let topOnClick = (function (idx) { return function (e) { e.stopPropagation(); onOpenLightbox(idx); }; })(idx);
+                    let bottomOnClick = (function (photo) { return function (e) { e.stopPropagation(); onToggleSelect(photo); }; })(photo);
                     let bottomText = isSelected ? 'Deseleccionar' : 'Seleccionar';
                     overlay = React.createElement('div', { className: 'gallery-overlay' },
                         React.createElement('button', { className: 'gallery-overlay-top', onClick: topOnClick }, 'Ver'),
                         React.createElement('button', { className: 'gallery-overlay-bottom', onClick: bottomOnClick }, bottomText)
                     );
                 }
+                let photoKey = (photo.id || ((photo.name || 'noname') + '|' + (photo.url || 'nourl')));
                 items.push(
-                    React.createElement('div', { key: `${photo.name}-${j}`, className: className, onClick: onClick },
-                        React.createElement('img', { src: photo.url, alt: photo.name || 'Imagen' }),
+                    React.createElement('div', { key: photoKey, className: className, onClick: onClick },
+                        React.createElement('img', {
+                            src: photo.url,
+                            alt: photo.name || 'Imagen',
+                            onError: function (e) { applyRobustFallback(e.target, 400, 300, 'Imagen no disponible'); }
+                        }),
                         overlay
                     )
                 );
@@ -973,18 +982,30 @@
         function App() {
             let [events, setEvents] = React.useState([]);
             let [selectedEvent, setSelectedEvent] = React.useState(null);
+
             let [selectedPhotos, setSelectedPhotos] = React.useState([]);
             let [isSelectionMode, setIsSelectionMode] = React.useState(false);
+
             let [lightboxIndex, setLightboxIndex] = React.useState(-1);
+
             let [showReview, setShowReview] = React.useState(false);
             let [reviewIndex, setReviewIndex] = React.useState(0);
+
             let [showEmailModal, setShowEmailModal] = React.useState(false);
             let [email, setEmail] = React.useState('');
+
             let [showResultModal, setShowResultModal] = React.useState(false);
             let [resultMessage, setResultMessage] = React.useState({ type: 'success', title: '', message: '' });
+
             let [emailsConfig, setEmailsConfig] = React.useState({ adminEmail: '', ccEmails: [] });
             let [isSendingEmail, setIsSendingEmail] = React.useState(false);
+
+            // Filtro por fotógrafo dentro del evento
             let [activePhotographer, setActivePhotographer] = React.useState(null);
+
+            // Vista global por fotógrafo
+            let [selectedPhotographer, setSelectedPhotographer] = React.useState(null);
+            let [photographerQuery, setPhotographerQuery] = React.useState('');
 
             let hasSelections = selectedPhotos.length > 0;
 
@@ -994,7 +1015,6 @@
                 document.body.style.top = `-${scrollY}px`;
                 document.body.style.width = '100%';
             };
-
             let unlockBody = function () {
                 let scrollY = document.body.style.top;
                 document.body.style.position = '';
@@ -1006,11 +1026,8 @@
             let isAnyModalOpen = lightboxIndex !== -1 || showReview || showEmailModal || showResultModal;
 
             React.useEffect(function () {
-                if (isAnyModalOpen) {
-                    lockBody();
-                } else {
-                    unlockBody();
-                }
+                if (isAnyModalOpen) { lockBody(); }
+                else { unlockBody(); }
             }, [lightboxIndex, showReview, showEmailModal, showResultModal]);
 
             let toggleSelectionMode = function () {
@@ -1026,41 +1043,25 @@
                 let newSelected = [];
                 let alreadySelected = false;
                 for (let l = 0; l < selectedPhotos.length; l++) {
-                    if (selectedPhotos[l].id !== photo.id) {
-                        newSelected.push(selectedPhotos[l]);
-                    } else {
-                        alreadySelected = true;
-                    }
+                    if (selectedPhotos[l].id !== photo.id) { newSelected.push(selectedPhotos[l]); }
+                    else { alreadySelected = true; }
                 }
-                if (!alreadySelected) {
-                    newSelected.push(photo);
-                }
+                if (!alreadySelected) { newSelected.push(photo); }
                 setSelectedPhotos(newSelected);
-                if (prevLength === 0 && newSelected.length > 0 && !isSelectionMode) {
-                    setIsSelectionMode(true);
-                }
-                if (newSelected.length === 0) {
-                    setIsSelectionMode(false);
-                }
+                if (prevLength === 0 && newSelected.length > 0 && !isSelectionMode) { setIsSelectionMode(true); }
+                if (newSelected.length === 0) { setIsSelectionMode(false); }
             };
 
             let removeSelect = function (photo, resetIndex) {
                 let newSelected = [];
                 for (let m = 0; m < selectedPhotos.length; m++) {
-                    if (selectedPhotos[m].id !== photo.id) {
-                        newSelected.push(selectedPhotos[m]);
-                    }
+                    if (selectedPhotos[m].id !== photo.id) { newSelected.push(selectedPhotos[m]); }
                 }
                 setSelectedPhotos(newSelected);
-                if (newSelected.length === 0) {
-                    setIsSelectionMode(false);
-                }
+                if (newSelected.length === 0) { setIsSelectionMode(false); }
                 if (resetIndex && showReview) {
-                    if (newSelected.length === 0) {
-                        setShowReview(false);
-                    } else {
-                        setReviewIndex(0);
-                    }
+                    if (newSelected.length === 0) { setShowReview(false); }
+                    else { setReviewIndex(0); }
                 }
             };
 
@@ -1071,18 +1072,20 @@
 
             let handleEmailSubmit = function (userEmail, selectedPhotosParam) {
                 setIsSendingEmail(true);
-
+                let contexto = selectedEvent ? selectedEvent.name : (selectedPhotographer ? selectedPhotographer : 'Sin especificar');
                 let params = {
                     to_email: emailsConfig.adminEmail,
                     cc_emails: emailsConfig.ccEmails.join(','),
                     user_email: userEmail,
-                    nombreEvento: selectedEvent ? selectedEvent.name : 'Evento no especificado',
-                    photos: selectedPhotosParam.map(p => p.name.substring(0, p.name.lastIndexOf('.'))).join('\n')
+                    nombreEvento: contexto,
+                    photos: selectedPhotosParam.map(function (p) {
+                        let i = p.name.lastIndexOf('.');
+                        return i > 0 ? p.name.substring(0, i) : p.name;
+                    }).join('\n')
                 };
 
                 emailjs.send("service_fotosEventos", "template_0ntzv59", params)
-                    .then((result) => {
-                        console.log('Email enviado exitosamente!', result.text);
+                    .then(function (result) {
                         setIsSendingEmail(false);
                         setResultMessage({
                             type: 'success',
@@ -1091,8 +1094,7 @@
                         });
                         setShowResultModal(true);
                         setShowEmailModal(false);
-                    }, (error) => {
-                        console.log('Error al enviar email:', error.text);
+                    }, function (error) {
                         setIsSendingEmail(false);
                         setResultMessage({
                             type: 'error',
@@ -1111,6 +1113,8 @@
 
             let handleSelectEvent = function (ev) {
                 setSelectedEvent(ev);
+                setSelectedPhotographer(null);
+                setPhotographerQuery('');
                 setSelectedPhotos([]);
                 setIsSelectionMode(false);
                 setLightboxIndex(-1);
@@ -1121,72 +1125,17 @@
                 setActivePhotographer(null);
             };
 
-            let openLightbox = function (idx) {
-                setLightboxIndex(idx);
-            };
-
-            let closeLightbox = function () {
-                setLightboxIndex(-1);
-            };
-
-            let getPhotoLength = function () {
-                if (selectedEvent && selectedEvent.photos) {
-                    return selectedEvent.photos.length;
-                }
-                return 0;
-            };
-
-            let photoLength = getPhotoLength();
-
-            let prevPhoto = function () {
-                let newIndex = lightboxIndex - 1;
-                if (newIndex < 0) {
-                    newIndex = photoLength - 1;
-                }
-                setLightboxIndex(newIndex);
-            };
-
-            let nextPhoto = function () {
-                let newIndex = lightboxIndex + 1;
-                if (newIndex >= photoLength) {
-                    newIndex = 0;
-                }
-                setLightboxIndex(newIndex);
-            };
-
-            let prevReview = function () {
-                let newIndex = reviewIndex - 1;
-                if (newIndex < 0) {
-                    newIndex = selectedPhotos.length - 1;
-                }
-                setReviewIndex(newIndex);
-            };
-
-            let nextReview = function () {
-                let newIndex = reviewIndex + 1;
-                if (newIndex >= selectedPhotos.length) {
-                    newIndex = 0;
-                }
-                setReviewIndex(newIndex);
-            };
-
-            let handleKeyDown = function (e) {
-                if (lightboxIndex === -1) return;
-                if (e.key === 'ArrowLeft') {
-                    e.preventDefault();
-                    prevPhoto();
-                } else if (e.key === 'ArrowRight') {
-                    e.preventDefault();
-                    nextPhoto();
-                }
-            };
+            let openLightbox = function (idx) { setLightboxIndex(idx); };
+            let closeLightbox = function () { setLightboxIndex(-1); };
 
             React.useEffect(function () {
                 if (lightboxIndex !== -1) {
+                    function handleKeyDown(e) {
+                        if (e.key === 'ArrowLeft') { e.preventDefault(); prevPhoto(); }
+                        else if (e.key === 'ArrowRight') { e.preventDefault(); nextPhoto(); }
+                    }
                     window.addEventListener('keydown', handleKeyDown);
-                    return function () {
-                        window.removeEventListener('keydown', handleKeyDown);
-                    };
+                    return function () { window.removeEventListener('keydown', handleKeyDown); };
                 }
             }, [lightboxIndex]);
 
@@ -1205,25 +1154,62 @@
             }, []);
 
             React.useEffect(function () {
-                if (selectedEvent) {
-                    document.title = selectedEvent.name;
-                } else {
-                    document.title = 'Eventos disponibles';
+                if (selectedEvent) { document.title = selectedEvent.name; }
+                else if (selectedPhotographer) { document.title = `Fotos de ${selectedPhotographer}`; }
+                else { document.title = 'Eventos disponibles'; }
+            }, [selectedEvent, selectedPhotographer]);
+
+            // Construir fuente global de fotos y fotógrafos
+            let allEventsPhotos = [];
+            for (let i = 0; i < events.length; i++) {
+                let ev = events[i];
+                if (ev.photos && ev.photos.length) {
+                    for (let j = 0; j < ev.photos.length; j++) {
+                        allEventsPhotos.push(ev.photos[j]);
+                    }
                 }
-            }, [selectedEvent]);
-
-            let allPhotos = [];
-            if (selectedEvent && selectedEvent.photos) {
-                allPhotos = selectedEvent.photos;
             }
-            let photographers = Array.from(new Set(allPhotos.map(p => p.photographer).filter(Boolean)));
-            let photos = activePhotographer ? allPhotos.filter(p => p.photographer === activePhotographer) : allPhotos;
+            let allPhotographersSet = {};
+            for (let k = 0; k < allEventsPhotos.length; k++) {
+                let ph = allEventsPhotos[k].photographer;
+                if (ph) { allPhotographersSet[ph] = true; }
+            }
+            let allPhotographers = Object.keys(allPhotographersSet);
 
+            // Fotos actuales por contexto
+            let currentPhotos = [];
+            if (selectedEvent && selectedEvent.photos) {
+                currentPhotos = selectedEvent.photos;
+                if (activePhotographer) {
+                    currentPhotos = currentPhotos.filter(function (p) { return p.photographer === activePhotographer; });
+                }
+            } else if (selectedPhotographer) {
+                for (let m = 0; m < allEventsPhotos.length; m++) {
+                    if (allEventsPhotos[m].photographer === selectedPhotographer) {
+                        currentPhotos.push(allEventsPhotos[m]);
+                    }
+                }
+            }
+            let photos = currentPhotos;
+
+            // Navegación de lightbox en base a currentPhotos
+            let photoLength = photos.length;
+            let prevPhoto = function () {
+                let newIndex = lightboxIndex - 1;
+                if (newIndex < 0) { newIndex = photoLength - 1; }
+                setLightboxIndex(newIndex);
+            };
+            let nextPhoto = function () {
+                let newIndex = lightboxIndex + 1;
+                if (newIndex >= photoLength) { newIndex = 0; }
+                setLightboxIndex(newIndex);
+            };
+
+            // Carrusel de eventos
             let carouselItems = [];
             for (let n = 0; n < events.length; n++) {
                 let ev = events[n];
-                let idx = n;
-                let firstPhoto = ev.photos && ev.photos.length > 0 ? ev.photos[0].url : '';
+                let firstPhoto = ev.photos && ev.photos.length > 0 ? ev.photos.url : '';
                 let eventCardElements = [
                     React.createElement('div', { className: 'card-titulo-evento', title: ev.name || 'Evento sin nombre', key: 'title' }, ev.name || 'Evento sin nombre')
                 ];
@@ -1243,24 +1229,105 @@
                         )
                     );
                 }
+                let eventKey = ev.id || ev.name || ('event-' + n);
                 carouselItems.push(
                     React.createElement('div', {
                         className: 'carousel-item',
-                        key: ev.name || `event-${n}`,
-                        onClick: function (evParam) { return function () { handleSelectEvent(evParam); }; }(ev)
+                        key: eventKey,
+                        onClick: (function (evParam) { return function () { handleSelectEvent(evParam); }; })(ev)
                     },
                         React.createElement('div', { className: 'foto' },
                             React.createElement('img', {
                                 src: firstPhoto,
                                 alt: `Portada ${ev.name || 'Evento'}`,
-                                onError: function (e) {
-                                    e.target.src = 'https://placehold.co/260x156?text=Imagen%20no%20disponible';
-                                }
+                                onError: function (e) { applyRobustFallback(e.target, 260, 156, 'Imagen no disponible'); }
                             })
                         ),
                         React.createElement('div', { className: 'card-eventos' }, eventCardElements)
                     )
                 );
+            }
+
+            // Buscador global por fotógrafo (vista principal)
+            let searchRow = null;
+            if (!selectedEvent && !selectedPhotographer) {
+                searchRow = React.createElement('div', { key: 'search-row', className: 'search-row' },
+                    React.createElement('label', { htmlFor: 'photographer-search', className: 'search-label' }, 'Buscar por fotógrafo'),
+                    React.createElement('input', {
+                        id: 'photographer-search',
+                        list: 'photographers-list',
+                        className: 'search-input',
+                        placeholder: 'Escribe un nombre...',
+                        value: photographerQuery,
+                        onChange: function (e) {
+                            let val = e.target.value;
+                            setPhotographerQuery(val);
+                            for (let i = 0; i < allPhotographers.length; i++) {
+                                if (allPhotographers[i] === val) {
+                                    setSelectedPhotographer(val);
+                                    setSelectedEvent(null);
+                                    setSelectedPhotos([]);
+                                    setIsSelectionMode(false);
+                                    setLightboxIndex(-1);
+                                    setShowReview(false);
+                                    setShowEmailModal(false);
+                                    setEmail('');
+                                    setReviewIndex(0);
+                                    setActivePhotographer(null);
+                                    break;
+                                }
+                            }
+                        }
+                    }),
+                    React.createElement('datalist', { id: 'photographers-list' },
+                        allPhotographers.map(function (ph) {
+                            return React.createElement('option', { key: 'opt-' + ph, value: ph });
+                        })
+                    )
+                );
+            }
+
+            // Fila de filtros por fotógrafo dentro del evento seleccionado
+            let filtersRow = null;
+            if (selectedEvent) {
+                let photographers = [];
+                if (selectedEvent.photos && selectedEvent.photos.length) {
+                    let setPh = {};
+                    for (let p = 0; p < selectedEvent.photos.length; p++) {
+                        let ph = selectedEvent.photos[p].photographer;
+                        if (ph) setPh[ph] = true;
+                    }
+                    photographers = Object.keys(setPh);
+                }
+                filtersRow = React.createElement('div', { key: 'filters-row', className: 'filters-row' },
+                    React.createElement('button', {
+                        key: 'all',
+                        className: 'filter-button' + (activePhotographer === null ? ' active' : ''),
+                        onClick: function () { setActivePhotographer(null); }
+                    }, 'Todas las fotografías'),
+                    photographers.map(function (ph) {
+                        return React.createElement('button', {
+                            key: 'ph-' + ph,
+                            className: 'filter-button' + (activePhotographer === ph ? ' active' : ''),
+                            onClick: function () { setActivePhotographer(ph); }
+                        }, 'Fotos de ' + ph);
+                    })
+                );
+            }
+
+            // Contenido según contexto
+            let selectionControls = null;
+            if (isSelectionMode || hasSelections) {
+                selectionControls = React.createElement('button', { onClick: toggleSelectionMode }, isSelectionMode ? 'Cancelar selección' : 'Seleccionar imágenes para orden');
+                if (hasSelections) {
+                    selectionControls = [
+                        React.createElement('button', { key: 'toggle', onClick: toggleSelectionMode }, isSelectionMode ? 'Cancelar selección' : 'Seleccionar imágenes para orden'),
+                        React.createElement('span', { key: 'count', className: 'selected-count' }, `${selectedPhotos.length} ${selectedPhotos.length === 1 ? 'imagen seleccionada' : 'imágenes seleccionadas'}`),
+                        React.createElement('button', { key: 'generate', onClick: function () { setShowReview(true); setReviewIndex(0); } }, 'Generar orden')
+                    ];
+                }
+            } else {
+                selectionControls = React.createElement('button', { onClick: toggleSelectionMode }, 'Seleccionar imágenes para orden');
             }
 
             let gallery = null;
@@ -1298,8 +1365,16 @@
                     reviewIndex: reviewIndex,
                     onClose: function () { setShowReview(false); },
                     onDeselect: removeSelect,
-                    onPrev: prevReview,
-                    onNext: nextReview,
+                    onPrev: function () {
+                        let newIndex = reviewIndex - 1;
+                        if (newIndex < 0) { newIndex = selectedPhotos.length - 1; }
+                        setReviewIndex(newIndex);
+                    },
+                    onNext: function () {
+                        let newIndex = reviewIndex + 1;
+                        if (newIndex >= selectedPhotos.length) { newIndex = 0; }
+                        setReviewIndex(newIndex);
+                    },
                     onConfirm: handleConfirm
                 });
             }
@@ -1320,60 +1395,70 @@
             if (showResultModal) {
                 resultModal = React.createElement(ResultModal, {
                     resultMessage: resultMessage,
-                    onClose: function () { setShowResultModal(false); }
+                    onClose: function () {
+                        setShowResultModal(false);
+                        setIsSelectionMode(false);
+                        setSelectedPhotos([]);
+                        setEmail('');
+                    }
                 });
             }
 
-            let selectionControls = null;
-            if (isSelectionMode || hasSelections) {
-                selectionControls = React.createElement('button', { onClick: toggleSelectionMode }, isSelectionMode ? 'Cancelar selección' : 'Seleccionar imágenes para orden');
-                if (hasSelections) {
-                    selectionControls = [
-                        React.createElement('button', { key: 'toggle', onClick: toggleSelectionMode }, isSelectionMode ? 'Cancelar selección' : 'Seleccionar imágenes para orden'),
-                        React.createElement('span', { key: 'count', className: 'selected-count' }, `${selectedPhotos.length} ${selectedPhotos.length === 1 ? 'imagen seleccionada' : 'imágenes seleccionadas'}`),
-                        React.createElement('button', { key: 'generate', onClick: function () { setShowReview(true); setReviewIndex(0); } }, 'Generar orden')
-                    ];
-                }
-            } else {
-                selectionControls = React.createElement('button', { onClick: toggleSelectionMode }, 'Seleccionar imágenes para orden');
-            }
-
-            let headerTitle = selectedEvent ? selectedEvent.name || 'Evento sin nombre' : 'Galería de Eventos';
-
             let content = null;
-            if (!selectedEvent) {
+            if (!selectedEvent && !selectedPhotographer) {
                 content = [
                     React.createElement('header', { key: 'header' },
-                        React.createElement('h1', null, headerTitle)
+                        React.createElement('h1', null, 'Galería de Eventos')
                     ),
                     React.createElement('h2', { key: 'h2', className: 'events-header' }, 'Eventos disponibles'),
-                    React.createElement('div', { key: 'carousel', className: 'carousel' }, carouselItems)
+                    React.createElement('div', { key: 'carousel', className: 'carousel' }, carouselItems),
+                    searchRow
                 ];
-            } else {
+            } else if (selectedEvent) {
                 content = [
                     React.createElement('header', { key: 'header' },
-                        React.createElement('h1', null, headerTitle)
+                        React.createElement('h1', null, selectedEvent.name || 'Evento sin nombre')
                     ),
                     React.createElement('div', { key: 'header-row', className: 'header-row' },
-                        React.createElement('button', { key: 'back', className: 'back-button', onClick: function () { setSelectedEvent(null); } }, 'Volver a eventos'),
+                        React.createElement('button', {
+                            key: 'back',
+                            className: 'back-button',
+                            onClick: function () {
+                                setSelectedEvent(null);
+                                setSelectedPhotographer(null);
+                                setPhotographerQuery('');
+                                setActivePhotographer(null);
+                            }
+                        }, 'Volver a eventos'),
                         React.createElement('div', { key: 'controls', className: 'selection-controls-wrapper' }, selectionControls)
                     ),
-                    React.createElement('div', { key: 'filters-row', className: 'filters-row' },
-                        // Botón "Todas las fotografías"
-                        React.createElement('button', {
-                            key: 'all',
-                            className: 'filter-button' + (activePhotographer === null ? ' active' : ''),
-                            onClick: function () { setActivePhotographer(null); }
-                        }, 'Todas las fotografías'),
-                        // Un botón por fotógrafo
-                        photographers.map(function (ph) {
-                            return React.createElement('button', {
-                                key: 'ph-' + ph,
-                                className: 'filter-button' + (activePhotographer === ph ? ' active' : ''),
-                                onClick: function () { setActivePhotographer(ph); }
-                            }, 'Fotos de ' + ph);
-                        })
+                    filtersRow,
+                    gallery
+                ];
+            } else if (selectedPhotographer) {
+                content = [
+                    React.createElement('header', { key: 'header' },
+                        React.createElement('h1', null, `Fotos de ${selectedPhotographer}`)
                     ),
+                    React.createElement('div', { key: 'header-row', className: 'header-row' },
+                        React.createElement('button', {
+                            key: 'back',
+                            className: 'back-button',
+                            onClick: function () {
+                                setSelectedPhotographer(null);
+                                setPhotographerQuery('');
+                                setSelectedPhotos([]);
+                                setIsSelectionMode(false);
+                                setLightboxIndex(-1);
+                                setShowReview(false);
+                                setShowEmailModal(false);
+                                setEmail('');
+                                setReviewIndex(0);
+                            }
+                        }, 'Volver a eventos'),
+                        React.createElement('div', { key: 'controls', className: 'selection-controls-wrapper' }, selectionControls)
+                    ),
+                    // sin filtros de fotógrafo en esta vista
                     gallery
                 ];
             }
