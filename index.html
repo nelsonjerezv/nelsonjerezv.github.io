@@ -1209,7 +1209,7 @@
             let carouselItems = [];
             for (let n = 0; n < events.length; n++) {
                 let ev = events[n];
-                let firstPhoto = ev.photos && ev.photos.length > 0 ? ev.photos.url : '';
+                let firstPhoto = ev.photos && ev.photos.length > 0 ? ev.photos[0].url : '';
                 let eventCardElements = [
                     React.createElement('div', { className: 'card-titulo-evento', title: ev.name || 'Evento sin nombre', key: 'title' }, ev.name || 'Evento sin nombre')
                 ];
