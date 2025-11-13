@@ -1,21 +1,15 @@
 function App() {
     let [events, setEvents] = React.useState([]);
     let [selectedEvent, setSelectedEvent] = React.useState(null);
-
     let [selectedPhotos, setSelectedPhotos] = React.useState([]);
     let [isSelectionMode, setIsSelectionMode] = React.useState(false);
-
     let [lightboxIndex, setLightboxIndex] = React.useState(-1);
-
     let [showReview, setShowReview] = React.useState(false);
     let [reviewIndex, setReviewIndex] = React.useState(0);
-
     let [showEmailModal, setShowEmailModal] = React.useState(false);
     let [email, setEmail] = React.useState('');
-
     let [showResultModal, setShowResultModal] = React.useState(false);
     let [resultMessage, setResultMessage] = React.useState({ type: 'success', title: '', message: '' });
-
     let [emailsConfig, setEmailsConfig] = React.useState({ adminEmail: '', ccEmails: [] });
     let [isSendingEmail, setIsSendingEmail] = React.useState(false);
 
@@ -25,6 +19,9 @@ function App() {
     // Vista global por fotógrafo
     let [selectedPhotographer, setSelectedPhotographer] = React.useState(null);
     let [photographerQuery, setPhotographerQuery] = React.useState('');
+
+    // FILTRO POR EVENTO EN VISTA DE FOTÓGRAFO (CAMBIO NUEVO)
+    let [activeEventForPhotographer, setActiveEventForPhotographer] = React.useState(null);
 
     let hasSelections = selectedPhotos.length > 0;
 
@@ -43,7 +40,6 @@ function App() {
     };
 
     let isAnyModalOpen = lightboxIndex !== -1 || showReview || showEmailModal || showResultModal;
-
     React.useEffect(function () {
         if (isAnyModalOpen) { lockBody(); }
         else { unlockBody(); }
@@ -161,6 +157,7 @@ function App() {
             setEmail('');
             setReviewIndex(0);
             setActivePhotographer(null);
+            setActiveEventForPhotographer(null); // NUEVO: limpiar filtro evento
             return true;
         }
 
@@ -195,6 +192,7 @@ function App() {
                     setEmail('');
                     setReviewIndex(0);
                     setActivePhotographer(null);
+                    setActiveEventForPhotographer(null); // NUEVO: limpiar filtro evento
                     updateUrl('/fotografo/' + param);  // Asegura URL
                     return true;
                 }
@@ -220,6 +218,7 @@ function App() {
         setEmail('');
         setReviewIndex(0);
         setActivePhotographer(null);
+        setActiveEventForPhotographer(null); // NUEVO: limpiar filtro evento
         updateUrl('/evento/' + slugify(ev.name));  // Actualiza URL
     };
 
@@ -290,6 +289,13 @@ function App() {
     }
     let allPhotographers = Object.keys(allPhotographersSet);
 
+    // Eventos en los que el fotógrafo seleccionado tiene fotos (NUEVO)
+    let eventsForPhotographer = [];
+    if (selectedPhotographer && events) {
+        eventsForPhotographer = events.filter(ev =>
+            ev.photos && ev.photos.some(photo => photo.photographer === selectedPhotographer));
+    }
+
     // Fotos actuales por contexto
     let currentPhotos = [];
     if (selectedEvent && selectedEvent.photos) {
@@ -302,6 +308,15 @@ function App() {
             if (allEventsPhotos[m].photographer === selectedPhotographer) {
                 currentPhotos.push(allEventsPhotos[m]);
             }
+        }
+        // FILTRO NUEVO: aplicar filtro de evento si corresponde
+        if (activeEventForPhotographer) {
+            currentPhotos = currentPhotos.filter(photo => {
+                const ev = events.find(ev =>
+                    ev.photos && ev.photos.some(p => p.id === photo.id)
+                );
+                return ev && ev.name === activeEventForPhotographer;
+            });
         }
     }
     let photos = currentPhotos;
@@ -389,6 +404,7 @@ function App() {
                             setEmail('');
                             setReviewIndex(0);
                             setActivePhotographer(null);
+                            setActiveEventForPhotographer(null); // NUEVO: limpiar filtro evento
                             updateUrl('/fotografo/' + val);  // Actualiza URL
                             break;
                         }
@@ -428,6 +444,26 @@ function App() {
                     onClick: function () { setActivePhotographer(ph); }
                 }, 'Fotos de ' + ph);
             })
+        );
+    }
+
+    // FILA DE BOTONES DE EVENTOS (solo si hay fotógrafo seleccionado) -- CAMBIO NUEVO
+    let eventsRow = null;
+    if (selectedPhotographer && eventsForPhotographer.length > 0) {
+        eventsRow = (
+            React.createElement('div', { className: 'filters-row' },
+                React.createElement('button', {
+                    className: 'filter-button' + (activeEventForPhotographer === null ? ' active' : ''),
+                    onClick: function () { setActiveEventForPhotographer(null); }
+                }, 'Todos los eventos'),
+                eventsForPhotographer.map(function (ev) {
+                    return React.createElement('button', {
+                        key: ev.name,
+                        className: 'filter-button' + (activeEventForPhotographer === ev.name ? ' active' : ''),
+                        onClick: function () { setActiveEventForPhotographer(ev.name); }
+                    }, ev.name);
+                })
+            )
         );
     }
 
@@ -534,7 +570,7 @@ function App() {
             ),
             React.createElement('h2', { key: 'h2', className: 'events-header' }, 'Eventos disponibles'),
             React.createElement('div', { key: 'carousel', className: 'carousel' }, carouselItems),
-            searchRow  // Debajo del carrusel
+            searchRow
         ];
     } else if (selectedEvent) {
         content = [
@@ -550,7 +586,8 @@ function App() {
                         setSelectedPhotographer(null);
                         setPhotographerQuery('');
                         setActivePhotographer(null);
-                        updateUrl('/');  // Actualiza URL
+                        setActiveEventForPhotographer(null); // NUEVO: limpiar filtro evento
+                        updateUrl('/');
                     }
                 }, 'Volver a eventos'),
                 React.createElement('div', { key: 'controls', className: 'selection-controls-wrapper' }, selectionControls)
@@ -577,12 +614,14 @@ function App() {
                         setShowEmailModal(false);
                         setEmail('');
                         setReviewIndex(0);
-                        updateUrl('/');  // Actualiza URL
+                        setActiveEventForPhotographer(null); // NUEVO: limpiar filtro evento
+                        updateUrl('/');
                     }
                 }, 'Volver a eventos'),
                 React.createElement('div', { key: 'controls', className: 'selection-controls-wrapper' }, selectionControls)
             ),
-            gallery  // sin filtros
+            eventsRow, // NUEVO: FILA DE BOTONES DE EVENTOS
+            gallery
         ];
     }
 
