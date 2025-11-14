@@ -664,3 +664,147 @@ button:hover {
         max-width: 300px;
     }
 }
+
+.cardprofile-container {
+    background: var(--color-surface, #fff);
+    width: 340px;
+    display: grid;
+    grid-template-rows: auto auto 1fr auto;
+    border-radius: 14px;
+    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.12);
+    overflow: hidden;
+    position: relative;
+}
+.cardprofile-bg-img img {
+    width: 100%;
+    height: 130px;
+    object-fit: cover;
+    border-top-left-radius: 14px;
+    border-top-right-radius: 14px;
+}
+.cardprofile-profile-img {
+    width: 100px;
+    height: 100px;
+    display: flex;
+    justify-content: center;
+    margin-top: -50px;
+}
+.cardprofile-profile-pic {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    border: 6px solid var(--color-surface, #fff);
+    object-fit: cover;
+    background: var(--color-surface, #fff);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+.cardprofile-profile-info {
+    padding: 1rem 1rem 0.7rem 1rem;
+    text-align: center;
+}
+.cardprofile-name {
+    color: var(--color-primary, #007bff);
+    margin-top: 0.5rem;
+    margin-bottom: 0.5rem;
+    font-size: 1.25rem;
+    font-weight: bold;
+}
+.cardprofile-bio {
+    color: var(--color-text-secondary, #666);
+    font-size: 1rem;
+    margin: 0.2rem 0 0.7rem 0;
+    line-height: 1.4;
+}
+.cardprofile-social-links {
+    padding: 0.5rem 0 1.2rem 0;
+    text-align: center;
+}
+.cardprofile-social-links a {
+    margin: 0 0.8rem;
+    font-size: 1.6rem;
+    color: var(--color-primary, #007bff);
+    transition: color 0.2s, transform 0.2s;
+    text-decoration: none;
+}
+.cardprofile-social-links a:hover {
+    color: var(--color-primary-hover, #0056b3);
+    transform: scale(1.18);
+}
+
+/* Modal para CardProfile */
+.modal-modalprofile {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.55);
+    z-index: 9001;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.modal-modalprofile > div {
+    background: var(--color-surface, #fff);
+    border-radius: 16px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.14);
+    min-width: 340px;
+    max-width: 370px;
+    position: relative;
+}
+.modal-modalprofile button {
+    position: absolute;
+    top: 14px;
+    right: 16px;
+    background: none;
+    border: none;
+    font-size: 22px;
+    color: var(--color-dark-gray, #333);
+    cursor: pointer;
+}
+.cardprofile-bg-gradient {
+  width: 100%;
+  height: 130px;
+  background: linear-gradient(90deg, #ED1ABE 0%, #31006B 100%);
+  border-top-left-radius: 14px;
+  border-top-right-radius: 14px;
+}
+.cardprofile-default-avatar {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: var(--color-surface, #fff);
+  border-radius: 50%;
+  width: 100px;
+  height: 100px;
+  border: 6px solid var(--color-surface, #fff);
+  box-shadow: 0 2px 8px rgba(0,0,0,.10);
+}
+.cardprofile-default-avatar svg {
+  display: block;
+  margin: auto;
+}
+.modal-modalprofile button[aria-label="Cerrar perfil"] {
+  position: absolute;
+  top: 14px;
+  right: 16px;
+  background: rgba(34,34,51,0.75); /* fondo opaco semitransparente, acorde a paleta */
+  border: none;
+  font-size: 28px;
+  color: var(--color-white, #fff);  /* color claro */
+  font-weight: bold;
+  cursor: pointer;
+  border-radius: 50%;
+  width: 38px;
+  height: 38px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+  transition: background 0.2s;
+}
+
+.modal-modalprofile button[aria-label="Cerrar perfil"]:hover {
+  background: rgba(237,26,190,0.85); /* fucsia más fuerte en hover */
+  color: var(--color-white, #fff);
+}

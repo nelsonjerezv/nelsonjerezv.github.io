@@ -13,15 +13,13 @@ function App() {
     let [emailsConfig, setEmailsConfig] = React.useState({ adminEmail: '', ccEmails: [] });
     let [isSendingEmail, setIsSendingEmail] = React.useState(false);
 
-    // Filtro por fotógrafo dentro del evento
     let [activePhotographer, setActivePhotographer] = React.useState(null);
-
-    // Vista global por fotógrafo
     let [selectedPhotographer, setSelectedPhotographer] = React.useState(null);
     let [photographerQuery, setPhotographerQuery] = React.useState('');
-
-    // FILTRO POR EVENTO EN VISTA DE FOTÓGRAFO (CAMBIO NUEVO)
     let [activeEventForPhotographer, setActiveEventForPhotographer] = React.useState(null);
+
+    let [photographers, setPhotographers] = React.useState([]);
+    let [shownPhotographerCard, setShownPhotographerCard] = React.useState(null);
 
     let hasSelections = selectedPhotos.length > 0;
 
@@ -39,12 +37,133 @@ function App() {
         window.scrollTo(0, parseInt(scrollY || '0') * -1);
     };
 
-    let isAnyModalOpen = lightboxIndex !== -1 || showReview || showEmailModal || showResultModal;
+    let isAnyModalOpen = lightboxIndex !== -1 || showReview || showEmailModal || showResultModal || shownPhotographerCard;
     React.useEffect(function () {
         if (isAnyModalOpen) { lockBody(); }
         else { unlockBody(); }
-    }, [lightboxIndex, showReview, showEmailModal, showResultModal]);
+    }, [lightboxIndex, showReview, showEmailModal, showResultModal, shownPhotographerCard]);
 
+    React.useEffect(function () {
+        fetch('events.json')
+            .then(function (response) { return response.json(); })
+            .then(function (data) { setEvents(data); })
+            .catch(function () { setEvents([]); });
+    }, []);
+    React.useEffect(function () {
+        fetch('emails.json')
+            .then(function (response) { return response.json(); })
+            .then(function (data) { setEmailsConfig(data); })
+            .catch(function () { setEmailsConfig({ adminEmail: '', ccEmails: [] }); });
+    }, []);
+    React.useEffect(function () {
+        fetch('photographers.json')
+            .then(function (response) { return response.json(); })
+            .then(function (data) { setPhotographers(data); })
+            .catch(function () { setPhotographers([]); });
+    }, []);
+    React.useEffect(function () {
+        if (selectedEvent) { document.title = selectedEvent.name; }
+        else if (selectedPhotographer) { document.title = selectedPhotographer; }
+        else { document.title = 'Eventos disponibles'; }
+    }, [selectedEvent, selectedPhotographer]);
+
+    function slugify(name) {
+        if (!name) return '';
+        return name.toLowerCase().trim()
+            .replace(/[^a-z0-9\s-]/g, '')
+            .replace(/\s+/g, '-')
+            .replace(/-+/g, '-');
+    }
+
+    // PARA RUTA: espacios -> '_'
+    function photographerUrl(name) {
+        return name.replace(/\s+/g, '_');
+    }
+    // PARA PARSEAR RUTA: '_' -> espacios
+    function decodePhotographerUrl(slug) {
+        return slug.replace(/_/g, ' ');
+    }
+
+    function updateUrl(path) {
+        if (window.location.pathname !== path) {
+            window.history.pushState({}, '', path);
+        }
+    }
+
+    function parseAndSetState(pathname) {
+        if (pathname === '/' || pathname === '') {
+            setSelectedEvent(null);
+            setSelectedPhotographer(null);
+            setPhotographerQuery('');
+            setSelectedPhotos([]);
+            setIsSelectionMode(false);
+            setLightboxIndex(-1);
+            setShowReview(false);
+            setShowEmailModal(false);
+            setEmail('');
+            setReviewIndex(0);
+            setActivePhotographer(null);
+            setActiveEventForPhotographer(null);
+            return true;
+        }
+        let parts = pathname.split('/').filter(Boolean);
+        if (parts.length >= 2) {
+            let type = parts[0];
+            let param = parts.slice(1).join('/');
+            if (type === 'evento') {
+                let slug = slugify(param);
+                for (let i = 0; i < events.length; i++) {
+                    if (slugify(events[i].name) === slug) {
+                        handleSelectEvent(events[i]);
+                        return true;
+                    }
+                }
+                updateUrl('/');
+                return false;
+            } else if (type === 'fotografo') {
+                // DECODIFICAR "_" → espacio
+                let decodedPhotographer = decodePhotographerUrl(param);
+                if (allPhotographers.includes(decodedPhotographer)) {
+                    setSelectedPhotographer(decodedPhotographer);
+                    setSelectedEvent(null);
+                    setPhotographerQuery(decodedPhotographer);
+                    setSelectedPhotos([]);
+                    setIsSelectionMode(false);
+                    setLightboxIndex(-1);
+                    setShowReview(false);
+                    setShowEmailModal(false);
+                    setEmail('');
+                    setReviewIndex(0);
+                    setActivePhotographer(null);
+                    setActiveEventForPhotographer(null);
+                    updateUrl('/fotografo/' + photographerUrl(decodedPhotographer));
+                    return true;
+                }
+                updateUrl('/');
+                return false;
+            }
+        }
+        updateUrl('/');
+        return false;
+    }
+
+    let handleSelectEvent = function (ev) {
+        setSelectedEvent(ev);
+        setSelectedPhotographer(null);
+        setPhotographerQuery('');
+        setSelectedPhotos([]);
+        setIsSelectionMode(false);
+        setLightboxIndex(-1);
+        setShowReview(false);
+        setShowEmailModal(false);
+        setEmail('');
+        setReviewIndex(0);
+        setActivePhotographer(null);
+        setActiveEventForPhotographer(null);
+        updateUrl('/evento/' + slugify(ev.name));
+    };
+    let openLightbox = function (idx) { setLightboxIndex(idx); };
+    let closeLightbox = function () { setLightboxIndex(-1); };
     let toggleSelectionMode = function () {
         setIsSelectionMode(!isSelectionMode);
         if (!isSelectionMode) {
@@ -52,7 +171,6 @@ function App() {
             setLightboxIndex(-1);
         }
     };
-
     let toggleSelect = function (photo) {
         let prevLength = selectedPhotos.length;
         let newSelected = [];
@@ -66,7 +184,6 @@ function App() {
         if (prevLength === 0 && newSelected.length > 0 && !isSelectionMode) { setIsSelectionMode(true); }
         if (newSelected.length === 0) { setIsSelectionMode(false); }
     };
-
     let removeSelect = function (photo, resetIndex) {
         let newSelected = [];
         for (let m = 0; m < selectedPhotos.length; m++) {
@@ -79,12 +196,10 @@ function App() {
             else { setReviewIndex(0); }
         }
     };
-
     let handleConfirm = function () {
         setShowReview(false);
         setShowEmailModal(true);
     };
-
     let handleEmailSubmit = function (userEmail, selectedPhotosParam) {
         setIsSendingEmail(true);
         let contexto = selectedEvent ? selectedEvent.name : (selectedPhotographer ? selectedPhotographer : 'Sin especificar');
@@ -119,111 +234,11 @@ function App() {
                 setShowResultModal(true);
             });
     };
-
     let handleGenerateFromLightbox = function () {
         setLightboxIndex(-1);
         setShowReview(true);
         setReviewIndex(0);
     };
-
-    // Helper para slugificar nombres de eventos (para URLs limpias)
-    function slugify(name) {
-        if (!name) return '';
-        return name.toLowerCase().trim()
-            .replace(/[^a-z0-9\s-]/g, '')  // Quita chars especiales
-            .replace(/\s+/g, '-')          // Espacios a guiones
-            .replace(/-+/g, '-');          // Múltiples guiones a uno
-    }
-
-    // Actualiza el URL sin recargar la página
-    function updateUrl(path) {
-        if (window.location.pathname !== path) {
-            window.history.pushState({}, '', path);
-        }
-    }
-
-    // Función para parsear pathname y setear estado inicial/navegación
-    function parseAndSetState(pathname) {
-        if (pathname === '/' || pathname === '') {
-            // Vista principal
-            setSelectedEvent(null);
-            setSelectedPhotographer(null);
-            setPhotographerQuery('');
-            setSelectedPhotos([]);
-            setIsSelectionMode(false);
-            setLightboxIndex(-1);
-            setShowReview(false);
-            setShowEmailModal(false);
-            setEmail('');
-            setReviewIndex(0);
-            setActivePhotographer(null);
-            setActiveEventForPhotographer(null); // NUEVO: limpiar filtro evento
-            return true;
-        }
-
-        let parts = pathname.split('/').filter(Boolean);
-        if (parts.length >= 2) {
-            let type = parts[0];
-            let param = parts.slice(1).join('/');  // En caso de nombres con /
-
-            if (type === 'evento') {
-                // Busca evento por slug
-                let slug = slugify(param);
-                for (let i = 0; i < events.length; i++) {
-                    if (slugify(events[i].name) === slug) {
-                        handleSelectEvent(events[i]);
-                        return true;
-                    }
-                }
-                // No encontrado: redirige a /
-                updateUrl('/');
-                return false;
-            } else if (type === 'fotografo') {
-                // Busca fotógrafo exacto
-                if (allPhotographers.includes(param)) {
-                    setSelectedPhotographer(param);
-                    setSelectedEvent(null);
-                    setPhotographerQuery(param);
-                    setSelectedPhotos([]);
-                    setIsSelectionMode(false);
-                    setLightboxIndex(-1);
-                    setShowReview(false);
-                    setShowEmailModal(false);
-                    setEmail('');
-                    setReviewIndex(0);
-                    setActivePhotographer(null);
-                    setActiveEventForPhotographer(null); // NUEVO: limpiar filtro evento
-                    updateUrl('/fotografo/' + param);  // Asegura URL
-                    return true;
-                }
-                // No encontrado: redirige a /
-                updateUrl('/');
-                return false;
-            }
-        }
-        // Ruta inválida: redirige a /
-        updateUrl('/');
-        return false;
-    }
-
-    let handleSelectEvent = function (ev) {
-        setSelectedEvent(ev);
-        setSelectedPhotographer(null);
-        setPhotographerQuery('');
-        setSelectedPhotos([]);
-        setIsSelectionMode(false);
-        setLightboxIndex(-1);
-        setShowReview(false);
-        setShowEmailModal(false);
-        setEmail('');
-        setReviewIndex(0);
-        setActivePhotographer(null);
-        setActiveEventForPhotographer(null); // NUEVO: limpiar filtro evento
-        updateUrl('/evento/' + slugify(ev.name));  // Actualiza URL
-    };
-
-    let openLightbox = function (idx) { setLightboxIndex(idx); };
-    let closeLightbox = function () { setLightboxIndex(-1); };
 
     React.useEffect(function () {
         if (lightboxIndex !== -1) {
@@ -235,44 +250,13 @@ function App() {
             return function () { window.removeEventListener('keydown', handleKeyDown); };
         }
     }, [lightboxIndex]);
-
+    React.useEffect(function () { parseAndSetState(window.location.pathname); }, []);
     React.useEffect(function () {
-        fetch('events.json')
-            .then(function (response) { return response.json(); })
-            .then(function (data) { setEvents(data); })
-            .catch(function () { setEvents([]); });
-    }, []);
-
-    React.useEffect(function () {
-        fetch('emails.json')
-            .then(function (response) { return response.json(); })
-            .then(function (data) { setEmailsConfig(data); })
-            .catch(function () { setEmailsConfig({ adminEmail: '', ccEmails: [] }); });
-    }, []);
-
-    React.useEffect(function () {
-        if (selectedEvent) { document.title = selectedEvent.name; }
-        else if (selectedPhotographer) { document.title = selectedPhotographer; }
-        else { document.title = 'Eventos disponibles'; }
-    }, [selectedEvent, selectedPhotographer]);
-
-    // Inicializa estado desde URL al montar la app
-    React.useEffect(function () {
-        parseAndSetState(window.location.pathname);
-    }, []);
-
-    // Escucha cambios de URL (navegación con botones del navegador)
-    React.useEffect(function () {
-        function handlePopState() {
-            parseAndSetState(window.location.pathname);
-        }
+        function handlePopState() { parseAndSetState(window.location.pathname); }
         window.addEventListener('popstate', handlePopState);
-        return function () {
-            window.removeEventListener('popstate', handlePopState);
-        };
+        return function () { window.removeEventListener('popstate', handlePopState); };
     }, []);
 
-    // Construir fuente global de fotos y fotógrafos (después de cargar events)
     let allEventsPhotos = [];
     for (let i = 0; i < events.length; i++) {
         let ev = events[i];
@@ -289,14 +273,12 @@ function App() {
     }
     let allPhotographers = Object.keys(allPhotographersSet);
 
-    // Eventos en los que el fotógrafo seleccionado tiene fotos (NUEVO)
     let eventsForPhotographer = [];
     if (selectedPhotographer && events) {
         eventsForPhotographer = events.filter(ev =>
             ev.photos && ev.photos.some(photo => photo.photographer === selectedPhotographer));
     }
 
-    // Fotos actuales por contexto
     let currentPhotos = [];
     if (selectedEvent && selectedEvent.photos) {
         currentPhotos = selectedEvent.photos;
@@ -309,7 +291,6 @@ function App() {
                 currentPhotos.push(allEventsPhotos[m]);
             }
         }
-        // FILTRO NUEVO: aplicar filtro de evento si corresponde
         if (activeEventForPhotographer) {
             currentPhotos = currentPhotos.filter(photo => {
                 const ev = events.find(ev =>
@@ -321,7 +302,6 @@ function App() {
     }
     let photos = currentPhotos;
 
-    // Navegación de lightbox en base a currentPhotos
     let photoLength = photos.length;
     let prevPhoto = function () {
         let newIndex = lightboxIndex - 1;
@@ -334,7 +314,6 @@ function App() {
         setLightboxIndex(newIndex);
     };
 
-    // Carrusel de eventos (con resolveImageUrl para portadas)
     let carouselItems = [];
     for (let n = 0; n < events.length; n++) {
         let ev = events[n];
@@ -404,8 +383,9 @@ function App() {
                             setEmail('');
                             setReviewIndex(0);
                             setActivePhotographer(null);
-                            setActiveEventForPhotographer(null); // NUEVO: limpiar filtro evento
-                            updateUrl('/fotografo/' + val);  // Actualiza URL
+                            setActiveEventForPhotographer(null);
+                            // USAR "_" EN LA RUTA
+                            updateUrl('/fotografo/' + photographerUrl(val));
                             break;
                         }
                     }
@@ -419,7 +399,6 @@ function App() {
         );
     }
 
-    // Fila de filtros por fotógrafo dentro del evento seleccionado
     let filtersRow = null;
     if (selectedEvent) {
         let photographers = [];
@@ -446,8 +425,6 @@ function App() {
             })
         );
     }
-
-    // FILA DE BOTONES DE EVENTOS (solo si hay fotógrafo seleccionado) -- CAMBIO NUEVO
     let eventsRow = null;
     if (selectedPhotographer && eventsForPhotographer.length > 0) {
         eventsRow = (
@@ -466,8 +443,6 @@ function App() {
             )
         );
     }
-
-    // Controles de selección
     let selectionControls = null;
     if (isSelectionMode || hasSelections) {
         selectionControls = React.createElement('button', { onClick: toggleSelectionMode }, isSelectionMode ? 'Cancelar selección' : 'Seleccionar imágenes para orden');
@@ -481,8 +456,6 @@ function App() {
     } else {
         selectionControls = React.createElement('button', { onClick: toggleSelectionMode }, 'Seleccionar imágenes para orden');
     }
-
-    // Galería
     let gallery = null;
     if (photos.length > 0) {
         gallery = React.createElement(Gallery, {
@@ -496,8 +469,6 @@ function App() {
     } else {
         gallery = React.createElement('p', null, 'No hay fotos para mostrar.');
     }
-
-    // Lightbox
     let lightbox = null;
     if (lightboxIndex !== -1 && photos.length > 0) {
         lightbox = React.createElement(Lightbox, {
@@ -511,8 +482,6 @@ function App() {
             selectedPhotos: selectedPhotos
         });
     }
-
-    // Review Modal
     let reviewModal = null;
     if (showReview && selectedPhotos.length > 0) {
         reviewModal = React.createElement(ReviewModal, {
@@ -533,8 +502,6 @@ function App() {
             onConfirm: handleConfirm
         });
     }
-
-    // Email Modal
     let emailModal = null;
     if (showEmailModal) {
         emailModal = React.createElement(EmailModal, {
@@ -546,8 +513,6 @@ function App() {
             isSendingEmail: isSendingEmail
         });
     }
-
-    // Result Modal
     let resultModal = null;
     if (showResultModal) {
         resultModal = React.createElement(ResultModal, {
@@ -560,8 +525,22 @@ function App() {
             }
         });
     }
-
-    // Contenido por contexto
+    let photographerModal = null;
+    if (shownPhotographerCard) {
+        photographerModal = React.createElement(
+            'div',
+            { className: "modal-modalprofile", onClick: function () { setShownPhotographerCard(null); } },
+            React.createElement(
+                'div',
+                { onClick: function (e) { e.stopPropagation(); } },
+                React.createElement(CardProfile, shownPhotographerCard),
+                React.createElement('button', {
+                    onClick: function () { setShownPhotographerCard(null); },
+                    "aria-label": "Cerrar perfil"
+                }, "×")
+            )
+        );
+    }
     let content = null;
     if (!selectedEvent && !selectedPhotographer) {
         content = [
@@ -586,7 +565,7 @@ function App() {
                         setSelectedPhotographer(null);
                         setPhotographerQuery('');
                         setActivePhotographer(null);
-                        setActiveEventForPhotographer(null); // NUEVO: limpiar filtro evento
+                        setActiveEventForPhotographer(null);
                         updateUrl('/');
                     }
                 }, 'Volver a eventos'),
@@ -596,9 +575,23 @@ function App() {
             gallery
         ];
     } else if (selectedPhotographer) {
+        let currentPhotographerObj = photographers.find(function(ph) {
+            return ph && ph.name === selectedPhotographer;
+        });
         content = [
             React.createElement('header', { key: 'header' },
-                React.createElement('h1', null, selectedPhotographer)
+                React.createElement('h1', null, [
+                    "Fotos de ",
+                    React.createElement('a', {
+                        key: 'link',
+                        href: "#",
+                        style: { color: "var(--color-primary)", textDecoration: "underline dotted", cursor: "pointer" },
+                        onClick: function(e) {
+                            e.preventDefault();
+                            setShownPhotographerCard(currentPhotographerObj);
+                        }
+                    }, selectedPhotographer)
+                ])
             ),
             React.createElement('div', { key: 'header-row', className: 'header-row' },
                 React.createElement('button', {
@@ -614,20 +607,17 @@ function App() {
                         setShowEmailModal(false);
                         setEmail('');
                         setReviewIndex(0);
-                        setActiveEventForPhotographer(null); // NUEVO: limpiar filtro evento
+                        setActiveEventForPhotographer(null);
                         updateUrl('/');
                     }
                 }, 'Volver a eventos'),
                 React.createElement('div', { key: 'controls', className: 'selection-controls-wrapper' }, selectionControls)
             ),
-            eventsRow, // NUEVO: FILA DE BOTONES DE EVENTOS
+            eventsRow,
             gallery
         ];
     }
-
-    return React.createElement('div', null, content, lightbox, reviewModal, emailModal, resultModal);
+    return React.createElement('div', null, content, lightbox, reviewModal, emailModal, resultModal, photographerModal);
 }
-
-// Monta la app
 let root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(React.createElement(App));
