@@ -1,25 +1,27 @@
 [
-  {
-    "name": "Victor Carrasco",
-    "backgroundImg": "bg.png",
-    "profileImg": "profile-picture.jpg",
-    "bio": "Lorem ipsum dolor sit amet...",
-    "social": {
-      "x": "https://x.com/",
-      "instagram": "https://www.instagram.com/",
-      "linkedin": "https://www.linkedin.com/",
-      "youtube": "https://www.youtube.com/"
+    {
+        "name": "Victor Carrasco",
+        "backgroundImg": "",
+        "profileImg": "",
+        "bio": "Lorem ipsum dolor sit amet...",
+        "social": {
+            "x": "https://x.com/",
+            "instagram": "https://www.instagram.com/",
+            "linkedin": "https://www.linkedin.com/",
+            "youtube": "https://www.youtube.com/"
+        },
+        "correo": "email@algo"
     },
-    "correo": "email@algo"
-  },
-  {
-    "name": "Nelson Jerez",
-    "backgroundImg": "",
-    "profileImg": "",
-    "bio": "",
-    "social": {
-    },
-    "correo": "email@algo"
-  }
-
+    {
+        "name": "Nelson Jerez",
+        "backgroundImg": "",
+        "profileImg": "",
+        "bio": "",
+        "social": {
+            "x": "https://x.com/",
+            "instagram": "https://www.instagram.com/",
+            "youtube": "https://www.youtube.com/"
+        },
+        "correo": "email@algo"
+    }
 ]

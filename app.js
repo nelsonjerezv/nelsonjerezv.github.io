@@ -7,110 +7,163 @@ function App() {
     let [showReview, setShowReview] = React.useState(false);
     let [reviewIndex, setReviewIndex] = React.useState(0);
     let [showEmailModal, setShowEmailModal] = React.useState(false);
-    let [email, setEmail] = React.useState('');
+    let [email, setEmail] = React.useState("");
     let [showResultModal, setShowResultModal] = React.useState(false);
-    let [resultMessage, setResultMessage] = React.useState({ type: 'success', title: '', message: '' });
-    let [emailsConfig, setEmailsConfig] = React.useState({ adminEmail: '', ccEmails: [] });
+    let [resultMessage, setResultMessage] = React.useState({
+        type: "success",
+        title: "",
+        message: "",
+    });
+    let [emailsConfig, setEmailsConfig] = React.useState({
+        adminEmail: "",
+        ccEmails: [],
+    });
     let [isSendingEmail, setIsSendingEmail] = React.useState(false);
 
     let [activePhotographer, setActivePhotographer] = React.useState(null);
     let [selectedPhotographer, setSelectedPhotographer] = React.useState(null);
-    let [photographerQuery, setPhotographerQuery] = React.useState('');
-    let [activeEventForPhotographer, setActiveEventForPhotographer] = React.useState(null);
+    let [photographerQuery, setPhotographerQuery] = React.useState("");
+    let [activeEventForPhotographer, setActiveEventForPhotographer] =
+        React.useState(null);
 
     let [photographers, setPhotographers] = React.useState([]);
-    let [shownPhotographerCard, setShownPhotographerCard] = React.useState(null);
+    let [shownPhotographerCard, setShownPhotographerCard] =
+        React.useState(null);
 
     let hasSelections = selectedPhotos.length > 0;
 
     let lockBody = function () {
         let scrollY = window.scrollY;
-        document.body.style.position = 'fixed';
+        document.body.style.position = "fixed";
         document.body.style.top = `-${scrollY}px`;
-        document.body.style.width = '100%';
+        document.body.style.width = "100%";
     };
     let unlockBody = function () {
         let scrollY = document.body.style.top;
-        document.body.style.position = '';
-        document.body.style.top = '';
-        document.body.style.width = '';
-        window.scrollTo(0, parseInt(scrollY || '0') * -1);
+        document.body.style.position = "";
+        document.body.style.top = "";
+        document.body.style.width = "";
+        window.scrollTo(0, parseInt(scrollY || "0") * -1);
     };
 
-    let isAnyModalOpen = lightboxIndex !== -1 || showReview || showEmailModal || showResultModal || shownPhotographerCard;
-    React.useEffect(function () {
-        if (isAnyModalOpen) { lockBody(); }
-        else { unlockBody(); }
-    }, [lightboxIndex, showReview, showEmailModal, showResultModal, shownPhotographerCard]);
+    let isAnyModalOpen =
+        lightboxIndex !== -1 ||
+        showReview ||
+        showEmailModal ||
+        showResultModal ||
+        shownPhotographerCard;
+    React.useEffect(
+        function () {
+            if (isAnyModalOpen) {
+                lockBody();
+            } else {
+                unlockBody();
+            }
+        },
+        [
+            lightboxIndex,
+            showReview,
+            showEmailModal,
+            showResultModal,
+            shownPhotographerCard,
+        ]
+    );
 
     React.useEffect(function () {
-        fetch('events.json')
-            .then(function (response) { return response.json(); })
-            .then(function (data) { setEvents(data); })
-            .catch(function () { setEvents([]); });
+        fetch("events.json")
+            .then(function (response) {
+                return response.json();
+            })
+            .then(function (data) {
+                setEvents(data);
+            })
+            .catch(function () {
+                setEvents([]);
+            });
     }, []);
     React.useEffect(function () {
-        fetch('emails.json')
-            .then(function (response) { return response.json(); })
-            .then(function (data) { setEmailsConfig(data); })
-            .catch(function () { setEmailsConfig({ adminEmail: '', ccEmails: [] }); });
+        fetch("emails.json")
+            .then(function (response) {
+                return response.json();
+            })
+            .then(function (data) {
+                setEmailsConfig(data);
+            })
+            .catch(function () {
+                setEmailsConfig({ adminEmail: "", ccEmails: [] });
+            });
     }, []);
     React.useEffect(function () {
-        fetch('photographers.json')
-            .then(function (response) { return response.json(); })
-            .then(function (data) { setPhotographers(data); })
-            .catch(function () { setPhotographers([]); });
+        fetch("photographers.json")
+            .then(function (response) {
+                return response.json();
+            })
+            .then(function (data) {
+                setPhotographers(data);
+            })
+            .catch(function () {
+                setPhotographers([]);
+            });
     }, []);
-    React.useEffect(function () {
-        if (selectedEvent) { document.title = selectedEvent.name; }
-        else if (selectedPhotographer) { document.title = selectedPhotographer; }
-        else { document.title = 'Eventos disponibles'; }
-    }, [selectedEvent, selectedPhotographer]);
+    React.useEffect(
+        function () {
+            if (selectedEvent) {
+                document.title = selectedEvent.name;
+            } else if (selectedPhotographer) {
+                document.title = selectedPhotographer;
+            } else {
+                document.title = "Eventos disponibles";
+            }
+        },
+        [selectedEvent, selectedPhotographer]
+    );
 
     function slugify(name) {
-        if (!name) return '';
-        return name.toLowerCase().trim()
-            .replace(/[^a-z0-9\s-]/g, '')
-            .replace(/\s+/g, '-')
-            .replace(/-+/g, '-');
+        if (!name) return "";
+        return name
+            .toLowerCase()
+            .trim()
+            .replace(/[^a-z0-9\s-]/g, "")
+            .replace(/\s+/g, "-")
+            .replace(/-+/g, "-");
     }
 
     // PARA RUTA: espacios -> '_'
     function photographerUrl(name) {
-        return name.replace(/\s+/g, '_');
+        return name.replace(/\s+/g, "_");
     }
     // PARA PARSEAR RUTA: '_' -> espacios
     function decodePhotographerUrl(slug) {
-        return slug.replace(/_/g, ' ');
+        return slug.replace(/_/g, " ");
     }
 
     function updateUrl(path) {
         if (window.location.pathname !== path) {
-            window.history.pushState({}, '', path);
+            window.history.pushState({}, "", path);
         }
     }
 
     function parseAndSetState(pathname) {
-        if (pathname === '/' || pathname === '') {
+        if (pathname === "/" || pathname === "") {
             setSelectedEvent(null);
             setSelectedPhotographer(null);
-            setPhotographerQuery('');
+            setPhotographerQuery("");
             setSelectedPhotos([]);
             setIsSelectionMode(false);
             setLightboxIndex(-1);
             setShowReview(false);
             setShowEmailModal(false);
-            setEmail('');
+            setEmail("");
             setReviewIndex(0);
             setActivePhotographer(null);
             setActiveEventForPhotographer(null);
             return true;
         }
-        let parts = pathname.split('/').filter(Boolean);
+        let parts = pathname.split("/").filter(Boolean);
         if (parts.length >= 2) {
             let type = parts[0];
-            let param = parts.slice(1).join('/');
-            if (type === 'evento') {
+            let param = parts.slice(1).join("/");
+            if (type === "evento") {
                 let slug = slugify(param);
                 for (let i = 0; i < events.length; i++) {
                     if (slugify(events[i].name) === slug) {
@@ -118,9 +171,9 @@ function App() {
                         return true;
                     }
                 }
-                updateUrl('/');
+                updateUrl("/");
                 return false;
-            } else if (type === 'fotografo') {
+            } else if (type === "fotografo") {
                 // DECODIFICAR "_" → espacio
                 let decodedPhotographer = decodePhotographerUrl(param);
                 if (allPhotographers.includes(decodedPhotographer)) {
@@ -132,38 +185,44 @@ function App() {
                     setLightboxIndex(-1);
                     setShowReview(false);
                     setShowEmailModal(false);
-                    setEmail('');
+                    setEmail("");
                     setReviewIndex(0);
                     setActivePhotographer(null);
                     setActiveEventForPhotographer(null);
-                    updateUrl('/fotografo/' + photographerUrl(decodedPhotographer));
+                    updateUrl(
+                        "/fotografo/" + photographerUrl(decodedPhotographer)
+                    );
                     return true;
                 }
-                updateUrl('/');
+                updateUrl("/");
                 return false;
             }
         }
-        updateUrl('/');
+        updateUrl("/");
         return false;
     }
 
     let handleSelectEvent = function (ev) {
         setSelectedEvent(ev);
         setSelectedPhotographer(null);
-        setPhotographerQuery('');
+        setPhotographerQuery("");
         setSelectedPhotos([]);
         setIsSelectionMode(false);
         setLightboxIndex(-1);
         setShowReview(false);
         setShowEmailModal(false);
-        setEmail('');
+        setEmail("");
         setReviewIndex(0);
         setActivePhotographer(null);
         setActiveEventForPhotographer(null);
-        updateUrl('/evento/' + slugify(ev.name));
+        updateUrl("/evento/" + slugify(ev.name));
     };
-    let openLightbox = function (idx) { setLightboxIndex(idx); };
-    let closeLightbox = function () { setLightboxIndex(-1); };
+    let openLightbox = function (idx) {
+        setLightboxIndex(idx);
+    };
+    let closeLightbox = function () {
+        setLightboxIndex(-1);
+    };
     let toggleSelectionMode = function () {
         setIsSelectionMode(!isSelectionMode);
         if (!isSelectionMode) {
@@ -176,24 +235,40 @@ function App() {
         let newSelected = [];
         let alreadySelected = false;
         for (let l = 0; l < selectedPhotos.length; l++) {
-            if (selectedPhotos[l].id !== photo.id) { newSelected.push(selectedPhotos[l]); }
-            else { alreadySelected = true; }
+            if (selectedPhotos[l].id !== photo.id) {
+                newSelected.push(selectedPhotos[l]);
+            } else {
+                alreadySelected = true;
+            }
         }
-        if (!alreadySelected) { newSelected.push(photo); }
+        if (!alreadySelected) {
+            newSelected.push(photo);
+        }
         setSelectedPhotos(newSelected);
-        if (prevLength === 0 && newSelected.length > 0 && !isSelectionMode) { setIsSelectionMode(true); }
-        if (newSelected.length === 0) { setIsSelectionMode(false); }
+        if (prevLength === 0 && newSelected.length > 0 && !isSelectionMode) {
+            setIsSelectionMode(true);
+        }
+        if (newSelected.length === 0) {
+            setIsSelectionMode(false);
+        }
     };
     let removeSelect = function (photo, resetIndex) {
         let newSelected = [];
         for (let m = 0; m < selectedPhotos.length; m++) {
-            if (selectedPhotos[m].id !== photo.id) { newSelected.push(selectedPhotos[m]); }
+            if (selectedPhotos[m].id !== photo.id) {
+                newSelected.push(selectedPhotos[m]);
+            }
         }
         setSelectedPhotos(newSelected);
-        if (newSelected.length === 0) { setIsSelectionMode(false); }
+        if (newSelected.length === 0) {
+            setIsSelectionMode(false);
+        }
         if (resetIndex && showReview) {
-            if (newSelected.length === 0) { setShowReview(false); }
-            else { setReviewIndex(0); }
+            if (newSelected.length === 0) {
+                setShowReview(false);
+            } else {
+                setReviewIndex(0);
+            }
         }
     };
     let handleConfirm = function () {
@@ -202,37 +277,47 @@ function App() {
     };
     let handleEmailSubmit = function (userEmail, selectedPhotosParam) {
         setIsSendingEmail(true);
-        let contexto = selectedEvent ? selectedEvent.name : (selectedPhotographer ? selectedPhotographer : 'Sin especificar');
+        let contexto = selectedEvent
+            ? selectedEvent.name
+            : selectedPhotographer
+            ? selectedPhotographer
+            : "Sin especificar";
         let params = {
             to_email: emailsConfig.adminEmail,
-            cc_emails: emailsConfig.ccEmails.join(','),
+            cc_emails: emailsConfig.ccEmails.join(","),
             user_email: userEmail,
             nombreEvento: contexto,
-            photos: selectedPhotosParam.map(function (p) {
-                let i = p.name.lastIndexOf('.');
-                return i > 0 ? p.name.substring(0, i) : p.name;
-            }).join('\n')
+            photos: selectedPhotosParam
+                .map(function (p) {
+                    let i = p.name.lastIndexOf(".");
+                    return i > 0 ? p.name.substring(0, i) : p.name;
+                })
+                .join("\n"),
         };
 
-        emailjs.send("service_fotosEventos", "template_0ntzv59", params)
-            .then(function (result) {
+        emailjs.send("service_fotosEventos", "template_0ntzv59", params).then(
+            function (result) {
                 setIsSendingEmail(false);
                 setResultMessage({
-                    type: 'success',
-                    title: '¡Orden enviada!',
-                    message: 'Te contactaremos pronto con los detalles de tu orden.'
+                    type: "success",
+                    title: "¡Orden enviada!",
+                    message:
+                        "Te contactaremos pronto con los detalles de tu orden.",
                 });
                 setShowResultModal(true);
                 setShowEmailModal(false);
-            }, function (error) {
+            },
+            function (error) {
                 setIsSendingEmail(false);
                 setResultMessage({
-                    type: 'error',
-                    title: 'Error al enviar',
-                    message: 'No pudimos procesar tu orden. Por favor, intenta de nuevo.'
+                    type: "error",
+                    title: "Error al enviar",
+                    message:
+                        "No pudimos procesar tu orden. Por favor, intenta de nuevo.",
                 });
                 setShowResultModal(true);
-            });
+            }
+        );
     };
     let handleGenerateFromLightbox = function () {
         setLightboxIndex(-1);
@@ -240,21 +325,37 @@ function App() {
         setReviewIndex(0);
     };
 
-    React.useEffect(function () {
-        if (lightboxIndex !== -1) {
-            function handleKeyDown(e) {
-                if (e.key === 'ArrowLeft') { e.preventDefault(); prevPhoto(); }
-                else if (e.key === 'ArrowRight') { e.preventDefault(); nextPhoto(); }
+    React.useEffect(
+        function () {
+            if (lightboxIndex !== -1) {
+                function handleKeyDown(e) {
+                    if (e.key === "ArrowLeft") {
+                        e.preventDefault();
+                        prevPhoto();
+                    } else if (e.key === "ArrowRight") {
+                        e.preventDefault();
+                        nextPhoto();
+                    }
+                }
+                window.addEventListener("keydown", handleKeyDown);
+                return function () {
+                    window.removeEventListener("keydown", handleKeyDown);
+                };
             }
-            window.addEventListener('keydown', handleKeyDown);
-            return function () { window.removeEventListener('keydown', handleKeyDown); };
-        }
-    }, [lightboxIndex]);
-    React.useEffect(function () { parseAndSetState(window.location.pathname); }, []);
+        },
+        [lightboxIndex]
+    );
     React.useEffect(function () {
-        function handlePopState() { parseAndSetState(window.location.pathname); }
-        window.addEventListener('popstate', handlePopState);
-        return function () { window.removeEventListener('popstate', handlePopState); };
+        parseAndSetState(window.location.pathname);
+    }, []);
+    React.useEffect(function () {
+        function handlePopState() {
+            parseAndSetState(window.location.pathname);
+        }
+        window.addEventListener("popstate", handlePopState);
+        return function () {
+            window.removeEventListener("popstate", handlePopState);
+        };
     }, []);
 
     let allEventsPhotos = [];
@@ -269,21 +370,30 @@ function App() {
     let allPhotographersSet = {};
     for (let k = 0; k < allEventsPhotos.length; k++) {
         let ph = allEventsPhotos[k].photographer;
-        if (ph) { allPhotographersSet[ph] = true; }
+        if (ph) {
+            allPhotographersSet[ph] = true;
+        }
     }
     let allPhotographers = Object.keys(allPhotographersSet);
 
     let eventsForPhotographer = [];
     if (selectedPhotographer && events) {
-        eventsForPhotographer = events.filter(ev =>
-            ev.photos && ev.photos.some(photo => photo.photographer === selectedPhotographer));
+        eventsForPhotographer = events.filter(
+            (ev) =>
+                ev.photos &&
+                ev.photos.some(
+                    (photo) => photo.photographer === selectedPhotographer
+                )
+        );
     }
 
     let currentPhotos = [];
     if (selectedEvent && selectedEvent.photos) {
         currentPhotos = selectedEvent.photos;
         if (activePhotographer) {
-            currentPhotos = currentPhotos.filter(function (p) { return p.photographer === activePhotographer; });
+            currentPhotos = currentPhotos.filter(function (p) {
+                return p.photographer === activePhotographer;
+            });
         }
     } else if (selectedPhotographer) {
         for (let m = 0; m < allEventsPhotos.length; m++) {
@@ -292,9 +402,10 @@ function App() {
             }
         }
         if (activeEventForPhotographer) {
-            currentPhotos = currentPhotos.filter(photo => {
-                const ev = events.find(ev =>
-                    ev.photos && ev.photos.some(p => p.id === photo.id)
+            currentPhotos = currentPhotos.filter((photo) => {
+                const ev = events.find(
+                    (ev) =>
+                        ev.photos && ev.photos.some((p) => p.id === photo.id)
                 );
                 return ev && ev.name === activeEventForPhotographer;
             });
@@ -305,68 +416,201 @@ function App() {
     let photoLength = photos.length;
     let prevPhoto = function () {
         let newIndex = lightboxIndex - 1;
-        if (newIndex < 0) { newIndex = photoLength - 1; }
+        if (newIndex < 0) {
+            newIndex = photoLength - 1;
+        }
         setLightboxIndex(newIndex);
     };
     let nextPhoto = function () {
         let newIndex = lightboxIndex + 1;
-        if (newIndex >= photoLength) { newIndex = 0; }
+        if (newIndex >= photoLength) {
+            newIndex = 0;
+        }
         setLightboxIndex(newIndex);
     };
 
     let carouselItems = [];
     for (let n = 0; n < events.length; n++) {
         let ev = events[n];
-        let firstPhoto = ev.photos && ev.photos.length > 0 ? ev.photos[0].url : '';
+        let firstPhoto =
+            ev.photos && ev.photos.length > 0 ? ev.photos[0].url : "";
         let firstPhotoUrl = resolveImageUrl(firstPhoto);
         let eventCardElements = [
-            React.createElement('div', { className: 'card-titulo-evento', title: ev.name || 'Evento sin nombre', key: 'title' }, ev.name || 'Evento sin nombre')
+            React.createElement(
+                "div",
+                {
+                    className: "card-titulo-evento",
+                    title: ev.name || "Evento sin nombre",
+                    key: "title",
+                },
+                ev.name || "Evento sin nombre"
+            ),
         ];
         if (ev.fecha) {
             eventCardElements.push(
-                React.createElement('div', { className: 'card-data-evento', key: 'date' },
-                    React.createElement('span', { className: 'icon-eve-home', style: { fontSize: '16px', marginRight: '0.5rem' } }, '📅'),
+                React.createElement(
+                    "div",
+                    { className: "card-data-evento", key: "date" },
+                    React.createElement(
+                        "span",
+                        {
+                            className: "icon-eve-home",
+                            style: { fontSize: "16px", marginRight: "0.5rem" },
+                        },
+                        "📅"
+                    ),
                     ev.fecha
                 )
             );
         }
         if (ev.ubicacion) {
             eventCardElements.push(
-                React.createElement('div', { className: 'card-cid-evento', key: 'location' },
-                    React.createElement('span', { className: 'icon-eve-home', style: { fontSize: '16px', marginRight: '0.5rem' } }, '📍'),
-                    React.createElement('span', { className: 'nome-cidade-card' }, ev.ubicacion)
+                React.createElement(
+                    "div",
+                    { className: "card-cid-evento", key: "location" },
+                    React.createElement(
+                        "span",
+                        {
+                            className: "icon-eve-home",
+                            style: { fontSize: "16px", marginRight: "0.5rem" },
+                        },
+                        "📍"
+                    ),
+                    React.createElement(
+                        "span",
+                        { className: "nome-cidade-card" },
+                        ev.ubicacion
+                    )
                 )
             );
         }
-        let eventKey = ev.id || ev.name || ('event-' + n);
+        let eventKey = ev.id || ev.name || "event-" + n;
         carouselItems.push(
-            React.createElement('div', {
-                className: 'carousel-item',
-                key: eventKey,
-                onClick: (function (evParam) { return function () { handleSelectEvent(evParam); }; })(ev)
-            },
-                React.createElement('div', { className: 'foto' },
-                    React.createElement('img', {
+            React.createElement(
+                "div",
+                {
+                    className: "carousel-item",
+                    key: eventKey,
+                    onClick: (function (evParam) {
+                        return function () {
+                            handleSelectEvent(evParam);
+                        };
+                    })(ev),
+                },
+                React.createElement(
+                    "div",
+                    { className: "foto" },
+                    React.createElement("img", {
                         src: firstPhotoUrl,
-                        alt: `Portada ${ev.name || 'Evento'}`,
-                        onError: function (e) { applyRobustFallback(e.target, 260, 156, 'Imagen no disponible'); }
+                        alt: `Portada ${ev.name || "Evento"}`,
+                        onError: function (e) {
+                            applyRobustFallback(
+                                e.target,
+                                260,
+                                156,
+                                "Imagen no disponible"
+                            );
+                        },
                     })
                 ),
-                React.createElement('div', { className: 'card-eventos' }, eventCardElements)
+                React.createElement(
+                    "div",
+                    { className: "card-eventos" },
+                    eventCardElements
+                )
             )
         );
+    }
+
+    // --- Carrusel de fotógrafos asociados ---
+    let photographersRow = null;
+    if (photographers && photographers.length > 0) {
+        photographersRow = [
+            React.createElement(
+                "h2",
+                { key: "h2-photogs", className: "events-header" },
+                "Fotógrafos asociados"
+            ),
+            React.createElement(
+                "div",
+                { key: "carousel-photogs", className: "carousel" },
+                photographers.map(function (photog, idx) {
+                    return React.createElement(
+                        "div",
+                        {
+                            key: "photocard-" + (photog.name || idx),
+                            className: "carousel-item",
+                            onClick: function () {
+                                setShownPhotographerCard(photog);
+                            },
+                        },
+                        React.createElement(
+                            "div",
+                            { className: "foto" },
+                            photog.backgroundImg
+                                ? React.createElement("img", {
+                                      src: photog.backgroundImg,
+                                      alt: "Fondo de " + photog.name,
+                                      style: { objectFit: "cover" },
+                                  })
+                                : React.createElement("div", {
+                                      style: {
+                                          width: "100%",
+                                          height: "100%",
+                                          background:
+                                              "linear-gradient(90deg, #ED1ABE 0%, #31006B 100%)",
+                                          borderTopLeftRadius: 10,
+                                          borderTopRightRadius: 10,
+                                      },
+                                  })
+                        ),
+                        React.createElement(
+                            "div",
+                            { className: "card-eventos" },
+                            [
+                                React.createElement(
+                                    "div",
+                                    {
+                                        className: "card-titulo-evento",
+                                        title: photog.name,
+                                        key: "title",
+                                    },
+                                    photog.name || "Fotógrafo sin nombre"
+                                ),
+                                photog.bio
+                                    ? React.createElement(
+                                          "div",
+                                          {
+                                              className: "card-cid-evento",
+                                              key: "bio",
+                                          },
+                                          photog.bio
+                                      )
+                                    : null,
+                            ]
+                        )
+                    );
+                })
+            ),
+        ];
     }
 
     // Buscador global por fotógrafo (vista principal, debajo del carrusel)
     let searchRow = null;
     if (!selectedEvent && !selectedPhotographer) {
-        searchRow = React.createElement('div', { key: 'search-row', className: 'search-row' },
-            React.createElement('label', { htmlFor: 'photographer-search', className: 'search-label' }, 'Buscar por fotógrafo'),
-            React.createElement('input', {
-                id: 'photographer-search',
-                list: 'photographers-list',
-                className: 'search-input',
-                placeholder: 'Escribe un nombre...',
+        searchRow = React.createElement(
+            "div",
+            { key: "search-row", className: "search-row" },
+            React.createElement(
+                "label",
+                { htmlFor: "photographer-search", className: "search-label" },
+                "Buscar por fotógrafo"
+            ),
+            React.createElement("input", {
+                id: "photographer-search",
+                list: "photographers-list",
+                className: "search-input",
+                placeholder: "Escribe un nombre...",
                 value: photographerQuery,
                 onChange: function (e) {
                     let val = e.target.value;
@@ -380,20 +624,25 @@ function App() {
                             setLightboxIndex(-1);
                             setShowReview(false);
                             setShowEmailModal(false);
-                            setEmail('');
+                            setEmail("");
                             setReviewIndex(0);
                             setActivePhotographer(null);
                             setActiveEventForPhotographer(null);
                             // USAR "_" EN LA RUTA
-                            updateUrl('/fotografo/' + photographerUrl(val));
+                            updateUrl("/fotografo/" + photographerUrl(val));
                             break;
                         }
                     }
-                }
+                },
             }),
-            React.createElement('datalist', { id: 'photographers-list' },
+            React.createElement(
+                "datalist",
+                { id: "photographers-list" },
                 allPhotographers.map(function (ph) {
-                    return React.createElement('option', { key: 'opt-' + ph, value: ph });
+                    return React.createElement("option", {
+                        key: "opt-" + ph,
+                        value: ph,
+                    });
                 })
             )
         );
@@ -410,51 +659,121 @@ function App() {
             }
             photographers = Object.keys(setPh);
         }
-        filtersRow = React.createElement('div', { key: 'filters-row', className: 'filters-row' },
-            React.createElement('button', {
-                key: 'all',
-                className: 'filter-button' + (activePhotographer === null ? ' active' : ''),
-                onClick: function () { setActivePhotographer(null); }
-            }, 'Todas las fotografías'),
+        filtersRow = React.createElement(
+            "div",
+            { key: "filters-row", className: "filters-row" },
+            React.createElement(
+                "button",
+                {
+                    key: "all",
+                    className:
+                        "filter-button" +
+                        (activePhotographer === null ? " active" : ""),
+                    onClick: function () {
+                        setActivePhotographer(null);
+                    },
+                },
+                "Todas las fotografías"
+            ),
             photographers.map(function (ph) {
-                return React.createElement('button', {
-                    key: 'ph-' + ph,
-                    className: 'filter-button' + (activePhotographer === ph ? ' active' : ''),
-                    onClick: function () { setActivePhotographer(ph); }
-                }, 'Fotos de ' + ph);
+                return React.createElement(
+                    "button",
+                    {
+                        key: "ph-" + ph,
+                        className:
+                            "filter-button" +
+                            (activePhotographer === ph ? " active" : ""),
+                        onClick: function () {
+                            setActivePhotographer(ph);
+                        },
+                    },
+                    "Fotos de " + ph
+                );
             })
         );
     }
     let eventsRow = null;
     if (selectedPhotographer && eventsForPhotographer.length > 0) {
-        eventsRow = (
-            React.createElement('div', { className: 'filters-row' },
-                React.createElement('button', {
-                    className: 'filter-button' + (activeEventForPhotographer === null ? ' active' : ''),
-                    onClick: function () { setActiveEventForPhotographer(null); }
-                }, 'Todos los eventos'),
-                eventsForPhotographer.map(function (ev) {
-                    return React.createElement('button', {
+        eventsRow = React.createElement(
+            "div",
+            { className: "filters-row" },
+            React.createElement(
+                "button",
+                {
+                    className:
+                        "filter-button" +
+                        (activeEventForPhotographer === null ? " active" : ""),
+                    onClick: function () {
+                        setActiveEventForPhotographer(null);
+                    },
+                },
+                "Todos los eventos"
+            ),
+            eventsForPhotographer.map(function (ev) {
+                return React.createElement(
+                    "button",
+                    {
                         key: ev.name,
-                        className: 'filter-button' + (activeEventForPhotographer === ev.name ? ' active' : ''),
-                        onClick: function () { setActiveEventForPhotographer(ev.name); }
-                    }, ev.name);
-                })
-            )
+                        className:
+                            "filter-button" +
+                            (activeEventForPhotographer === ev.name
+                                ? " active"
+                                : ""),
+                        onClick: function () {
+                            setActiveEventForPhotographer(ev.name);
+                        },
+                    },
+                    ev.name
+                );
+            })
         );
     }
     let selectionControls = null;
     if (isSelectionMode || hasSelections) {
-        selectionControls = React.createElement('button', { onClick: toggleSelectionMode }, isSelectionMode ? 'Cancelar selección' : 'Seleccionar imágenes para orden');
+        selectionControls = React.createElement(
+            "button",
+            { onClick: toggleSelectionMode },
+            isSelectionMode
+                ? "Cancelar selección"
+                : "Seleccionar imágenes para orden"
+        );
         if (hasSelections) {
             selectionControls = [
-                React.createElement('button', { key: 'toggle', onClick: toggleSelectionMode }, isSelectionMode ? 'Cancelar selección' : 'Seleccionar imágenes para orden'),
-                React.createElement('span', { key: 'count', className: 'selected-count' }, `${selectedPhotos.length} ${selectedPhotos.length === 1 ? 'imagen seleccionada' : 'imágenes seleccionadas'}`),
-                React.createElement('button', { key: 'generate', onClick: function () { setShowReview(true); setReviewIndex(0); } }, 'Generar orden')
+                React.createElement(
+                    "button",
+                    { key: "toggle", onClick: toggleSelectionMode },
+                    isSelectionMode
+                        ? "Cancelar selección"
+                        : "Seleccionar imágenes para orden"
+                ),
+                React.createElement(
+                    "span",
+                    { key: "count", className: "selected-count" },
+                    `${selectedPhotos.length} ${
+                        selectedPhotos.length === 1
+                            ? "imagen seleccionada"
+                            : "imágenes seleccionadas"
+                    }`
+                ),
+                React.createElement(
+                    "button",
+                    {
+                        key: "generate",
+                        onClick: function () {
+                            setShowReview(true);
+                            setReviewIndex(0);
+                        },
+                    },
+                    "Generar orden"
+                ),
             ];
         }
     } else {
-        selectionControls = React.createElement('button', { onClick: toggleSelectionMode }, 'Seleccionar imágenes para orden');
+        selectionControls = React.createElement(
+            "button",
+            { onClick: toggleSelectionMode },
+            "Seleccionar imágenes para orden"
+        );
     }
     let gallery = null;
     if (photos.length > 0) {
@@ -464,10 +783,10 @@ function App() {
             hasSelections: hasSelections,
             selectedPhotos: selectedPhotos,
             onToggleSelect: toggleSelect,
-            onOpenLightbox: openLightbox
+            onOpenLightbox: openLightbox,
         });
     } else {
-        gallery = React.createElement('p', null, 'No hay fotos para mostrar.');
+        gallery = React.createElement("p", null, "No hay fotos para mostrar.");
     }
     let lightbox = null;
     if (lightboxIndex !== -1 && photos.length > 0) {
@@ -479,7 +798,7 @@ function App() {
             onNext: nextPhoto,
             onToggleSelect: toggleSelect,
             onGenerateOrder: handleGenerateFromLightbox,
-            selectedPhotos: selectedPhotos
+            selectedPhotos: selectedPhotos,
         });
     }
     let reviewModal = null;
@@ -487,19 +806,25 @@ function App() {
         reviewModal = React.createElement(ReviewModal, {
             selectedPhotos: selectedPhotos,
             reviewIndex: reviewIndex,
-            onClose: function () { setShowReview(false); },
+            onClose: function () {
+                setShowReview(false);
+            },
             onDeselect: removeSelect,
             onPrev: function () {
                 let newIndex = reviewIndex - 1;
-                if (newIndex < 0) { newIndex = selectedPhotos.length - 1; }
+                if (newIndex < 0) {
+                    newIndex = selectedPhotos.length - 1;
+                }
                 setReviewIndex(newIndex);
             },
             onNext: function () {
                 let newIndex = reviewIndex + 1;
-                if (newIndex >= selectedPhotos.length) { newIndex = 0; }
+                if (newIndex >= selectedPhotos.length) {
+                    newIndex = 0;
+                }
                 setReviewIndex(newIndex);
             },
-            onConfirm: handleConfirm
+            onConfirm: handleConfirm,
         });
     }
     let emailModal = null;
@@ -507,10 +832,12 @@ function App() {
         emailModal = React.createElement(EmailModal, {
             email: email,
             setEmail: setEmail,
-            onClose: function () { setShowEmailModal(false); },
+            onClose: function () {
+                setShowEmailModal(false);
+            },
             onSubmit: handleEmailSubmit,
             selectedPhotos: selectedPhotos,
-            isSendingEmail: isSendingEmail
+            isSendingEmail: isSendingEmail,
         });
     }
     let resultModal = null;
@@ -521,103 +848,182 @@ function App() {
                 setShowResultModal(false);
                 setIsSelectionMode(false);
                 setSelectedPhotos([]);
-                setEmail('');
-            }
+                setEmail("");
+            },
         });
     }
     let photographerModal = null;
     if (shownPhotographerCard) {
         photographerModal = React.createElement(
-            'div',
-            { className: "modal-modalprofile", onClick: function () { setShownPhotographerCard(null); } },
+            "div",
+            {
+                className: "modal-modalprofile",
+                onClick: function () {
+                    setShownPhotographerCard(null);
+                },
+            },
             React.createElement(
-                'div',
-                { onClick: function (e) { e.stopPropagation(); } },
+                "div",
+                {
+                    onClick: function (e) {
+                        e.stopPropagation();
+                    },
+                },
                 React.createElement(CardProfile, shownPhotographerCard),
-                React.createElement('button', {
-                    onClick: function () { setShownPhotographerCard(null); },
-                    "aria-label": "Cerrar perfil"
-                }, "×")
+                React.createElement(
+                    "button",
+                    {
+                        onClick: function () {
+                            setShownPhotographerCard(null);
+                        },
+                        "aria-label": "Cerrar perfil",
+                    },
+                    "×"
+                )
             )
         );
     }
     let content = null;
     if (!selectedEvent && !selectedPhotographer) {
         content = [
-            React.createElement('header', { key: 'header' },
-                React.createElement('h1', null, 'Galería de Eventos')
+            React.createElement(
+                "header",
+                { key: "header" },
+                React.createElement("h1", null, "Galería de Eventos")
             ),
-            React.createElement('h2', { key: 'h2', className: 'events-header' }, 'Eventos disponibles'),
-            React.createElement('div', { key: 'carousel', className: 'carousel' }, carouselItems),
-            searchRow
+            React.createElement(
+                "h2",
+                { key: "h2", className: "events-header" },
+                "Eventos disponibles"
+            ),
+            React.createElement(
+                "div",
+                { key: "carousel", className: "carousel" },
+                carouselItems
+            ),
+            ...(photographersRow ? photographersRow : []),
+            searchRow,
         ];
     } else if (selectedEvent) {
         content = [
-            React.createElement('header', { key: 'header' },
-                React.createElement('h1', null, selectedEvent.name || 'Evento sin nombre')
+            React.createElement(
+                "header",
+                { key: "header" },
+                React.createElement(
+                    "h1",
+                    null,
+                    selectedEvent.name || "Evento sin nombre"
+                )
             ),
-            React.createElement('div', { key: 'header-row', className: 'header-row' },
-                React.createElement('button', {
-                    key: 'back',
-                    className: 'back-button',
-                    onClick: function () {
-                        setSelectedEvent(null);
-                        setSelectedPhotographer(null);
-                        setPhotographerQuery('');
-                        setActivePhotographer(null);
-                        setActiveEventForPhotographer(null);
-                        updateUrl('/');
-                    }
-                }, 'Volver a eventos'),
-                React.createElement('div', { key: 'controls', className: 'selection-controls-wrapper' }, selectionControls)
+            React.createElement(
+                "div",
+                { key: "header-row", className: "header-row" },
+                React.createElement(
+                    "button",
+                    {
+                        key: "back",
+                        className: "back-button",
+                        onClick: function () {
+                            setSelectedEvent(null);
+                            setSelectedPhotographer(null);
+                            setPhotographerQuery("");
+                            setActivePhotographer(null);
+                            setActiveEventForPhotographer(null);
+                            updateUrl("/");
+                        },
+                    },
+                    "Volver a eventos"
+                ),
+                React.createElement(
+                    "div",
+                    {
+                        key: "controls",
+                        className: "selection-controls-wrapper",
+                    },
+                    selectionControls
+                )
             ),
             filtersRow,
-            gallery
+            gallery,
         ];
     } else if (selectedPhotographer) {
-        let currentPhotographerObj = photographers.find(function(ph) {
+        let currentPhotographerObj = photographers.find(function (ph) {
             return ph && ph.name === selectedPhotographer;
         });
         content = [
-            React.createElement('header', { key: 'header' },
-                React.createElement('h1', null, [
+            React.createElement(
+                "header",
+                { key: "header" },
+                React.createElement("h1", null, [
                     "Fotos de ",
-                    React.createElement('a', {
-                        key: 'link',
-                        href: "#",
-                        style: { color: "var(--color-primary)", textDecoration: "underline dotted", cursor: "pointer" },
-                        onClick: function(e) {
-                            e.preventDefault();
-                            setShownPhotographerCard(currentPhotographerObj);
-                        }
-                    }, selectedPhotographer)
+                    React.createElement(
+                        "a",
+                        {
+                            key: "link",
+                            href: "#",
+                            style: {
+                                color: "var(--color-primary)",
+                                textDecoration: "underline dotted",
+                                cursor: "pointer",
+                            },
+                            onClick: function (e) {
+                                e.preventDefault();
+                                setShownPhotographerCard(
+                                    currentPhotographerObj
+                                );
+                            },
+                        },
+                        selectedPhotographer
+                    ),
                 ])
             ),
-            React.createElement('div', { key: 'header-row', className: 'header-row' },
-                React.createElement('button', {
-                    key: 'back',
-                    className: 'back-button',
-                    onClick: function () {
-                        setSelectedPhotographer(null);
-                        setPhotographerQuery('');
-                        setSelectedPhotos([]);
-                        setIsSelectionMode(false);
-                        setLightboxIndex(-1);
-                        setShowReview(false);
-                        setShowEmailModal(false);
-                        setEmail('');
-                        setReviewIndex(0);
-                        setActiveEventForPhotographer(null);
-                        updateUrl('/');
-                    }
-                }, 'Volver a eventos'),
-                React.createElement('div', { key: 'controls', className: 'selection-controls-wrapper' }, selectionControls)
+            React.createElement(
+                "div",
+                { key: "header-row", className: "header-row" },
+                React.createElement(
+                    "button",
+                    {
+                        key: "back",
+                        className: "back-button",
+                        onClick: function () {
+                            setSelectedPhotographer(null);
+                            setPhotographerQuery("");
+                            setSelectedPhotos([]);
+                            setIsSelectionMode(false);
+                            setLightboxIndex(-1);
+                            setShowReview(false);
+                            setShowEmailModal(false);
+                            setEmail("");
+                            setReviewIndex(0);
+                            setActiveEventForPhotographer(null);
+                            updateUrl("/");
+                        },
+                    },
+                    "Volver a eventos"
+                ),
+                React.createElement(
+                    "div",
+                    {
+                        key: "controls",
+                        className: "selection-controls-wrapper",
+                    },
+                    selectionControls
+                )
             ),
             eventsRow,
-            gallery
+            gallery,
         ];
     }
-    return React.createElement('div', null, content, lightbox, reviewModal, emailModal, resultModal, photographerModal);
+    return React.createElement(
+        "div",
+        null,
+        content,
+        lightbox,
+        reviewModal,
+        emailModal,
+        resultModal,
+        photographerModal
+    );
 }
-let root = ReactDOM.createRoot(document.getElementById('root'));
+let root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(React.createElement(App));

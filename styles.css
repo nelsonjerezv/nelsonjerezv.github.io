@@ -763,48 +763,76 @@ button:hover {
     cursor: pointer;
 }
 .cardprofile-bg-gradient {
-  width: 100%;
-  height: 130px;
-  background: linear-gradient(90deg, #ED1ABE 0%, #31006B 100%);
-  border-top-left-radius: 14px;
-  border-top-right-radius: 14px;
+    width: 100%;
+    height: 130px;
+    background: linear-gradient(90deg, #ed1abe 0%, #31006b 100%);
+    border-top-left-radius: 14px;
+    border-top-right-radius: 14px;
 }
 .cardprofile-default-avatar {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background: var(--color-surface, #fff);
-  border-radius: 50%;
-  width: 100px;
-  height: 100px;
-  border: 6px solid var(--color-surface, #fff);
-  box-shadow: 0 2px 8px rgba(0,0,0,.10);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: var(--color-surface, #fff);
+    border-radius: 50%;
+    width: 100px;
+    height: 100px;
+    border: 6px solid var(--color-surface, #fff);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 .cardprofile-default-avatar svg {
-  display: block;
-  margin: auto;
+    display: block;
+    margin: auto;
 }
 .modal-modalprofile button[aria-label="Cerrar perfil"] {
-  position: absolute;
-  top: 14px;
-  right: 16px;
-  background: rgba(34,34,51,0.75); /* fondo opaco semitransparente, acorde a paleta */
-  border: none;
-  font-size: 28px;
-  color: var(--color-white, #fff);  /* color claro */
-  font-weight: bold;
-  cursor: pointer;
-  border-radius: 50%;
-  width: 38px;
-  height: 38px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 10;
-  transition: background 0.2s;
+    position: absolute;
+    top: 14px;
+    right: 16px;
+    background: rgba(
+        34,
+        34,
+        51,
+        0.75
+    ); /* fondo opaco semitransparente, acorde a paleta */
+    border: none;
+    font-size: 28px;
+    color: var(--color-white, #fff); /* color claro */
+    font-weight: bold;
+    cursor: pointer;
+    border-radius: 50%;
+    width: 38px;
+    height: 38px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+    transition: background 0.2s;
 }
 
 .modal-modalprofile button[aria-label="Cerrar perfil"]:hover {
-  background: rgba(237,26,190,0.85); /* fucsia más fuerte en hover */
-  color: var(--color-white, #fff);
+    background: rgba(237, 26, 190, 0.85); /* fucsia más fuerte en hover */
+    color: var(--color-white, #fff);
+}
+.cardprofile-social-links i {
+    font-size: 1.5em;
+    width: 1em;
+    height: 1em;
+    text-align: center;
+    line-height: 1em;
+    vertical-align: middle;
+    min-width: 24px;
+    min-height: 24px;
+    max-width: 34px;
+    max-height: 34px;
+    display: inline-block;
+}
+.cardprofile-section-title {
+    text-align: center;
+    color: var(--color-text-secondary);
+    font-size: 0.95em;
+    font-weight: bold;
+    padding-bottom: 0.2em;
+    margin-top: 0.8em;
+    margin-bottom: -0.25em;
+    letter-spacing: 1px;
 }

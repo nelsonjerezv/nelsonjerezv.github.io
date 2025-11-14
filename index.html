@@ -1,38 +1,46 @@
 <!DOCTYPE html>
 <html lang="es">
-<head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>Eventos disponibles</title>
-    <link rel="stylesheet" href="styles.css">
-</head>
-<body>
-    <!-- Punto de montaje de React: no lo muevas -->
-    <div id="root"></div>
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width,initial-scale=1" />
+        <title>Eventos disponibles</title>
+        <link
+            rel="stylesheet"
+            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+            crossorigin="anonymous"
+        />
+        <link rel="stylesheet" href="styles.css" />
+    </head>
+    <body>
+        <!-- Punto de montaje de React: no lo muevas -->
+        <div id="root"></div>
 
-    <!-- EmailJS primero: carga la lib -->
-    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
-    <!-- Init de emailjs INMEDIATAMENTE después: asegura que la lib esté lista antes de componentes que la usen (ej. App) -->
-    <script type="text/javascript">
-        emailjs.init("trRTddWLTqdGsxznW");
-    </script>
+        <!-- EmailJS primero: carga la lib -->
+        <script
+            type="text/javascript"
+            src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"
+        ></script>
+        <!-- Init de emailjs INMEDIATAMENTE después: asegura que la lib esté lista antes de componentes que la usen (ej. App) -->
+        <script type="text/javascript">
+            emailjs.init("trRTddWLTqdGsxznW");
+        </script>
 
-    <!-- React y ReactDOM: definen window.React y window.ReactDOM globales -->
-    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
-    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+        <!-- React y ReactDOM: definen window.React y window.ReactDOM globales -->
+        <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+        <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
 
-    <!-- Babel Standalone: transpila los siguientes scripts type="text/babel" -->
-    <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+        <!-- Babel Standalone: transpila los siguientes scripts type="text/babel" -->
+        <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
 
-    <!-- Tus scripts locales: en orden estricto (helpers primero, sin "let React = React;") -->
-    <script type="text/babel" src="helpers.js"></script>
-    <script type="text/babel" src="lightbox.js"></script>
-    <script type="text/babel" src="reviewmodal.js"></script>
-    <script type="text/babel" src="emailmodal.js"></script>
-    <script type="text/babel" src="resultmodal.js"></script>
-    <script type="text/babel" src="gallery.js"></script>
-    <script type="text/babel" src="cardprofile.js"></script>
-    <!-- App al final: usa React global y todos los componentes previos -->
-    <script type="text/babel" src="app.js"></script>
-</body>
+        <!-- Tus scripts locales: en orden estricto (helpers primero, sin "let React = React;") -->
+        <script type="text/babel" src="helpers.js"></script>
+        <script type="text/babel" src="lightbox.js"></script>
+        <script type="text/babel" src="reviewmodal.js"></script>
+        <script type="text/babel" src="emailmodal.js"></script>
+        <script type="text/babel" src="resultmodal.js"></script>
+        <script type="text/babel" src="gallery.js"></script>
+        <script type="text/babel" src="cardprofile.js"></script>
+        <!-- App al final: usa React global y todos los componentes previos -->
+        <script type="text/babel" src="app.js"></script>
+    </body>
 </html>

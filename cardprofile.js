@@ -1,17 +1,10 @@
-function CardProfile({
-    backgroundImg,
-    profileImg,
-    name,
-    bio,
-    social = {}
-}) {
+function CardProfile({ backgroundImg, profileImg, name, bio, social = {} }) {
     // Iconos soportados (FontAwesome)
     const ICONS = {
-        twitter: 'fab fa-twitter',
-        x: 'fab fa-x-twitter',
-        instagram: 'fab fa-instagram',
-        linkedin: 'fab fa-linkedin',
-        youtube: 'fab fa-youtube'
+        x: "fab fa-x-twitter",
+        instagram: "fab fa-instagram",
+        linkedin: "fab fa-linkedin",
+        youtube: "fab fa-youtube",
     };
     const ICON_ORDER = ["twitter", "x", "instagram", "linkedin", "youtube"];
     const DEFAULT_SVG = (
@@ -48,38 +41,33 @@ function CardProfile({
             </div>
             <div className="cardprofile-profile-info">
                 <h2 className="cardprofile-name">{name}</h2>
-                {(bio && bio.trim()) ? (
+                {bio && bio.trim() ? (
                     <p className="cardprofile-bio">{bio}</p>
                 ) : null}
             </div>
+            {ICON_ORDER.some((platform) => ICONS[platform]) && (
+                <div className="cardprofile-section-title">Redes</div>
+            )}
             <div className="cardprofile-social-links">
-                {ICON_ORDER.filter(platform => ICONS[platform])
-                  .map(platform => {
-                    const url = social[platform];
-                    const iconClass = ICONS[platform];
-                    if (url) {
-                        return (
-                          <a
-                            key={platform}
-                            href={url}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="cardprofile-social-active"
-                          >
-                            <i className={iconClass}></i>
-                          </a>
-                        );
+                {ICON_ORDER.filter((platform) => ICONS[platform]).map(
+                    (platform) => {
+                        const url = social[platform];
+                        const iconClass = ICONS[platform];
+                        if (url) {
+                            return (
+                                <a
+                                    key={platform}
+                                    href={url}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="cardprofile-social-active"
+                                >
+                                    <i className={iconClass}></i>
+                                </a>
+                            );
+                        }
                     }
-                    return (
-                      <span
-                        key={platform}
-                        className="cardprofile-social-inactive"
-                        title={platform.charAt(0).toUpperCase()+platform.slice(1)}
-                      >
-                        <i className={iconClass}></i>
-                      </span>
-                    );
-                  })}
+                )}
             </div>
         </div>
     );
