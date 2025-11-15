@@ -672,6 +672,7 @@ function App() {
 
     let filtersRow = null;
     if (selectedEvent) {
+        // Asegúrate de tener el array correcto con los nombres de fotógrafos
         let photographers = [];
         if (selectedEvent.photos && selectedEvent.photos.length) {
             let setPh = {};
@@ -681,38 +682,56 @@ function App() {
             }
             photographers = Object.keys(setPh);
         }
-        filtersRow = React.createElement(
-            "div",
-            { key: "filters-row", className: "filters-row" },
-            React.createElement(
-                "button",
-                {
-                    key: "all",
-                    className:
-                        "filter-button" +
-                        (activePhotographer === null ? " active" : ""),
-                    onClick: function () {
-                        setActivePhotographer(null);
-                    },
-                },
-                "Todas las fotografías"
-            ),
-            photographers.map(function (ph) {
-                return React.createElement(
+
+        //let photographers = /* tu forma habitual de obtener los fotógrafos del evento */;
+        if (photographers.length === 1) {
+            filtersRow = React.createElement(
+                "div",
+                { key: "filters-row", className: "filters-row" },
+                React.createElement(
                     "button",
                     {
-                        key: "ph-" + ph,
+                        className: "filter-button active",
+                        disabled: true, // para que NO se pueda clicar
+                        style: { pointerEvents: "none", opacity: 1 }, // opcional, para que no se vea "gris"
+                    },
+                    "Fotos de " + photographers[0]
+                )
+            );
+        } else if (photographers.length > 1) {
+            filtersRow = React.createElement(
+                "div",
+                { key: "filters-row", className: "filters-row" },
+                React.createElement(
+                    "button",
+                    {
+                        key: "all",
                         className:
                             "filter-button" +
-                            (activePhotographer === ph ? " active" : ""),
+                            (activePhotographer === null ? " active" : ""),
                         onClick: function () {
-                            setActivePhotographer(ph);
+                            setActivePhotographer(null);
                         },
                     },
-                    "Fotos de " + ph
-                );
-            })
-        );
+                    "Todas las fotografías"
+                ),
+                photographers.map(function (ph) {
+                    return React.createElement(
+                        "button",
+                        {
+                            key: "ph-" + ph,
+                            className:
+                                "filter-button" +
+                                (activePhotographer === ph ? " active" : ""),
+                            onClick: function () {
+                                setActivePhotographer(ph);
+                            },
+                        },
+                        "Fotos de " + ph
+                    );
+                })
+            );
+        }
     }
     let eventsRow = null;
     if (selectedPhotographer && eventsForPhotographer.length > 0) {
