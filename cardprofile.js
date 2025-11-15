@@ -1,4 +1,4 @@
-function CardProfile({ backgroundImg, profileImg, name, bio, social = {} }) {
+function CardProfile({ backgroundImg, profileImg, name, bio, social = {}, onClose }) {
     // Iconos soportados (FontAwesome)
     const ICONS = {
         x: "fab fa-x-twitter",
@@ -45,6 +45,16 @@ function CardProfile({ backgroundImg, profileImg, name, bio, social = {} }) {
                     <p className="cardprofile-bio">{bio}</p>
                 ) : null}
             </div>
+            <button
+                className="cardprofile-fotos-btn"
+                onClick={() => {
+                    window.location.hash =
+                        "/fotografo/" + name.replace(/\s+/g, "_");
+                    if (onClose) onClose(); // Cierra el CardProfile/modal
+                }}
+            >
+                Ver fotos
+            </button>
             {ICON_ORDER.some((platform) => ICONS[platform]) && (
                 <div className="cardprofile-section-title">Redes</div>
             )}

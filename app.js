@@ -891,7 +891,12 @@ function App() {
                         e.stopPropagation();
                     },
                 },
-                React.createElement(CardProfile, shownPhotographerCard),
+                React.createElement(CardProfile, {
+                    ...shownPhotographerCard,
+                    onClose: function () {
+                        setShownPhotographerCard(null);
+                    },
+                }),
                 React.createElement(
                     "button",
                     {

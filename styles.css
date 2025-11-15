@@ -743,6 +743,22 @@ button:hover {
     color: var(--color-primary-hover, #0056b3);
     transform: scale(1.18);
 }
+.cardprofile-fotos-btn {
+    margin-top: 1em;
+    padding: 0.5em 1em;
+    background: var(--color-white) !important;
+    color: var(--color-primary) !important;
+    position: initial !important;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background 0.2s;
+}
+.cardprofile-fotos-btn:hover {
+    color: var(--color-white) !important;
+    background: var(--color-primary) !important;
+}
 
 /* Modal para CardProfile */
 .modal-modalprofile {
