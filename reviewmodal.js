@@ -6,7 +6,6 @@ function ReviewModal(props) {
     let onPrev = props.onPrev;
     let onNext = props.onNext;
     let onConfirm = props.onConfirm;
-
     let [isImageLoading, setIsImageLoading] = React.useState(true);
     let [touchStart, setTouchStart] = React.useState(null);
     let [touchEnd, setTouchEnd] = React.useState(null);
@@ -18,25 +17,27 @@ function ReviewModal(props) {
     let handleImageLoad = function () {
         setIsImageLoading(false);
     };
+
     let resetLoading = function () {
         setIsImageLoading(true);
     };
 
     let handleTouchStart = function (e) {
         setTouchEnd(null);
-        setTouchStart(e.targetTouches.clientX);
+        setTouchStart(e.targetTouches[0].clientX);
     };
+
     let handleTouchMove = function (e) {
-        setTouchEnd(e.targetTouches.clientX);
+        setTouchEnd(e.targetTouches[0].clientX);
     };
+
     let handleTouchEnd = function () {
         if (!touchStart || !touchEnd) return;
         let distance = touchStart - touchEnd;
         if (distance > 50) {
             resetLoading();
             onNext();
-        }
-        if (distance < -50) {
+        } else if (distance < -50) {
             resetLoading();
             onPrev();
         }
@@ -146,39 +147,39 @@ function ReviewModal(props) {
                             );
                         },
                         style: { display: isImageLoading ? "none" : "block" },
-                    })
-                )
-            ),
-            React.createElement(
-                "div",
-                { className: "review-footer" },
-                React.createElement(
-                    "button",
-                    {
-                        className: "review-deselect",
-                        onClick: function (e) {
-                            e.stopPropagation();
-                            onDeselect(photo, true);
-                        },
-                    },
-                    "Deseleccionar"
+                    }),
+                    navButtons
                 ),
                 React.createElement(
                     "div",
-                    { className: "review-buttons" },
+                    { className: "review-footer" },
                     React.createElement(
                         "button",
-                        { onClick: onClose },
-                        "Volver"
+                        {
+                            className: "review-deselect",
+                            onClick: function (e) {
+                                e.stopPropagation();
+                                onDeselect(photo, true);
+                            },
+                        },
+                        "Deseleccionar"
                     ),
                     React.createElement(
-                        "button",
-                        { onClick: onConfirm },
-                        "Confirmar"
+                        "div",
+                        { className: "review-buttons" },
+                        React.createElement(
+                            "button",
+                            { onClick: onClose },
+                            "Volver"
+                        ),
+                        React.createElement(
+                            "button",
+                            { onClick: onConfirm },
+                            "Confirmar"
+                        )
                     )
                 )
             )
-        ),
-        navButtons
+        )
     );
 }
