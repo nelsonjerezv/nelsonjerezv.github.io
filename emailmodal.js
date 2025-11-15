@@ -6,6 +6,11 @@ function EmailModal(props) {
     let selectedPhotos = props.selectedPhotos;
     let isSendingEmail = props.isSendingEmail;
 
+    let uniquePhotographers = new Set(
+        selectedPhotos.map((photo) => photo.photographerId)
+    );
+    let multiplePhotographers = uniquePhotographers.size > 1;
+
     let handleChange = function (e) {
         setEmail(e.target.value);
     };
@@ -39,12 +44,14 @@ function EmailModal(props) {
                 React.createElement(
                     "h2",
                     null,
-                    "Ingresa tu email para la orden"
+                    "Ingresa tu email para generar la orden"
                 ),
                 React.createElement(
                     "p",
                     null,
-                    "Te contactaremos cuando la orden sea recibida por el equipo."
+                    multiplePhotographers
+                        ? "Cuando la orden sea generada, los fotógrafos te contactarán vía email para gestionar el pago y la entrega."
+                        : "Cuando la orden sea generada, el fotógrafo te contactará vía email para gestionar el pago y la entrega."
                 )
             ),
             React.createElement("input", {

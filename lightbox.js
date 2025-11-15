@@ -163,6 +163,7 @@ function Lightbox(props) {
                         if (selectedPhotos.length > 0) onGenerateOrder();
                     },
                     disabled: selectedPhotos.length === 0,
+                    style: { display: selectedPhotos.length === 0 ? "none" : "block" },
                 },
                 "Generar orden"
             )

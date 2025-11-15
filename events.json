@@ -611,41 +611,6 @@
     ]
   },
   {
-    "name": "Evento de Prueba",
-    "photos": [
-      {
-        "id": "pexels-olly-3769699_processed.avif",
-        "name": "pexels-olly-3769699_processed.avif",
-        "photographer": "Nelson Jerez",
-        "url": "https://cdn.jsdelivr.net/gh/nelsonjerezv/nelsonjerezv.github.io@main/images/Evento%20de%20Prueba/Nelson%20Jerez/pexels-olly-3769699_processed.avif"
-      },
-      {
-        "id": "pexels-olly-3769701_processed.avif",
-        "name": "pexels-olly-3769701_processed.avif",
-        "photographer": "Nelson Jerez",
-        "url": "https://cdn.jsdelivr.net/gh/nelsonjerezv/nelsonjerezv.github.io@main/images/Evento%20de%20Prueba/Nelson%20Jerez/pexels-olly-3769701_processed.avif"
-      },
-      {
-        "id": "pexels-olly-3771806_processed.avif",
-        "name": "pexels-olly-3771806_processed.avif",
-        "photographer": "Nelson Jerez",
-        "url": "https://cdn.jsdelivr.net/gh/nelsonjerezv/nelsonjerezv.github.io@main/images/Evento%20de%20Prueba/Nelson%20Jerez/pexels-olly-3771806_processed.avif"
-      },
-      {
-        "id": "pexels-olly-3771834_processed.avif",
-        "name": "pexels-olly-3771834_processed.avif",
-        "photographer": "Victor Carrasco",
-        "url": "https://cdn.jsdelivr.net/gh/nelsonjerezv/nelsonjerezv.github.io@main/images/Evento%20de%20Prueba/Victor%20Carrasco/pexels-olly-3771834_processed.avif"
-      },
-      {
-        "id": "pexels-olly-3771836_processed.avif",
-        "name": "pexels-olly-3771836_processed.avif",
-        "photographer": "Victor Carrasco",
-        "url": "https://cdn.jsdelivr.net/gh/nelsonjerezv/nelsonjerezv.github.io@main/images/Evento%20de%20Prueba/Victor%20Carrasco/pexels-olly-3771836_processed.avif"
-      }
-    ]
-  },
-  {
     "name": "Top Man 2025",
     "photos": [
       {
@@ -1301,17 +1266,6 @@
         "name": "Topman_processed.avif",
         "photographer": "Victor Carrasco",
         "url": "https://cdn.jsdelivr.net/gh/nelsonjerezv/nelsonjerezv.github.io@main/images/Top%20Man%202025/Victor%20Carrasco/Topman_processed.avif"
-      }
-    ]
-  },
-  {
-    "name": "cycling Pucon 2025",
-    "photos": [
-      {
-        "id": "premium_photo-1713184149461-69b0abeb3daa 2.avif",
-        "name": "premium_photo-1713184149461-69b0abeb3daa 2.avif",
-        "photographer": "Victor Carrasco",
-        "url": "https://cdn.jsdelivr.net/gh/nelsonjerezv/nelsonjerezv.github.io@main/images/cycling%20Pucon%202025/Victor%20Carrasco/premium_photo-1713184149461-69b0abeb3daa%202.avif"
       }
     ]
   }
