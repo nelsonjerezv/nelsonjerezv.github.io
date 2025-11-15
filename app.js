@@ -238,50 +238,77 @@ function App() {
         setShowReview(false);
         setShowEmailModal(true);
     };
-    let handleEmailSubmit = function (userEmail, selectedPhotosParam) {
+    let handleEmailSubmit = async function (userEmail, selectedPhotosParam) {
         setIsSendingEmail(true);
+
+        // 1. Agrupa fotos por el nombre del fotógrafo
+        let photosByPhotographer = {};
+        selectedPhotosParam.forEach((photo) => {
+            let pname = photo.photographer;
+            if (!photosByPhotographer[pname]) photosByPhotographer[pname] = [];
+            photosByPhotographer[pname].push(photo);
+        });
+
         let contexto = selectedEvent
             ? selectedEvent.name
             : selectedPhotographer
             ? selectedPhotographer
             : "Sin especificar";
-        let params = {
-            to_email: emailsConfig.adminEmail,
-            cc_emails: emailsConfig.ccEmails.join(","),
-            user_email: userEmail,
-            nombreEvento: contexto,
-            photos: selectedPhotosParam
-                .map(function (p) {
-                    let i = p.name.lastIndexOf(".");
-                    return i > 0 ? p.name.substring(0, i) : p.name;
-                })
-                .join("\n"),
-        };
 
-        emailjs.send("service_fotosEventos", "template_0ntzv59", params).then(
-            function (result) {
-                setIsSendingEmail(false);
-                setResultMessage({
-                    type: "success",
-                    title: "¡Orden enviada!",
-                    message:
-                        "Te contactaremos pronto con los detalles de tu orden.",
-                });
-                setShowResultModal(true);
-                setShowEmailModal(false);
-            },
-            function (error) {
-                setIsSendingEmail(false);
-                setResultMessage({
-                    type: "error",
-                    title: "Error al enviar",
-                    message:
-                        "No pudimos procesar tu orden. Por favor, intenta de nuevo.",
-                });
-                setShowResultModal(true);
+        // 2. Para cada fotógrafo, arma el mail y envíalo
+        let sendPromises = Object.entries(photosByPhotographer).map(
+            ([photographerName, photos]) => {
+                // Busca el fotógrafo por nombre exacto en photographers.json
+                let photographerInfo = photographersList.find(
+                    (ph) => ph.name === photographerName
+                );
+                if (!photographerInfo) return Promise.resolve(); // Si no lo encuentra, ignora
+
+                let params = {
+                    to_email: photographerInfo.email, // Email del fotógrafo
+                    cc_emails: emailsConfig.ccEmails.join(","),
+                    user_email: userEmail,
+                    nombreEvento: contexto,
+                    photos: photos
+                        .map(function (p) {
+                            let i = p.name.lastIndexOf(".");
+                            return i > 0 ? p.name.substring(0, i) : p.name;
+                        })
+                        .join("\n"),
+                };
+
+                return emailjs.send(
+                    "service_fotosEventos",
+                    "template_0ntzv59",
+                    params
+                );
             }
         );
+
+        // 3. Espera que todos los mails se envíen
+        try {
+            await Promise.all(sendPromises);
+            setIsSendingEmail(false);
+            setResultMessage({
+                type: "success",
+                title: "¡Orden enviada!",
+                message:
+                    "Te contactaremos pronto con los detalles de tu orden.",
+            });
+            setShowResultModal(true);
+            setShowEmailModal(false);
+        } catch (error) {
+            setIsSendingEmail(false);
+            setResultMessage({
+                type: "error",
+                title: "Error al enviar",
+                message:
+                    "No pudimos procesar tu orden. Por favor, intenta de nuevo.",
+            });
+            setShowResultModal(true);
+        }
     };
+
     let handleGenerateFromLightbox = function () {
         setLightboxIndex(-1);
         setShowReview(true);
