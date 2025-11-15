@@ -259,7 +259,7 @@ function App() {
         let sendPromises = Object.entries(photosByPhotographer).map(
             ([photographerName, photos]) => {
                 // Busca el fotógrafo por nombre exacto en photographers.json
-                let photographerInfo = photographersList.find(
+                let photographerInfo = photographers.find(
                     (ph) => ph.name === photographerName
                 );
                 if (!photographerInfo) return Promise.resolve(); // Si no lo encuentra, ignora

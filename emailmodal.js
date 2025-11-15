@@ -5,9 +5,8 @@ function EmailModal(props) {
     let onSubmit = props.onSubmit;
     let selectedPhotos = props.selectedPhotos;
     let isSendingEmail = props.isSendingEmail;
-
     let uniquePhotographers = new Set(
-        selectedPhotos.map((photo) => photo.photographerId)
+        selectedPhotos.map((photo) => photo.photographer)
     );
     let multiplePhotographers = uniquePhotographers.size > 1;
 
