@@ -29,6 +29,8 @@ function App() {
     let [photographers, setPhotographers] = React.useState([]);
     let [shownPhotographerCard, setShownPhotographerCard] =
         React.useState(null);
+    let [showPhotographersInfo, setShowPhotographersInfo] =
+        React.useState(false);
 
     let hasSelections = selectedPhotos.length > 0;
 
@@ -95,6 +97,22 @@ function App() {
     function parseAndSetState(hash) {
         const pathname = hash.replace(/^#/, "");
         if (pathname === "/" || pathname === "") {
+            setSelectedEvent(null);
+            setSelectedPhotographer(null);
+            setPhotographerQuery("");
+            setSelectedPhotos([]);
+            setIsSelectionMode(false);
+            setLightboxIndex(-1);
+            setShowReview(false);
+            setShowEmailModal(false);
+            setEmail("");
+            setReviewIndex(0);
+            setActivePhotographer(null);
+            setActiveEventForPhotographer(null);
+            return true;
+        }
+        if (pathname === "/trabaja_con_nosotros") {
+            setShowPhotographersInfo(true);
             setSelectedEvent(null);
             setSelectedPhotographer(null);
             setPhotographerQuery("");
@@ -336,20 +354,16 @@ function App() {
         [lightboxIndex]
     );
     React.useEffect(() => {
-        if (events.length > 0) {
-            parseAndSetState(window.location.hash);
-        }
+        if (parseAndSetState(window.location.hash)) return;
+        if (events.length > 0) parseAndSetState(window.location.hash);
     }, [events, photographers]);
     React.useEffect(() => {
         function handleHashChange() {
-            // SOLO ejecuta si hay eventos cargados
-            if (events.length > 0) {
-                parseAndSetState(window.location.hash);
-            }
+            parseAndSetState(window.location.hash);
         }
         window.addEventListener("hashchange", handleHashChange);
         return () => window.removeEventListener("hashchange", handleHashChange);
-    }, [events, photographers]); // <- IMPORTANTE: depende de eventos!
+    }, [events, photographers]);
 
     React.useEffect(function () {
         fetch("events.json")
@@ -930,12 +944,146 @@ function App() {
         );
     }
     let content = null;
-    if (!selectedEvent && !selectedPhotographer) {
+    if (showPhotographersInfo) {
         content = [
             React.createElement(
                 "header",
-                { key: "header" },
-                React.createElement("h1", null, "Galería de Eventos")
+                {
+                    key: "header",
+                    style: {
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                    },
+                },
+                React.createElement("h1", null, ""),
+                React.createElement(
+                    "button",
+                    {
+                        style: { marginLeft: "auto" },
+                        onClick: () => {
+                            setShowPhotographersInfo(false);
+                            window.location.hash = "#/";
+                        },
+                    },
+                    "Volver"
+                )
+            ),
+            React.createElement(
+                "div",
+                {
+                    style: {
+                        padding: 24,
+                        maxWidth: 600,
+                        margin: "40px auto",
+                        textAlign: "center",
+                    },
+                },
+                React.createElement("h2", null, "Trabaja con nosotros"),
+                React.createElement(
+                    "p",
+                    null,
+                    "Te invitamos a formar parte de nuestra comunidad de fotógrafos. Nuestra plataforma está diseñada para que tu trabajo llegue directamente a los asistentes, facilitando un proceso simple y directo para que puedas gestionar tus ventas sin intermediarios."
+                ),
+                React.createElement(
+                    "h3",
+                    null,
+                    "Así funciona nuestro flujo de trabajo"
+                ),
+                React.createElement(
+                    "ul",
+                    {
+                        style: {
+                            textAlign: "left",
+                            maxWidth: 520,
+                            margin: "24px auto",
+                        },
+                    },
+                    React.createElement(
+                        "li",
+                        null,
+                        "Exposición de tu trabajo: Nosotros subimos a la web la galería del evento con tus fotografías, las convertimos a un formato optimizado y protegemos con marca de agua nuestra o tuya."
+                    ),
+                    React.createElement(
+                        "li",
+                        null,
+                        "Selección del cliente: Los asistentes exploran las galerías, seleccionan las imágenes que desean adquirir y completan un formulario con su pedido y correo de contacto."
+                    ),
+                    React.createElement(
+                        "li",
+                        null,
+                        "Notificación instantánea: Recibirás un correo automático con los nombres de las fotos seleccionadas y correo del cliente en cuanto realicen una solicitud."
+                    ),
+                    React.createElement(
+                        "li",
+                        null,
+                        "Gestión directa: Desde ese momento, te comunicas directamente con tu cliente para coordinar la entrega de los archivos en alta calidad y el pago."
+                    )
+                ),
+                React.createElement("h3", null, "Principales beneficios"),
+                React.createElement(
+                    "ul",
+                    {
+                        style: {
+                            textAlign: "left",
+                            maxWidth: 520,
+                            margin: "24px auto",
+                        },
+                    },
+                    React.createElement(
+                        "li",
+                        null,
+                        "Autonomía total: Controlas tus propios clientes, precios y métodos de pago."
+                    ),
+                    React.createElement(
+                        "li",
+                        null,
+                        "Visibilidad garantizada: Expón tu trabajo profesionalmente ante todos los asistentes del evento."
+                    ),
+                    React.createElement(
+                        "li",
+                        null,
+                        "Proceso simplificado: Nosotros nos ocupamos de la vitrina digital y de notificarte las solicitudes para que tú te enfoques en la post-venta."
+                    )
+                ),
+                React.createElement(
+                    "h4",
+                    { style: { marginTop: 36 } },
+                    "¿Listo para unirte?"
+                ),
+                React.createElement(
+                    "p",
+                    null,
+                    "Si eres fotógrafo de eventos y te interesa nuestra forma de trabajar, nos encantaría colaborar contigo. Escríbenos a ",
+                    React.createElement(
+                        "a",
+                        { href: "mailto:tu.email@ejemplo.com" },
+                        "tu.email@ejemplo.com"
+                    ),
+                    " para presentarte y conocer más sobre el proceso de incorporación."
+                )
+            ),
+        ];
+    } else if (!selectedEvent && !selectedPhotographer) {
+        content = [
+            React.createElement(
+                "header",
+                {
+                    key: "header",
+                    style: {
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                    },
+                },
+                React.createElement("h1", null, ""),
+                React.createElement(
+                    "a",
+                    {
+                        href: "#/trabaja_con_nosotros",
+                    },
+                    "para fotógrafos"
+                )
             ),
             React.createElement(
                 "h2",

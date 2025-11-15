@@ -638,13 +638,22 @@ button:hover {
 }
 
 .filter-button:hover {
-    background: var(--color-gallery-overlay-hover);
+    background: var(--color-primary);
     color: var(--color-white);
 }
 
 .filter-button.active {
     background: var(--color-primary);
     color: var(--color-white);
+}
+
+a[href="#/trabaja_con_nosotros"] {
+    color: var(--color-white);
+    text-decoration: none;
+}
+
+a[href="#/trabaja_con_nosotros"]:hover {
+    text-decoration: underline;
 }
 
 .search-row {
