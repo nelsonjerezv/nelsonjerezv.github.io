@@ -69,55 +69,6 @@ function App() {
         ]
     );
 
-    React.useEffect(function () {
-        fetch("events.json")
-            .then(function (response) {
-                return response.json();
-            })
-            .then(function (data) {
-                setEvents(data);
-            })
-            .catch(function () {
-                setEvents([]);
-            });
-    }, []);
-    React.useEffect(function () {
-        fetch("emails.json")
-            .then(function (response) {
-                return response.json();
-            })
-            .then(function (data) {
-                setEmailsConfig(data);
-            })
-            .catch(function () {
-                setEmailsConfig({ adminEmail: "", ccEmails: [] });
-            });
-    }, []);
-    React.useEffect(function () {
-        fetch("photographers.json")
-            .then(function (response) {
-                return response.json();
-            })
-            .then(function (data) {
-                setPhotographers(data);
-            })
-            .catch(function () {
-                setPhotographers([]);
-            });
-    }, []);
-    React.useEffect(
-        function () {
-            if (selectedEvent) {
-                document.title = selectedEvent.name;
-            } else if (selectedPhotographer) {
-                document.title = selectedPhotographer;
-            } else {
-                document.title = "Eventos disponibles";
-            }
-        },
-        [selectedEvent, selectedPhotographer]
-    );
-
     function slugify(name) {
         if (!name) return "";
         return name
@@ -127,23 +78,22 @@ function App() {
             .replace(/\s+/g, "-")
             .replace(/-+/g, "-");
     }
-
-    // PARA RUTA: espacios -> '_'
     function photographerUrl(name) {
         return name.replace(/\s+/g, "_");
     }
-    // PARA PARSEAR RUTA: '_' -> espacios
     function decodePhotographerUrl(slug) {
         return slug.replace(/_/g, " ");
     }
 
     function updateUrl(path) {
-        if (window.location.pathname !== path) {
-            window.history.pushState({}, "", path);
+        const hashPath = path.startsWith("/") ? path : "/" + path;
+        if (window.location.hash !== "#" + hashPath) {
+            window.location.hash = hashPath;
         }
     }
 
-    function parseAndSetState(pathname) {
+    function parseAndSetState(hash) {
+        const pathname = hash.replace(/^#/, "");
         if (pathname === "/" || pathname === "") {
             setSelectedEvent(null);
             setSelectedPhotographer(null);
@@ -167,16 +117,29 @@ function App() {
                 let slug = slugify(param);
                 for (let i = 0; i < events.length; i++) {
                     if (slugify(events[i].name) === slug) {
-                        handleSelectEvent(events[i]);
+                        setSelectedEvent(events[i]);
+                        setSelectedPhotographer(null);
+                        setPhotographerQuery("");
+                        setSelectedPhotos([]);
+                        setIsSelectionMode(false);
+                        setLightboxIndex(-1);
+                        setShowReview(false);
+                        setShowEmailModal(false);
+                        setEmail("");
+                        setReviewIndex(0);
+                        setActivePhotographer(null);
+                        setActiveEventForPhotographer(null);
                         return true;
                     }
                 }
                 updateUrl("/");
                 return false;
             } else if (type === "fotografo") {
-                // DECODIFICAR "_" → espacio
                 let decodedPhotographer = decodePhotographerUrl(param);
-                if (allPhotographers.includes(decodedPhotographer)) {
+                if (
+                    allPhotographers &&
+                    allPhotographers.includes(decodedPhotographer)
+                ) {
                     setSelectedPhotographer(decodedPhotographer);
                     setSelectedEvent(null);
                     setPhotographerQuery(decodedPhotographer);
@@ -197,9 +160,9 @@ function App() {
                 updateUrl("/");
                 return false;
             }
+            updateUrl("/");
+            return false;
         }
-        updateUrl("/");
-        return false;
     }
 
     let handleSelectEvent = function (ev) {
@@ -345,18 +308,52 @@ function App() {
         },
         [lightboxIndex]
     );
-    React.useEffect(function () {
-        parseAndSetState(window.location.pathname);
-    }, []);
-    React.useEffect(function () {
-        function handlePopState() {
-            parseAndSetState(window.location.pathname);
+    React.useEffect(() => {
+        if (events.length > 0) {
+            parseAndSetState(window.location.hash);
         }
-        window.addEventListener("popstate", handlePopState);
-        return function () {
-            window.removeEventListener("popstate", handlePopState);
-        };
+    }, [events, photographers]);
+    React.useEffect(() => {
+        function handleHashChange() {
+            // SOLO ejecuta si hay eventos cargados
+            if (events.length > 0) {
+                parseAndSetState(window.location.hash);
+            }
+        }
+        window.addEventListener("hashchange", handleHashChange);
+        return () => window.removeEventListener("hashchange", handleHashChange);
+    }, [events, photographers]); // <- IMPORTANTE: depende de eventos!
+
+    React.useEffect(function () {
+        fetch("events.json")
+            .then((res) => res.json())
+            .then(setEvents)
+            .catch(() => setEvents([]));
     }, []);
+    React.useEffect(function () {
+        fetch("emails.json")
+            .then((res) => res.json())
+            .then(setEmailsConfig)
+            .catch(() => setEmailsConfig({ adminEmail: "", ccEmails: [] }));
+    }, []);
+    React.useEffect(function () {
+        fetch("photographers.json")
+            .then((res) => res.json())
+            .then(setPhotographers)
+            .catch(() => setPhotographers([]));
+    }, []);
+    React.useEffect(
+        function () {
+            if (selectedEvent) {
+                document.title = selectedEvent.name;
+            } else if (selectedPhotographer) {
+                document.title = selectedPhotographer;
+            } else {
+                document.title = "Eventos disponibles";
+            }
+        },
+        [selectedEvent, selectedPhotographer]
+    );
 
     let allEventsPhotos = [];
     for (let i = 0; i < events.length; i++) {
@@ -491,11 +488,9 @@ function App() {
                 {
                     className: "carousel-item",
                     key: eventKey,
-                    onClick: (function (evParam) {
-                        return function () {
-                            handleSelectEvent(evParam);
-                        };
-                    })(ev),
+                    onClick: () => {
+                        updateUrl("/evento/" + slugify(ev.name));
+                    },
                 },
                 React.createElement(
                     "div",
